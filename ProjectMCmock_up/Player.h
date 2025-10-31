@@ -29,5 +29,6 @@ private:
 	std::uint16_t m_wins;
 	std::uint16_t m_gamesPlayed;
 	std::uint16_t m_unusedCards;
+	std::uint8_t m_performanceScore;
 };
 
