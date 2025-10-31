@@ -1,8 +1,19 @@
 #include "Player.h"
 #include <iostream>
+#include <cmath>
 std::uint8_t Player::score() const
 {
-    return std::uint8_t();
+	if (m_wins > 0)
+		return 5 * (abs(m_wins / m_gamesPlayed - m_gamesPlayed / m_unusedCards));
+	else
+		return 0;
+}
+
+bool Player::placeCard()
+{
+
+
+	return false;
 }
 
 void Player::viewProfile() const
