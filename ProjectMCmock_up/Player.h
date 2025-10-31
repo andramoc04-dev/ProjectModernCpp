@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <list>
 #include <string>
-
+#include <stack>
 class Player
 {
 public:
@@ -18,8 +18,8 @@ public:
 	);
 
 	std::uint8_t score() const;
-	bool placeCard();
-	void takeCard();
+	bool placeCards(Card choosenCard,Card descendingStack1, Card descendingStack2, Card ascendingStack1, Card ascendingStack2);
+	void takeCard(std::stack<Card>& Stack);
 	void viewProfile() const;
 
 private:
