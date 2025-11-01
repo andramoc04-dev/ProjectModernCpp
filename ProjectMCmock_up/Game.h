@@ -9,7 +9,7 @@ class Game
 {
 public:
 	void shuffleCards();
-	void endGame();
+	bool endGame(int numberOfPlacedCards);
 	void runGame();
 private:
 	std::vector<Player> m_players;
