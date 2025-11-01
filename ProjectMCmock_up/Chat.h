@@ -4,7 +4,7 @@
 class Chat
 {
 public:
-	std::string setMessage();
+	void setMessage(std::string m_message);
 	void printMessage();
 private:
 	std::string m_message;
