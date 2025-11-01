@@ -9,7 +9,19 @@ void Game::shuffleCards()
 
 bool Game::endGame(int numberOfPlacedCards)
 {
-	
+	if (numberOfPlacedCards == -1)
+		return false;
+	if (numberOfPlacedCards < 2)
+	{
+		std::cout << "You lost..." << std::endl;
+		return true;
+	}
+	if (m_cardsStack.empty())
+	{
+		std::cout << "You won!" << std::endl;
+		return true;
+	}
+	return false;
 }
 
 void Game::runGame()
