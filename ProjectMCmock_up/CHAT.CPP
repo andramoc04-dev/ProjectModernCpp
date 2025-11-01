@@ -1,5 +1,6 @@
 #include "Chat.h"
 #include<cctype>
+#include<iostream>
 void Chat::setMessage(std::string message)
 {
     bool contains_numbers = false;
@@ -15,3 +16,10 @@ void Chat::setMessage(std::string message)
     else
         m_message = message;
 }
+
+void Chat::printMessage()
+{
+    std::cout << m_message << std::endl;
+}
+
+
