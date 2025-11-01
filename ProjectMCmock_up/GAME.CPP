@@ -4,7 +4,17 @@
 
 void Game::shuffleCards()
 {
-
+	std::deque<int> sortedCards;
+	for (int i = 1; i <= 99; i++)
+		sortedCards.push_back(i);
+	int position;
+	while (!sortedCards.empty())
+	{
+		position = std::rand() % sortedCards.size();
+		Card card(sortedCards[position]);
+		m_cardsStack.push(card);
+		sortedCards.erase(sortedCards.begin() + position);
+	}
 }
 
 bool Game::endGame(int numberOfPlacedCards)
