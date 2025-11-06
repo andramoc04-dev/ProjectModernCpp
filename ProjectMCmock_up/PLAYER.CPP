@@ -65,3 +65,13 @@ std::uint16_t Player::getUnusedCards()
 {
 	return m_unusedCards;
 }
+
+void Player::setWins(std::uint16_t gamesWon)
+{
+	m_wins = gamesWon;
+}
+
+std::uint16_t Player::getWins()
+{
+	return m_wins;
+}
