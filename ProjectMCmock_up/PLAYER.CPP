@@ -55,3 +55,13 @@ void Player::viewProfile() const
 	std::cout << "Total number of games played: " << m_gamesPlayed << "\n";
 	std::cout << "Score: " << m_performanceScore << "\n";
 }
+
+void Player::setUnusedCards(std::uint16_t numberOfcards)
+{
+	m_unusedCards = numberOfcards;
+}
+
+std::uint16_t Player::getUnusedCards()
+{
+	return m_unusedCards;
+}

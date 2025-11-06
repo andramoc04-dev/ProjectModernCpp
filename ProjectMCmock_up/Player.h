@@ -21,6 +21,8 @@ public:
 	bool placeCards(Card choosenCard,Card descendingStack1, Card descendingStack2, Card ascendingStack1, Card ascendingStack2);
 	void takeCard(std::stack<Card>& Stack);
 	void viewProfile() const;
+	void setUnusedCards(std::uint16_t numberOfcards);
+	std::uint16_t getUnusedCards();
 
 private:
 	std::string m_name;
