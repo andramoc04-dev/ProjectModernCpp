@@ -30,6 +30,8 @@ public:
 	std::list<Card> getHand();
 
 	std::uint16_t getScore();
+
+	std::string getName();
 private:
 	std::string m_name;
 	std::list<Card> m_hand;

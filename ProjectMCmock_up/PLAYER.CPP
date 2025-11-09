@@ -88,3 +88,8 @@ std::uint16_t Player::getScore()
 {
 	return m_performanceScore;
 }
+
+std::string Player::getName()
+{
+	return m_name;
+}

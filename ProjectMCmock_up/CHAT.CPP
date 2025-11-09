@@ -17,9 +17,9 @@ void Chat::setMessage(std::string message)
         m_message = message;
 }
 
-void Chat::printMessage()
+void Chat::printMessage(std::string m_name,std::string m_message)
 {
-    std::cout << m_message << std::endl;
+    std::cout <<m_name<<": "<< m_message << std::endl;
 }
 
 
