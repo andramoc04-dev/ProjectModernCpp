@@ -24,7 +24,7 @@ void Game::shuffleCards()
 
 bool Game::endGame(int numberOfPlacedCards)
 {
-	if (numberOfPlacedCards == -1)
+	if (numberOfPlacedCards == 0)
 		return false;
 	if (numberOfPlacedCards < 2)
 	{
@@ -42,18 +42,32 @@ bool Game::endGame(int numberOfPlacedCards)
 void Game::runGame()
 {
 	Card descendingStack1(100), descendingStack2(100), ascendingStack1(1), ascendingStack2(1);
-	Card choosenCard; int numberOfPlacedCards = -1;
-	for (int i = 0; i < m_players.size() && endGame(numberOfPlacedCards) == false; i++)
+	Card choosenCard; int numberOfPlacedCards=0;
+	shuffleCards();
+	while (!endGame(numberOfPlacedCards))
 	{
-		std::cout << "Choose at least two cards, or 0 if you're done";
-		std::cin >> choosenCard;
-		while (choosenCard.getNumber() != 0)
+		
+		for (int i = 0; i < m_players.size(); i++)
 		{
-			numberOfPlacedCards += m_players[i].placeCards(choosenCard, descendingStack1, descendingStack2, ascendingStack1, ascendingStack2);
+			std::cout << "It's " << m_players[i].getName() << "'s turn.\n";
+
+			numberOfPlacedCards = 0;
+			std::cout << "Choose at least two cards, or 0 if you're done";
 			std::cin >> choosenCard;
+			while (choosenCard.getNumber() != 0)
+			{
+				numberOfPlacedCards += m_players[i].placeCards(choosenCard, descendingStack1, descendingStack2, ascendingStack1, ascendingStack2);
+				std::cin >> choosenCard;
+			}
+			if (numberOfPlacedCards >= 2 && !m_cardsStack.empty())
+				for (int j = 0; j < numberOfPlacedCards; j++)
+				{
+					if (!m_cardsStack.empty())
+						m_players[i].takeCard(m_cardsStack);
+					else
+						std::cout << "The main stack of cards is empty! Please take cards from another player's hand!";
+
+				}
 		}
-		if(numberOfPlacedCards>=2)
-			for(int j = 0; j < numberOfPlacedCards; j++)
-				m_players[i].takeCard(m_cardsStack);
 	}
 }

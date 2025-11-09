@@ -71,10 +71,9 @@ bool Player::placeCards(Card choosenCard, Card descendingStack1, Card descending
 
 void Player::takeCard(std::stack<Card>& Stack)
 {
-	if (m_hand.empty())
 		m_hand.push_back(Stack.top());
-	else
-		std::cout << "You need to empty your hand before taking another card!";
+		Stack.pop();
+	
 	
 }
 
