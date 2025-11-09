@@ -2,6 +2,11 @@
 #include <iostream>
 #include <deque>
 
+Game::Game(std::vector<Player> players, std::stack<Card> cardsStack, Chat chat):
+	m_players(players), m_cardsStack(cardsStack), m_chat(chat)
+{
+}
+
 void Game::shuffleCards()
 {
 	std::deque<int> sortedCards;

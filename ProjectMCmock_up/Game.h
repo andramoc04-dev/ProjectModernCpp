@@ -8,6 +8,8 @@
 class Game
 {
 public:
+	Game(std::vector<Player> players, std::stack<Card> cardsStack, Chat chat);
+	Game() = default;
 	void shuffleCards();
 	bool endGame(int numberOfPlacedCards);
 	void runGame();
