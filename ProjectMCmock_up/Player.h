@@ -17,7 +17,7 @@ public:
 		std::uint16_t unusedCards = 0
 	);
 
-	std::uint8_t score() const;
+	void score();
 	bool placeCards(Card choosenCard,Card descendingStack1, Card descendingStack2, Card ascendingStack1, Card ascendingStack2);
 	void takeCard(std::stack<Card>& Stack);
 	void viewProfile() const;
@@ -29,6 +29,7 @@ public:
 	std::uint16_t getWins();
 	std::list<Card> getHand();
 
+	std::uint16_t getScore();
 private:
 	std::string m_name;
 	std::list<Card> m_hand;

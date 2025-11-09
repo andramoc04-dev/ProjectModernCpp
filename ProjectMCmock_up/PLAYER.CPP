@@ -1,12 +1,15 @@
 #include "Player.h"
 #include <iostream>
 #include <cmath>
-std::uint8_t Player::score() const
+void Player::score()
 {
-	if (m_wins > 0)
-		return 5 * (abs(m_wins / m_gamesPlayed - m_gamesPlayed / m_unusedCards));
+	if (m_gamesPlayed > 0)
+	{
+		double FloatScore = 5.0 * m_wins / (m_gamesPlayed + 0.5 * m_unusedCards);
+		m_performanceScore = static_cast<uint16_t>(FloatScore);
+	}
 	else
-		return 0;
+		m_performanceScore = 0;
 }
 
 bool Player::placeCards(Card choosenCard, Card descendingStack1, Card descendingStack2, Card ascendingStack1, Card ascendingStack2)
@@ -79,4 +82,9 @@ std::uint16_t Player::getWins()
 std::list<Card> Player::getHand()
 {
 	return m_hand;
+}
+
+std::uint16_t Player::getScore()
+{
+	return m_performanceScore;
 }
