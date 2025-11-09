@@ -47,7 +47,7 @@ void Player::takeCard(std::stack<Card>& Stack)
 	if (m_hand.empty())
 		m_hand.push_back(Stack.top());
 	else
-		std::cout << "You need to empty your hande before taking another card!";
+		std::cout << "You need to empty your hand before taking another card!";
 	
 }
 
@@ -59,9 +59,9 @@ void Player::viewProfile() const
 	std::cout << "Score: " << m_performanceScore << "\n";
 }
 
-void Player::setUnusedCards(std::uint16_t numberOfcards)
+void Player::setUnusedCards(std::uint16_t numberOfCards)
 {
-	m_unusedCards = numberOfcards;
+	m_unusedCards = numberOfCards;
 }
 
 std::uint16_t Player::getUnusedCards()

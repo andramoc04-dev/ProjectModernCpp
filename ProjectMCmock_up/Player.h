@@ -22,7 +22,7 @@ public:
 	void takeCard(std::stack<Card>& Stack);
 	void viewProfile() const;
 
-	void setUnusedCards(std::uint16_t numberOfcards);
+	void setUnusedCards(std::uint16_t numberOfCards);
 	std::uint16_t getUnusedCards();
 
 	void setWins(std::uint16_t gamesWon);
