@@ -8,6 +8,11 @@
 class Player
 {
 public:
+
+	Player();
+
+	Player(const std::string& name);
+
 	Player(
 		std::string name,
 		std::list<Card> hand,

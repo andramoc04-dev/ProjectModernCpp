@@ -1,6 +1,33 @@
 #include "Player.h"
 #include <iostream>
 #include <cmath>
+Player::Player():
+	m_name("Unknown"),
+	m_hand(),
+	m_hoursPlayed(0),
+	m_wins(0),
+	m_gamesPlayed(0),
+	m_unusedCards(0)
+{
+}
+Player::Player(const std::string& name):
+	m_name(name),
+	m_hand(),
+	m_hoursPlayed(0),
+	m_wins(0),
+	m_gamesPlayed(0),
+	m_unusedCards(0)
+{
+}
+Player::Player(std::string name, std::list<Card> hand, std::uint16_t hoursPlayed, std::uint16_t wins, std::uint16_t gamesPlayed, std::uint16_t unusedCards)
+	:m_name(name),
+	m_hand(hand),
+	m_hoursPlayed(hoursPlayed),
+	m_wins(wins),
+	m_gamesPlayed(gamesPlayed),
+	m_unusedCards(unusedCards)
+{
+}
 void Player::score()
 {
 	if (m_gamesPlayed > 0)
