@@ -10,7 +10,7 @@ Game::Game(std::vector<Player> players, std::stack<Card> cardsStack, Chat chat):
 void Game::shuffleCards()
 {
 	std::deque<int> sortedCards;
-	for (int i = 1; i <= 99; i++)
+	for (int i = 2; i <= 99; i++)
 		sortedCards.push_back(i);
 	int position;
 	while (!sortedCards.empty())
@@ -24,17 +24,33 @@ void Game::shuffleCards()
 
 bool Game::endGame(int numberOfPlacedCards)
 {
-	if (numberOfPlacedCards == 0)
-		return false;
-	if (numberOfPlacedCards < 2)
+	if ((numberOfPlacedCards < 2 && !m_cardsStack.empty()) || 
+		(numberOfPlacedCards < 1 && m_cardsStack.empty()))
 	{
 		std::cout << "You lost..." << std::endl;
+		for (auto& player : m_players)
+		{
+			player.setUnusedCards(player.getUnusedCards()+1);
+		}
 		return true;
 	}
 	if (m_cardsStack.empty())
 	{
-		std::cout << "You won!" << std::endl;
-		return true;
+		bool emptyHands = true;
+		for (auto& player : m_players)
+		{
+			if (!player.getHand().empty())
+				emptyHands = false;
+		}
+		if(emptyHands==true)
+		{
+			std::cout << "You won!" << std::endl;
+			for (auto& player : m_players)
+			{
+				player.setWins(player.getWins()+1);
+			}
+			return true;
+		}
 	}
 	return false;
 }
