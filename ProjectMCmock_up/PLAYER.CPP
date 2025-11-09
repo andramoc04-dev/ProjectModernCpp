@@ -75,3 +75,8 @@ std::uint16_t Player::getWins()
 {
 	return m_wins;
 }
+
+std::list<Card> Player::getHand()
+{
+	return m_hand;
+}

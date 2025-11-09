@@ -27,6 +27,7 @@ public:
 
 	void setWins(std::uint16_t gamesWon);
 	std::uint16_t getWins();
+	std::list<Card> getHand();
 
 private:
 	std::string m_name;
