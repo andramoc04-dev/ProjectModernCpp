@@ -1,16 +1,16 @@
 #pragma once
 #include<string>
+#include<vector>
+#include"Message.h"
 
 class Chat
 {
 public:
-	Chat(const std::string& name, const std::string& message)
-		: m_name(name), m_message(message) {}
 	Chat() = default;
-	void setMessage(std::string m_message);
-	void printMessage(std::string m_name,std::string m_message);
+
+	void AddMessage(Player player, std::string text);
+	void PrintMessages();
 private:
-	std::string m_message;
-	std::string m_name;
+	std::vector<Message>m_messages;
 };
 

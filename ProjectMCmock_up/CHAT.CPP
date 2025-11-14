@@ -1,25 +1,31 @@
 #include "Chat.h"
 #include<cctype>
 #include<iostream>
-void Chat::setMessage(std::string message)
+#include <chrono>
+#include <format>
+
+using namespace std::chrono;
+void Chat::AddMessage(Player player, std::string text)
 {
-    bool contains_numbers = false;
-    for (char c : message)
-    {
-        if (std::isdigit(c)) {
-            contains_numbers = true;
-            break;
-        }
-    }
-    if (contains_numbers)
-        m_message = "###";
-    else
-        m_message = message;
+    Message message;
+    message.SetPlayerName(player.getName());
+    message.SetTextFromPlayer(text);
+    message.SetTimeStamp(std::chrono::system_clock::now());
+
+    m_messages.push_back(message);
 }
 
-void Chat::printMessage(std::string m_name,std::string m_message)
+void Chat::PrintMessages()
 {
-    std::cout <<m_name<<": "<< m_message << std::endl;
+    
+    for (const auto& message : m_messages)
+    {
+      std::cout << std::format("[{:%d.%m.%Y %H:%M:%S}] {}: {}", 
+                                message.GetTimeStamp(), 
+                                message.GetPlayerName(), 
+                                message.GetTextFromPlayer()) << std::endl;
+    }
+    
 }
 
 
