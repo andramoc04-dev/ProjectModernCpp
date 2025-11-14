@@ -4,12 +4,25 @@
 class Card
 {
 public:
+	enum class OrderDirection {
+		Ascending = 1,
+		Descending = 2,
+		Unknown = 0
+	};
+
 	Card(std::uint8_t number);
-	Card() {};
+	Card()=default;
+	
 	std::uint8_t getNumber() const;
+	OrderDirection GetDirection() const;
+
+	void SetDirection(OrderDirection direction);
 
 	friend std::istream& operator>>(std::istream& in,Card& c);
+
+	
 private:
-	std::uint8_t m_number;
+	std::uint8_t m_number=0;
+	OrderDirection m_direction=OrderDirection::Unknown;
 };
 
