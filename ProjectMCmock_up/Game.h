@@ -13,6 +13,7 @@ public:
 	void shuffleCards();
 	bool endGame(int numberOfPlacedCards);
 	void runGame();
+	void displayGameState(const Card& descending1, const Card& descending2, const Card& ascending1, const Card& ascending2);
 private:
 	std::vector<Player> m_players;
 	std::stack<Card> m_cardsStack;

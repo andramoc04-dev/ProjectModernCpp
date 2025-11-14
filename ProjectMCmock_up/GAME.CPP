@@ -87,3 +87,13 @@ void Game::runGame()
 		}
 	}
 }
+
+void Game::displayGameState(const Card& descending1, const Card& descending2, const Card& ascending1, const Card& ascending2)
+{
+
+	std::cout << "First descending stack: " << descending1.getNumber() << " ->place lower cards\n";
+	std::cout << "Second descending stack: " << descending2.getNumber() << " ->place lower cards\n";
+	std::cout << "First ascending stack: " << ascending1.getNumber() << " ->place higher cards\n";
+	std::cout << "Second ascending stack: " << ascending2.getNumber() << " ->place higher cards\n";
+	std::cout << "Cards remaining in deck: " << m_cardsStack.size() << "\n";
+}
