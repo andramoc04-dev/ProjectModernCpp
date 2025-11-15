@@ -47,13 +47,13 @@ bool Player::PlaceCard(Card choosenCard, Card descendingStack1, Card descendingS
 		if (choosenCard.GetNumber() - descendingStack1.GetNumber() == 10 or choosenCard.GetNumber() < descendingStack1.GetNumber())
 			descendingStack1 = choosenCard;
 		else
-			if (choosenCard.GetNumber() - descendingStack2.GetNumber() == 10 or choosenCard.GetNumber() - descendingStack2.GetNumber())
+			if (choosenCard.GetNumber() - descendingStack2.GetNumber() == 10 or choosenCard.GetNumber() < descendingStack2.GetNumber())
 				descendingStack2 = choosenCard;
 			else
-				if (ascendingStack1.GetNumber() - choosenCard.GetNumber() == 10 or choosenCard.GetNumber() - ascendingStack1.GetNumber())
+				if (ascendingStack1.GetNumber() - choosenCard.GetNumber() == 10 or choosenCard.GetNumber() > ascendingStack1.GetNumber())
 					ascendingStack1 = choosenCard;
 				else
-					if (ascendingStack2.GetNumber() - choosenCard.GetNumber() == 10 or choosenCard.GetNumber() - ascendingStack2.GetNumber())
+					if (ascendingStack2.GetNumber() - choosenCard.GetNumber() == 10 or choosenCard.GetNumber() > ascendingStack2.GetNumber())
 						ascendingStack2 = choosenCard;
 					else
 					{
