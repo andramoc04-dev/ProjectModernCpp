@@ -71,7 +71,7 @@ void Game::RunGame()
 
 			numberOfPlacedCards = 0;
 			std::cout << "Choose at least two cards, or 0 if you're done.\n";
-			DisplayGameState(descendingStack1, descendingStack2, ascendingStack1, ascendingStack2);
+			DisplayGameState(descendingStack1, descendingStack2, ascendingStack1, ascendingStack2, m_players[i].GetName());
 			std::cin >> choosenCard;
 			while (choosenCard.GetNumber() != 0)
 			{
@@ -96,7 +96,8 @@ void Game::RunGame()
 	}
 }
 
-void Game::DisplayGameState(const Card& descending1, const Card& descending2, const Card& ascending1, const Card& ascending2)
+void Game::DisplayGameState(const Card& descending1, const Card& descending2, const Card& ascending1, 
+	const Card& ascending2, Player player)
 {
 
 	std::cout << "First descending stack: " << static_cast<int>(descending1.GetNumber()) << " ->place lower cards\n";
@@ -104,4 +105,10 @@ void Game::DisplayGameState(const Card& descending1, const Card& descending2, co
 	std::cout << "First ascending stack: " << static_cast<int>(ascending1.GetNumber()) << " ->place higher cards\n";
 	std::cout << "Second ascending stack: " << static_cast<int>(ascending2.GetNumber()) << " ->place higher cards\n";
 	std::cout << "Cards remaining in deck: " << m_cardsStack.size() << "\n";
+	std::list<Card> hand = player.GetHand();
+	for (auto card : player.GetHand())
+	{
+		std::cout << static_cast<int>(card.GetNumber()) << " ";
+	}
+	
 }
