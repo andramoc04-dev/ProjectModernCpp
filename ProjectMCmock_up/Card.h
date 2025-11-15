@@ -4,7 +4,7 @@
 class Card
 {
 public:
-	enum class OrderDirection {
+	enum class OrderDirection : std::uint8_t {
 		Ascending = 1,
 		Descending = 2,
 		Unknown = 0

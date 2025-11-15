@@ -23,7 +23,7 @@ public:
 	);
 
 	void Score();
-	bool PlaceCard(Card choosenCard,Card descendingStack1, Card descendingStack2, Card ascendingStack1, Card ascendingStack2);
+	bool PlaceCard(Card choosenCard, Card& descendingStack1, Card& descendingStack2, Card& ascendingStack1, Card& ascendingStack2);
 	void TakeCard(std::stack<Card>& Stack);
 	void ViewProfile() const;
 
