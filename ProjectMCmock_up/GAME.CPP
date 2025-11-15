@@ -25,13 +25,13 @@ void Game::ShuffleCards()
 
 bool Game::EndGame(int numberOfPlacedCards)
 {
-	if ((numberOfPlacedCards < 2 && !m_cardsStack.empty()) || 
-		(numberOfPlacedCards < 1 && m_cardsStack.empty()))
+	int minCardsRequired = m_cardsStack.empty() ? 1 : 2;
+	if ( numberOfPlacedCards < minCardsRequired )
 	{
 		std::cout << "You lost..." << std::endl;
 		for (auto& player : m_players)
 		{
-			player.SetUnusedCards(player.GetUnusedCards()+1);
+			player.SetUnusedCards(player.GetUnusedCards());
 		}
 		return true;
 	}
