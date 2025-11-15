@@ -13,23 +13,10 @@
   <property name="windowTitle">
    <string>LoginPage</string>
   </property>
-  <widget class="QPushButton" name="registerButton">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>220</y>
-     <width>111</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Register</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="loginButton">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>220</x>
      <y>150</y>
      <width>111</width>
      <height>41</height>
@@ -42,27 +29,27 @@
   <widget class="QLineEdit" name="Password">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>110</y>
+     <x>220</x>
+     <y>100</y>
      <width>113</width>
      <height>24</height>
     </rect>
    </property>
    <property name="text">
-    <string>Password</string>
+    <string/>
    </property>
   </widget>
   <widget class="QLineEdit" name="Username">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>220</x>
      <y>70</y>
      <width>113</width>
      <height>24</height>
     </rect>
    </property>
    <property name="text">
-    <string>Username</string>
+    <string/>
    </property>
   </widget>
  </widget>
