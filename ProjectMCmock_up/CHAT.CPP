@@ -8,7 +8,7 @@ using namespace std::chrono;
 void Chat::AddMessage(Player player, std::string text)
 {
     Message message;
-    message.SetPlayerName(player.getName());
+    message.SetPlayerName(player.GetName());
     message.SetTextFromPlayer(text);
     message.SetTimeStamp(std::chrono::system_clock::now());
 

@@ -11,6 +11,6 @@ int main()
 	std::stack<Card> cards;
 	Chat chat=Chat();
 	Game game(players, cards, chat);
-	game.runGame();
+	game.RunGame();
 	return 0;
 }

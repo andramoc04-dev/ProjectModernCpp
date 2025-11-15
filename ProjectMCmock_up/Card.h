@@ -13,7 +13,7 @@ public:
 	Card(std::uint8_t number);
 	Card()=default;
 	
-	std::uint8_t getNumber() const;
+	std::uint8_t GetNumber() const;
 	OrderDirection GetDirection() const;
 
 	void SetDirection(OrderDirection direction);

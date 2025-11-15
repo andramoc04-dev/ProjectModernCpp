@@ -22,21 +22,21 @@ public:
 		std::uint16_t unusedCards = 0
 	);
 
-	void score();
-	bool placeCards(Card choosenCard,Card descendingStack1, Card descendingStack2, Card ascendingStack1, Card ascendingStack2);
-	void takeCard(std::stack<Card>& Stack);
-	void viewProfile() const;
+	void Score();
+	bool PlaceCard(Card choosenCard,Card descendingStack1, Card descendingStack2, Card ascendingStack1, Card ascendingStack2);
+	void TakeCard(std::stack<Card>& Stack);
+	void ViewProfile() const;
 
-	void setUnusedCards(std::uint16_t numberOfCards);
-	std::uint16_t getUnusedCards();
+	void SetUnusedCards(std::uint16_t numberOfCards);
+	std::uint16_t GetUnusedCards();
 
-	void setWins(std::uint16_t gamesWon);
-	std::uint16_t getWins();
-	std::list<Card> getHand();
+	void SetWins(std::uint16_t gamesWon);
+	std::uint16_t GetWins();
+	std::list<Card> GetHand();
 
-	std::uint16_t getScore();
+	std::uint16_t GetScore();
 
-	std::string getName();
+	std::string GetName();
 private:
 	std::string m_name;
 	std::list<Card> m_hand;

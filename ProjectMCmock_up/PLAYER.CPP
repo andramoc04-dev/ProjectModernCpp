@@ -28,7 +28,7 @@ Player::Player(std::string name, std::list<Card> hand, std::uint16_t hoursPlayed
 	m_unusedCards(unusedCards)
 {
 }
-void Player::score()
+void Player::Score()
 {
 	if (m_gamesPlayed > 0)
 	{
@@ -39,21 +39,21 @@ void Player::score()
 		m_performanceScore = 0;
 }
 
-bool Player::placeCards(Card choosenCard, Card descendingStack1, Card descendingStack2, Card ascendingStack1, Card ascendingStack2)
+bool Player::PlaceCard(Card choosenCard, Card descendingStack1, Card descendingStack2, Card ascendingStack1, Card ascendingStack2)
 {
 	if (!m_hand.empty())
 
 	{
-		if (choosenCard.getNumber() - descendingStack1.getNumber() == 10 or choosenCard.getNumber() < descendingStack1.getNumber())
+		if (choosenCard.GetNumber() - descendingStack1.GetNumber() == 10 or choosenCard.GetNumber() < descendingStack1.GetNumber())
 			descendingStack1 = choosenCard;
 		else
-			if (choosenCard.getNumber() - descendingStack2.getNumber() == 10 or choosenCard.getNumber() - descendingStack2.getNumber())
+			if (choosenCard.GetNumber() - descendingStack2.GetNumber() == 10 or choosenCard.GetNumber() - descendingStack2.GetNumber())
 				descendingStack2 = choosenCard;
 			else
-				if (ascendingStack1.getNumber() - choosenCard.getNumber() == 10 or choosenCard.getNumber() - ascendingStack1.getNumber())
+				if (ascendingStack1.GetNumber() - choosenCard.GetNumber() == 10 or choosenCard.GetNumber() - ascendingStack1.GetNumber())
 					ascendingStack1 = choosenCard;
 				else
-					if (ascendingStack2.getNumber() - choosenCard.getNumber() == 10 or choosenCard.getNumber() - ascendingStack2.getNumber())
+					if (ascendingStack2.GetNumber() - choosenCard.GetNumber() == 10 or choosenCard.GetNumber() - ascendingStack2.GetNumber())
 						ascendingStack2 = choosenCard;
 					else
 					{
@@ -69,7 +69,7 @@ bool Player::placeCards(Card choosenCard, Card descendingStack1, Card descending
 	}
 }
 
-void Player::takeCard(std::stack<Card>& Stack)
+void Player::TakeCard(std::stack<Card>& Stack)
 {
 		m_hand.push_back(Stack.top());
 		Stack.pop();
@@ -77,7 +77,7 @@ void Player::takeCard(std::stack<Card>& Stack)
 	
 }
 
-void Player::viewProfile() const
+void Player::ViewProfile() const
 {
 	std::cout << "Username: " << m_name << "\n";
 	std::cout << "Total hours played: " << m_hoursPlayed << "\n";
@@ -85,37 +85,37 @@ void Player::viewProfile() const
 	std::cout << "Score: " << m_performanceScore << "\n";
 }
 
-void Player::setUnusedCards(std::uint16_t numberOfCards)
+void Player::SetUnusedCards(std::uint16_t numberOfCards)
 {
 	m_unusedCards = numberOfCards;
 }
 
-std::uint16_t Player::getUnusedCards()
+std::uint16_t Player::GetUnusedCards()
 {
 	return m_unusedCards;
 }
 
-void Player::setWins(std::uint16_t gamesWon)
+void Player::SetWins(std::uint16_t gamesWon)
 {
 	m_wins = gamesWon;
 }
 
-std::uint16_t Player::getWins()
+std::uint16_t Player::GetWins()
 {
 	return m_wins;
 }
 
-std::list<Card> Player::getHand()
+std::list<Card> Player::GetHand()
 {
 	return m_hand;
 }
 
-std::uint16_t Player::getScore()
+std::uint16_t Player::GetScore()
 {
 	return m_performanceScore;
 }
 
-std::string Player::getName()
+std::string Player::GetName()
 {
 	return m_name;
 }

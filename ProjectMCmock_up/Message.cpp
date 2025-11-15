@@ -24,7 +24,7 @@ std::chrono::system_clock::time_point Message::GetTimeStamp() const
 
 void Message::SetPlayerName(Player player)
 {
-    m_player_name = player.getName();
+    m_player_name = player.GetName();
 }
 
 void Message::SetTextFromPlayer(std::string text)

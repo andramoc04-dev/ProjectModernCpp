@@ -7,8 +7,9 @@ Game::Game(std::vector<Player> players, std::stack<Card> cardsStack, Chat chat):
 {
 }
 
-void Game::shuffleCards()
+void Game::ShuffleCards()
 {
+	std::srand(std::time(0));
 	std::deque<int> sortedCards;
 	for (int i = 2; i <= 99; i++)
 		sortedCards.push_back(i);
@@ -22,7 +23,7 @@ void Game::shuffleCards()
 	}
 }
 
-bool Game::endGame(int numberOfPlacedCards)
+bool Game::EndGame(int numberOfPlacedCards)
 {
 	if ((numberOfPlacedCards < 2 && !m_cardsStack.empty()) || 
 		(numberOfPlacedCards < 1 && m_cardsStack.empty()))
@@ -30,7 +31,7 @@ bool Game::endGame(int numberOfPlacedCards)
 		std::cout << "You lost..." << std::endl;
 		for (auto& player : m_players)
 		{
-			player.setUnusedCards(player.getUnusedCards()+1);
+			player.SetUnusedCards(player.GetUnusedCards()+1);
 		}
 		return true;
 	}
@@ -39,7 +40,7 @@ bool Game::endGame(int numberOfPlacedCards)
 		bool emptyHands = true;
 		for (auto& player : m_players)
 		{
-			if (!player.getHand().empty())
+			if (!player.GetHand().empty())
 				emptyHands = false;
 		}
 		if(emptyHands==true)
@@ -47,7 +48,7 @@ bool Game::endGame(int numberOfPlacedCards)
 			std::cout << "You won!" << std::endl;
 			for (auto& player : m_players)
 			{
-				player.setWins(player.getWins()+1);
+				player.SetWins(player.GetWins()+1);
 			}
 			return true;
 		}
@@ -55,45 +56,52 @@ bool Game::endGame(int numberOfPlacedCards)
 	return false;
 }
 
-void Game::runGame()
+void Game::RunGame()
 {
 	Card descendingStack1(100), descendingStack2(100), ascendingStack1(1), ascendingStack2(1);
 	Card choosenCard; int numberOfPlacedCards=0;
-	shuffleCards();
-	while (!endGame(numberOfPlacedCards))
+	ShuffleCards();
+	bool gameEnded = false;
+	std::cout << "Game started.\n";
+	while (!gameEnded)
 	{
-		
 		for (int i = 0; i < m_players.size(); i++)
 		{
-			std::cout << "It's " << m_players[i].getName() << "'s turn.\n";
+			std::cout << "It's " << m_players[i].GetName() << "'s turn.\n";
 
 			numberOfPlacedCards = 0;
-			std::cout << "Choose at least two cards, or 0 if you're done";
+			std::cout << "Choose at least two cards, or 0 if you're done.\n";
+			DisplayGameState(descendingStack1, descendingStack2, ascendingStack1, ascendingStack2);
 			std::cin >> choosenCard;
-			while (choosenCard.getNumber() != 0)
+			while (choosenCard.GetNumber() != 0)
 			{
-				numberOfPlacedCards += m_players[i].placeCards(choosenCard, descendingStack1, descendingStack2, ascendingStack1, ascendingStack2);
+				numberOfPlacedCards += m_players[i].PlaceCard(choosenCard, descendingStack1, descendingStack2, ascendingStack1, ascendingStack2);
 				std::cin >> choosenCard;
 			}
 			if (numberOfPlacedCards >= 2 && !m_cardsStack.empty())
 				for (int j = 0; j < numberOfPlacedCards; j++)
 				{
 					if (!m_cardsStack.empty())
-						m_players[i].takeCard(m_cardsStack);
+						m_players[i].TakeCard(m_cardsStack);
 					else
 						std::cout << "The main stack of cards is empty! Please take cards from another player's hand!";
 
 				}
+			if (EndGame(numberOfPlacedCards))
+			{
+				gameEnded = true;
+				break;
+			}
 		}
 	}
 }
 
-void Game::displayGameState(const Card& descending1, const Card& descending2, const Card& ascending1, const Card& ascending2)
+void Game::DisplayGameState(const Card& descending1, const Card& descending2, const Card& ascending1, const Card& ascending2)
 {
 
-	std::cout << "First descending stack: " << descending1.getNumber() << " ->place lower cards\n";
-	std::cout << "Second descending stack: " << descending2.getNumber() << " ->place lower cards\n";
-	std::cout << "First ascending stack: " << ascending1.getNumber() << " ->place higher cards\n";
-	std::cout << "Second ascending stack: " << ascending2.getNumber() << " ->place higher cards\n";
+	std::cout << "First descending stack: " << static_cast<int>(descending1.GetNumber()) << " ->place lower cards\n";
+	std::cout << "Second descending stack: " << static_cast<int>(descending2.GetNumber()) << " ->place lower cards\n";
+	std::cout << "First ascending stack: " << static_cast<int>(ascending1.GetNumber()) << " ->place higher cards\n";
+	std::cout << "Second ascending stack: " << static_cast<int>(ascending2.GetNumber()) << " ->place higher cards\n";
 	std::cout << "Cards remaining in deck: " << m_cardsStack.size() << "\n";
 }
