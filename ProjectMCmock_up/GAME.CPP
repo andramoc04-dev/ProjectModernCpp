@@ -32,7 +32,7 @@ bool Game::EndGame(int numberOfPlacedCards)
 		std::cout << "You lost..." << std::endl;
 		for (auto& player : m_players)
 		{
-			player.SetUnusedCards(player.GetUnusedCards());
+			player.SetUnusedCards(player.GetUnusedCards()+1);
 		}
 		return true;
 	}
@@ -74,11 +74,15 @@ void Game::RunGame()
 			std::cout << "It's " << m_players[i].GetName() << "'s turn.\n";
 
 			numberOfPlacedCards = 0;
-			std::cout << "Choose at least two cards, or 0 if you're done.\n";
-			DisplayGameState(descendingStack1, descendingStack2, ascendingStack1, ascendingStack2, m_players[i].GetName());
+			if (m_cardsStack.empty())
+				std::cout << "Choose one card to place\n";
+			else
+			std::cout << "Choose at least two cards\n";
+			DisplayGameState(descendingStack1, descendingStack2, ascendingStack1, ascendingStack2, m_players[i]);
 			std::cin >> choosenCard;
 			while (choosenCard.GetNumber() != 0)
 			{
+				std::cout << "Choosed card value is " << static_cast<int>( choosenCard.GetNumber() )<< "\n";
 				numberOfPlacedCards += m_players[i].PlaceCard(choosenCard, descendingStack1, descendingStack2, ascendingStack1, ascendingStack2);
 				std::cin >> choosenCard;
 			}
@@ -88,7 +92,7 @@ void Game::RunGame()
 					if (!m_cardsStack.empty())
 						m_players[i].TakeCard(m_cardsStack);
 					else
-						std::cout << "The main stack of cards is empty! Please take cards from another player's hand!";
+						break;
 
 				}
 			if (EndGame(numberOfPlacedCards))
@@ -101,7 +105,7 @@ void Game::RunGame()
 }
 
 void Game::DisplayGameState(const Card& descending1, const Card& descending2, const Card& ascending1, 
-	const Card& ascending2, Player player)
+	const Card& ascending2, Player& player)
 {
 
 	std::cout << "First descending stack: " << static_cast<int>(descending1.GetNumber()) << " ->place lower cards\n";
@@ -110,7 +114,7 @@ void Game::DisplayGameState(const Card& descending1, const Card& descending2, co
 	std::cout << "Second ascending stack: " << static_cast<int>(ascending2.GetNumber()) << " ->place higher cards\n";
 	std::cout << "Cards remaining in deck: " << m_cardsStack.size() << "\n";
 	std::list<Card> hand = player.GetHand();
-	for (auto card : player.GetHand())
+	for (auto card : hand)
 	{
 		std::cout << static_cast<int>(card.GetNumber()) << " ";
 	}
