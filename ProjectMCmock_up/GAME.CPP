@@ -1,8 +1,9 @@
 #include "Game.h"
 #include <iostream>
+#include <ranges>
 #include <deque>
 
-Game::Game(std::vector<Player> players, std::stack<Card> cardsStack, Chat chat):
+Game::Game(std::vector<Player>& players, std::stack<Card>& cardsStack, Chat& chat):
 	m_players(players), m_cardsStack(cardsStack), m_chat(chat)
 {
 }
@@ -63,6 +64,9 @@ void Game::RunGame()
 	ShuffleCards();
 	bool gameEnded = false;
 	std::cout << "Game started.\n";
+
+	CardsDistribution();
+
 	while (!gameEnded)
 	{
 		for (int i = 0; i < m_players.size(); i++)
@@ -112,3 +116,34 @@ void Game::DisplayGameState(const Card& descending1, const Card& descending2, co
 	}
 	
 }
+
+void Game::CardsDistribution()
+{
+	size_t numberOfPlayers = m_players.size();
+	size_t cardsPerPlayer = 0;
+	switch (numberOfPlayers)
+	{
+	case 2:
+		cardsPerPlayer = 8;
+		break;
+	case 3:
+		cardsPerPlayer = 7;
+		break;
+	case 4:
+	case 5:
+		cardsPerPlayer = 6;
+		break;
+	default:
+		throw std::invalid_argument("Invalid number of players.");
+
+	}
+	
+	size_t totalCards = cardsPerPlayer * numberOfPlayers;
+	for (auto i : std::views::iota(0u, totalCards)) 
+	{
+		m_players[i % numberOfPlayers].GetHand().push_back(m_cardsStack.top());
+		m_cardsStack.pop();
+	}
+
+}
+

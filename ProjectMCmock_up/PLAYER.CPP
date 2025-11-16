@@ -117,7 +117,7 @@ std::uint16_t Player::GetWins()
 	return m_wins;
 }
 
-std::list<Card> Player::GetHand()
+std::list<Card>& Player::GetHand()
 {
 	return m_hand;
 }

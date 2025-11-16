@@ -32,7 +32,7 @@ public:
 
 	void SetWins(std::uint16_t gamesWon);
 	std::uint16_t GetWins();
-	std::list<Card> GetHand();
+	std::list<Card>& GetHand();
 
 	std::uint16_t GetScore();
 
