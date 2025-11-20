@@ -8,7 +8,7 @@
 class Game
 {
 public:
-	Game(std::vector<Player>& players, std::stack<Card>& cardsStack, Chat& chat);
+	Game(std::vector<Player>& players, std::stack<Card>& cardsDeck, Chat& chat);
 	Game() = default;
 	void ShuffleCards();
 	bool EndGame(int numberOfPlacedCards);
@@ -18,7 +18,7 @@ public:
 	void CardsDistribution();
 private:
 	std::vector<Player> m_players;
-	std::stack<Card> m_cardsStack;
+	std::stack<Card> m_cardsDeck;
 	Chat m_chat;
 };
 

@@ -82,6 +82,8 @@ bool Player::PlaceCard(Card choosenCard, Card& descendingStack1, Card& descendin
 						std::cout << "This card doesn't belong in any of the stacks!";
 						return false;
 					}
+
+		m_hand.erase(foundCard);
 		return true;
 	}
 	else
@@ -91,10 +93,10 @@ bool Player::PlaceCard(Card choosenCard, Card& descendingStack1, Card& descendin
 	}
 }
 
-void Player::TakeCard(std::stack<Card>& Stack)
+void Player::TakeCard(std::stack<Card>& Deck)
 {
-		m_hand.push_back(Stack.top());
-		Stack.pop();
+		m_hand.push_back(Deck.top());
+		Deck.pop();
 	
 	
 }

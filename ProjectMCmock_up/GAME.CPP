@@ -3,8 +3,8 @@
 #include <ranges>
 #include <deque>
 
-Game::Game(std::vector<Player>& players, std::stack<Card>& cardsStack, Chat& chat):
-	m_players(players), m_cardsStack(cardsStack), m_chat(chat)
+Game::Game(std::vector<Player>& players, std::stack<Card>& cardsDeck, Chat& chat):
+	m_players(players), m_cardsDeck(cardsDeck), m_chat(chat)
 {
 }
 
@@ -19,14 +19,14 @@ void Game::ShuffleCards()
 	{
 		position = std::rand() % sortedCards.size();
 		Card card(sortedCards[position]);
-		m_cardsStack.push(card);
+		m_cardsDeck.push(card);
 		sortedCards.erase(sortedCards.begin() + position);
 	}
 }
 
 bool Game::EndGame(int numberOfPlacedCards)
 {
-	int minCardsRequired = m_cardsStack.empty() ? 1 : 2;
+	int minCardsRequired = m_cardsDeck.empty() ? 1 : 2;
 	if ( numberOfPlacedCards < minCardsRequired )
 	{
 		std::cout << "You lost..." << std::endl;
@@ -36,7 +36,7 @@ bool Game::EndGame(int numberOfPlacedCards)
 		}
 		return true;
 	}
-	if (m_cardsStack.empty())
+	if (m_cardsDeck.empty())
 	{
 		bool emptyHands = true;
 		for (auto& player : m_players)
@@ -59,7 +59,7 @@ bool Game::EndGame(int numberOfPlacedCards)
 
 void Game::RunGame()
 {
-	Card descendingStack1(100), descendingStack2(100), ascendingStack1(1), ascendingStack2(1);
+	Card descendingDeck1(100), descendingDeck2(100), ascendingDeck1(1), ascendingDeck2(1);
 	Card choosenCard; int numberOfPlacedCards=0;
 	ShuffleCards();
 	bool gameEnded = false;
@@ -74,23 +74,24 @@ void Game::RunGame()
 			std::cout << "It's " << m_players[i].GetName() << "'s turn.\n";
 
 			numberOfPlacedCards = 0;
-			if (m_cardsStack.empty())
+			if (m_cardsDeck.empty())
 				std::cout << "Choose one card to place\n";
 			else
 			std::cout << "Choose at least two cards\n";
-			DisplayGameState(descendingStack1, descendingStack2, ascendingStack1, ascendingStack2, m_players[i]);
+			DisplayGameState(descendingDeck1, descendingDeck2, ascendingDeck1, ascendingDeck2, m_players[i]);
 			std::cin >> choosenCard;
 			while (choosenCard.GetNumber() != 0)
 			{
 				std::cout << "Choosed card value is " << static_cast<int>( choosenCard.GetNumber() )<< "\n";
-				numberOfPlacedCards += m_players[i].PlaceCard(choosenCard, descendingStack1, descendingStack2, ascendingStack1, ascendingStack2);
+				numberOfPlacedCards += m_players[i].PlaceCard(choosenCard, descendingDeck1, descendingDeck2, ascendingDeck1, ascendingDeck2);
+				std::cout << "Press 0 if you are done\n";
 				std::cin >> choosenCard;
 			}
-			if (numberOfPlacedCards >= 2 && !m_cardsStack.empty())
+			if (numberOfPlacedCards >= 2 && !m_cardsDeck.empty())
 				for (int j = 0; j < numberOfPlacedCards; j++)
 				{
-					if (!m_cardsStack.empty())
-						m_players[i].TakeCard(m_cardsStack);
+					if (!m_cardsDeck.empty())
+						m_players[i].TakeCard(m_cardsDeck);
 					else
 						break;
 
@@ -108,11 +109,11 @@ void Game::DisplayGameState(const Card& descending1, const Card& descending2, co
 	const Card& ascending2, Player& player)
 {
 
-	std::cout << "First descending stack: " << static_cast<int>(descending1.GetNumber()) << " ->place lower cards\n";
-	std::cout << "Second descending stack: " << static_cast<int>(descending2.GetNumber()) << " ->place lower cards\n";
-	std::cout << "First ascending stack: " << static_cast<int>(ascending1.GetNumber()) << " ->place higher cards\n";
-	std::cout << "Second ascending stack: " << static_cast<int>(ascending2.GetNumber()) << " ->place higher cards\n";
-	std::cout << "Cards remaining in deck: " << m_cardsStack.size() << "\n";
+	std::cout << "First descending deck: " << static_cast<int>(descending1.GetNumber()) << " ->place lower cards\n";
+	std::cout << "Second descending deck: " << static_cast<int>(descending2.GetNumber()) << " ->place lower cards\n";
+	std::cout << "First ascending deck: " << static_cast<int>(ascending1.GetNumber()) << " ->place higher cards\n";
+	std::cout << "Second ascending deck: " << static_cast<int>(ascending2.GetNumber()) << " ->place higher cards\n";
+	std::cout << "Cards remaining in deck: " << m_cardsDeck.size() << "\n";
 	std::list<Card> hand = player.GetHand();
 	for (auto card : hand)
 	{
@@ -145,8 +146,8 @@ void Game::CardsDistribution()
 	size_t totalCards = cardsPerPlayer * numberOfPlayers;
 	for (auto i : std::views::iota(0u, totalCards)) 
 	{
-		m_players[i % numberOfPlayers].GetHand().push_back(m_cardsStack.top());
-		m_cardsStack.pop();
+		m_players[i % numberOfPlayers].GetHand().push_back(m_cardsDeck.top());
+		m_cardsDeck.pop();
 	}
 
 }

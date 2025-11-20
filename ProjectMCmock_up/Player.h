@@ -24,8 +24,8 @@ public:
 	);
 
 	void Score();
-	bool PlaceCard(Card choosenCard, Card& descendingStack1, Card& descendingStack2, Card& ascendingStack1, Card& ascendingStack2);
-	void TakeCard(std::stack<Card>& Stack);
+	bool PlaceCard(Card choosenCard, Card& descendingDeck1, Card& descendingDeck2, Card& ascendingDeck1, Card& ascendingDeck2);
+	void TakeCard(std::stack<Card>& Deck);
 	void ViewProfile() const;
 
 	void SetUnusedCards(std::uint16_t numberOfCards);
