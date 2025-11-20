@@ -92,6 +92,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="StartupPage.cpp" />
     <QtRcc Include="Client.qrc" />
     <QtUic Include="Client.ui" />
     <QtMoc Include="Client.h" />
@@ -99,9 +100,13 @@
     <ClCompile Include="LoginPage.cpp" />
     <ClCompile Include="main.cpp" />
     <QtUic Include="LoginPage.ui" />
+    <QtUic Include="StartupPage.ui" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="LoginPage.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="StartupPage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
