@@ -10,22 +10,25 @@ Player::Player():
 	m_unusedCards(0)
 {
 }
-Player::Player(const std::string& name):
+Player::Player(const std::string& name) :
 	m_name(name),
 	m_hand(),
 	m_hoursPlayed(0),
 	m_wins(0),
 	m_gamesPlayed(0),
-	m_unusedCards(0)
+	m_unusedCards(0),
+	m_password("")
 {
 }
-Player::Player(std::string name, std::list<Card> hand, std::uint16_t hoursPlayed, std::uint16_t wins, std::uint16_t gamesPlayed, std::uint16_t unusedCards)
+
+Player::Player(std::string name, std::list<Card> hand, std::uint16_t hoursPlayed, std::uint16_t wins, std::uint16_t gamesPlayed, std::uint16_t unusedCards,std::string password)
 	:m_name(name),
 	m_hand(hand),
 	m_hoursPlayed(hoursPlayed),
 	m_wins(wins),
 	m_gamesPlayed(gamesPlayed),
-	m_unusedCards(unusedCards)
+	m_unusedCards(unusedCards),
+	m_password(password)
 {
 }
 void Player::Score()
@@ -109,7 +112,7 @@ void Player::SetUnusedCards(std::uint16_t numberOfCards)
 	m_unusedCards = numberOfCards;
 }
 
-std::uint16_t Player::GetUnusedCards()
+std::uint16_t Player::GetUnusedCards() const
 {
 	return m_unusedCards;
 }
@@ -119,22 +122,37 @@ void Player::SetWins(std::uint16_t gamesWon)
 	m_wins = gamesWon;
 }
 
-std::uint16_t Player::GetWins()
+std::uint16_t Player::GetWins() const
 {
 	return m_wins;
 }
 
-std::list<Card>& Player::GetHand()
+std::list<Card>& Player::GetHand() 
 {
 	return m_hand;
 }
 
-std::uint16_t Player::GetScore()
+std::uint16_t Player::GetScore() const
 {
 	return m_performanceScore;
 }
 
-std::string Player::GetName()
+void Player::SetName(std::string name)
+{
+	m_name = name;
+}
+
+std::string Player::GetName() const
 {
 	return m_name;
+}
+
+std::string Player::GetPassword() const
+{
+	return m_password;
+}
+
+void Player::SetPassword(std::string password)
+{
+	m_password = password;
 }
