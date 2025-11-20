@@ -1,11 +1,11 @@
 #include "Card.h"
 
-Card::Card(std::uint8_t number)
+Card::Card(std::uint16_t number)
 {
     m_number = number;
 }
 
-std::uint8_t Card::GetNumber() const
+std::uint16_t Card::GetNumber() const
 {
     return m_number;
 }
@@ -20,9 +20,14 @@ void Card::SetDirection(OrderDirection direction)
     m_direction = direction;
 }
 
+bool Card::operator==(const Card& other)
+{
+    return m_number == other.m_number;
+}
+
 std::istream& operator>>(std::istream& in, Card& c)
 {
-    std::uint8_t number;
+    std::uint16_t number;
     in >>number;
     c = Card(number);
     return in;

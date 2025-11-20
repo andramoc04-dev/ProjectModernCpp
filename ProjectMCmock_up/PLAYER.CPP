@@ -41,28 +41,29 @@ void Player::Score()
 
 bool Player::PlaceCard(Card choosenCard, Card& descendingStack1, Card& descendingStack2, Card& ascendingStack1, Card& ascendingStack2)
 {
+	
 	if (!m_hand.empty())
 	{
 		using enum Card::OrderDirection;
-		if (choosenCard.GetNumber() - descendingStack1.GetNumber() == 10 or choosenCard.GetNumber() < descendingStack1.GetNumber())
+		if (choosenCard.GetNumber() - descendingStack1.GetNumber() == 10 || choosenCard.GetNumber() < descendingStack1.GetNumber())
 		{
 			descendingStack1 = choosenCard;
 			descendingStack1.SetDirection(Card::OrderDirection::Descending);
 		}
 		else
-			if (choosenCard.GetNumber() - descendingStack2.GetNumber() == 10 or choosenCard.GetNumber() < descendingStack2.GetNumber())
+			if (choosenCard.GetNumber() - descendingStack2.GetNumber() == 10 || choosenCard.GetNumber() < descendingStack2.GetNumber())
 			{
 				descendingStack2 = choosenCard;
 				descendingStack2.SetDirection(Card::OrderDirection::Descending);
 			}
 			else
-				if (ascendingStack1.GetNumber() - choosenCard.GetNumber() == 10 or choosenCard.GetNumber() > ascendingStack1.GetNumber())
+				if (ascendingStack1.GetNumber() - choosenCard.GetNumber() == 10 || choosenCard.GetNumber() > ascendingStack1.GetNumber())
 				{
 					ascendingStack1 = choosenCard;
 					ascendingStack1.SetDirection(Card::OrderDirection::Ascending);
 				}
 				else
-					if (ascendingStack2.GetNumber() - choosenCard.GetNumber() == 10 or choosenCard.GetNumber() > ascendingStack2.GetNumber())
+					if (ascendingStack2.GetNumber() - choosenCard.GetNumber() == 10 || choosenCard.GetNumber() > ascendingStack2.GetNumber())
 					{
 						ascendingStack2 = choosenCard;
 						ascendingStack2.SetDirection(Card::OrderDirection::Ascending);
