@@ -38,6 +38,9 @@
     <ClCompile Include="Client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <QtRcc Include="Game.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -55,6 +58,9 @@
     <ClCompile Include="ProfilePage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GamePage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LoginPage.ui">
@@ -67,6 +73,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="ProfilePage.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="GamePage.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
@@ -83,9 +92,15 @@
     <QtMoc Include="ProfilePage.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="GamePage.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\profileImg.jpg">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="GameBackground.jpg">
       <Filter>Resource Files\images</Filter>
     </Image>
   </ItemGroup>

@@ -1,6 +1,7 @@
 #include "Client.h"
 #include <QtWidgets/QApplication>
 #include"StartupPage.h"
+#include "GamePage.h"
 
 int main(int argc, char *argv[])
 {
@@ -12,6 +13,7 @@ int main(int argc, char *argv[])
     StartupPage startup;
     startup.show();
    
-    
+    GamePage game;
+    game.show();
     return app.exec();
 }

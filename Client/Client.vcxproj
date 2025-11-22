@@ -92,15 +92,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GamePage.cpp" />
     <ClCompile Include="LobbyPage.cpp" />
     <ClCompile Include="ProfilePage.cpp" />
     <ClCompile Include="StartupPage.cpp" />
     <QtRcc Include="Client.qrc" />
+    <QtRcc Include="Game.qrc" />
     <QtUic Include="Client.ui" />
     <QtMoc Include="Client.h" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="LoginPage.cpp" />
     <ClCompile Include="main.cpp" />
+    <QtUic Include="GamePage.ui" />
     <QtUic Include="LobbyPage.ui" />
     <QtUic Include="LoginPage.ui" />
     <QtUic Include="ProfilePage.ui" />
@@ -120,6 +123,10 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\profileImg.jpg" />
+    <Image Include="GameBackground.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="GamePage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
