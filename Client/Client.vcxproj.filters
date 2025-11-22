@@ -21,6 +21,9 @@
       <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
       <Extensions>ts</Extensions>
     </Filter>
+    <Filter Include="Resource Files\images">
+      <UniqueIdentifier>{3a399585-b41a-461d-b3de-5e794141e3bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="Client.qrc">
@@ -49,6 +52,9 @@
     <ClCompile Include="LobbyPage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ProfilePage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LoginPage.ui">
@@ -58,6 +64,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="LobbyPage.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="ProfilePage.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
@@ -71,5 +80,13 @@
     <QtMoc Include="LobbyPage.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="ProfilePage.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\profileImg.jpg">
+      <Filter>Resource Files\images</Filter>
+    </Image>
   </ItemGroup>
 </Project>

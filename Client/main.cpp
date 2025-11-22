@@ -3,6 +3,7 @@
 #include "LoginPage.h"
 #include"StartupPage.h"
 #include "LobbyPage.h"
+#include"ProfilePage.h"
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -18,5 +19,8 @@ int main(int argc, char *argv[])
     
     LobbyPage lobby;
     lobby.show();
+
+    ProfilePage profile;
+    profile.show();
     return app.exec();
 }
