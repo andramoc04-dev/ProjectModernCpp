@@ -4,7 +4,7 @@
 #include "ui_StartupPage.h"
 #include <QMessageBox>
 #include <QLabel>
-#include<QRegularExpression>
+#include "ProfilePage.h"
 
 class StartupPage : public QDialog
 {
@@ -16,5 +16,9 @@ public:
 
 private:
 	Ui::StartupPageClass ui;
+	ProfilePage* profilepage;
+
+private slots:
+	void openProfilePage();
 };
 

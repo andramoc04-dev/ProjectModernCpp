@@ -1,6 +1,5 @@
 #pragma once
 #include "Card.h"
-
 #include <cstdint>
 #include <list>
 #include <string>

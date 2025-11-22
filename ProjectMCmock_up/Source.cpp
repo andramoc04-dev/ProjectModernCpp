@@ -1,6 +1,5 @@
 #include <iostream>
-
-#include "Game.h";
+#include "Game.h"
 #include "Chat.h"
 
 int main()
