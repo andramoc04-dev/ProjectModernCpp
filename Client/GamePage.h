@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QDialog>
-#include "ui_Game.h"
+#include "ui_GamePage.h"
 
 class GamePage : public QDialog
 {
@@ -11,6 +11,10 @@ public:
 	GamePage(QWidget *parent = nullptr);
 	~GamePage();
 
+	void OnAscendingStack1Clicked();
+	void OnAscendingStack2Clicked();
+	void OnDescendingStack1Clicked();
+	void OnDescendingStack2Clicked();
 private:
 	Ui::GameClass ui;
 };

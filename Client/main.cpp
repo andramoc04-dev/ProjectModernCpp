@@ -15,5 +15,7 @@ int main(int argc, char *argv[])
    
     GamePage game;
     game.show();
+
+    
     return app.exec();
 }

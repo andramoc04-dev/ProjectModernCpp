@@ -103,5 +103,11 @@
     <Image Include="GameBackground.jpg">
       <Filter>Resource Files\images</Filter>
     </Image>
+    <Image Include="SizedCardPlacer.png">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="CardsDeck.jpg">
+      <Filter>Resource Files\images</Filter>
+    </Image>
   </ItemGroup>
 </Project>

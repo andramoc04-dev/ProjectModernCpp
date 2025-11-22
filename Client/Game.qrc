@@ -16,5 +16,6 @@
         <file>CardPlacer.png</file>
         <file>CardsDeck.jpg</file>
         <file>GameBackground.jpg</file>
+        <file>SizedCardPlacer.png</file>
     </qresource>
 </RCC>
