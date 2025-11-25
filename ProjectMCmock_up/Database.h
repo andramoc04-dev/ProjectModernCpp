@@ -51,4 +51,14 @@ namespace http
 		DataBase m_db = CreateDataBase(kDbFile);
 	};
 
+	class AddPlayerToGameHandler {
+	public:
+		AddPlayerToGameHandler(PlayerProfiles& profiles);
+
+		crow::response operator() (const crow::request& req) const;
+
+	private:
+		PlayerProfiles& m_db;
+	};
+
 }
