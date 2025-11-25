@@ -31,3 +31,20 @@ void http::PlayerProfiles::PopulateGame()
 {
 }
 
+http::AddPlayerToGameHandler::AddPlayerToGameHandler(PlayerProfiles& profiles)
+    : m_db{ profiles }
+{
+}
+
+crow::response http::AddPlayerToGameHandler::operator()(const crow::request& req) const
+{
+    auto bodyArgs = parseUrlArgs(req.body);
+    auto end = bodyArgs.end();
+    auto nameIter = bodyArgs.find("name");
+    auto passwordIter = bodyArgs.find("password");
+    if (nameIter != end && passwordIter != end)
+    {
+        m_db.AddPlayerToGame(nameIter->second, passwordIter->second);
+    }
+    return crow::response(201);
+}
