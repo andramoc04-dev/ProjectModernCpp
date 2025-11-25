@@ -11,7 +11,5 @@ int main()
 	Chat chat = Chat();
 	Game game(players, cards, chat);
 	game.RunGame();
-
-
 	return 0;
 }
