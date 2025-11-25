@@ -27,20 +27,31 @@ public:
 	void TakeCard(std::stack<Card>& Deck);
 	void ViewProfile() const;
 
+	std::list<Card>& GetHand();
+
 	void SetUnusedCards(std::uint16_t numberOfCards);
 	std::uint16_t GetUnusedCards() const;
 
 	void SetWins(std::uint16_t gamesWon);
 	std::uint16_t GetWins() const;
-	std::list<Card>& GetHand();
 
+	void SetId(std::uint32_t id);
+	std::uint32_t GetId() const;
+	
+
+	void SetScore(std::uint16_t score);
 	std::uint16_t GetScore()const;
+
+
 	void SetName(std::string name);
 	std::string GetName()const;
+
+
 	std::string GetPassword() const;
 	void SetPassword(std::string password);
 
 private:
+	std::uint32_t m_id;
 	std::string m_password;
 	std::string m_name;
 	std::list<Card> m_hand;

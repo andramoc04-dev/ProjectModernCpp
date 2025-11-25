@@ -132,9 +132,24 @@ std::uint16_t Player::GetWins() const
 	return m_wins;
 }
 
+void Player::SetId(std::uint32_t id)
+{
+	m_id = id;
+}
+
+std::uint32_t Player::GetId() const
+{
+	return m_id;
+}
+
 std::list<Card>& Player::GetHand() 
 {
 	return m_hand;
+}
+
+void Player::SetScore(std::uint16_t score)
+{
+	m_performanceScore = score;
 }
 
 std::uint16_t Player::GetScore() const
