@@ -11,6 +11,22 @@ bool http::PlayerProfiles::Initialize()
     return playersCount != 0;
 }
 
+std::vector<Player> http::PlayerProfiles::GetPlayer()
+{
+    return m_db.get_all<Player>();
+}
+
+void http::PlayerProfiles::AddPlayerToGame(const std::string& name, const std::string& password)
+{
+    Player newPlayer(name);
+    newPlayer.SetPassword(password);
+
+    m_db.insert(newPlayer);
+
+}
+
+
+
 void http::PlayerProfiles::PopulateGame()
 {
 }
