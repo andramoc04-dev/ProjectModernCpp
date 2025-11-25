@@ -19,4 +19,20 @@ namespace http
     }
 
    
+
+    std::unordered_map<std::string, std::string> parseUrlArgs(const std::string& urlArgs)
+    {
+        if (urlArgs.empty()) {
+            return {};
+        }
+
+        std::unordered_map<std::string, std::string> result;
+        for (const auto& kvStr : split(urlArgs, "&")) {
+            auto kvVector = split(kvStr, "=");
+            if (kvVector.size() == 2)
+                result[kvVector[0]] = kvVector[1];
+        }
+        return result;
+    }
+
 }
