@@ -32,6 +32,23 @@ namespace http
 
 	using DataBase = decltype(CreateDataBase(""));
 
+	class PlayerProfiles
+	{
+	public:
+		bool Initialize();
 
+		std::vector<Player> GetPlayer();
+		void AddPlayerToGame(const std::string& name, const std::string& password = "");
+
+
+	private:
+		void PopulateGame();
+
+	private:
+		const std::string kDbFile{ "players.sqlite" };
+
+	private:
+		DataBase m_db = CreateDataBase(kDbFile);
+	};
 
 }
