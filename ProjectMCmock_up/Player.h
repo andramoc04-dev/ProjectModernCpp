@@ -46,6 +46,9 @@ public:
 	void SetName(std::string name);
 	std::string GetName()const;
 
+	void SetHoursPlayed(std::uint16_t hoursPlayed);
+		std::uint16_t GetHoursPlayed() const;
+
 
 	std::string GetPassword() const;
 	void SetPassword(std::string password);

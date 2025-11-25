@@ -167,6 +167,16 @@ std::string Player::GetName() const
 	return m_name;
 }
 
+void Player::SetHoursPlayed(std::uint16_t hoursPlayed)
+{
+	m_hoursPlayed = hoursPlayed;
+}
+
+std::uint16_t Player::GetHoursPlayed() const
+{
+	return m_hoursPlayed;
+}
+
 std::string Player::GetPassword() const
 {
 	return m_password;
