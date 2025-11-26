@@ -13,33 +13,14 @@
   <property name="windowTitle">
    <string>ProfilePage</string>
   </property>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>121</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>16</pointsize>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>Your profile</string>
-   </property>
-   <property name="scaledContents">
-    <bool>true</bool>
-   </property>
-  </widget>
+  <property name="styleSheet">
+   <string notr="true"> background-color: #FDEED9;</string>
+  </property>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>50</y>
+     <y>70</y>
      <width>131</width>
      <height>131</height>
     </rect>
@@ -62,15 +43,19 @@ border: none;</string>
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>60</y>
-     <width>81</width>
-     <height>21</height>
+     <y>70</y>
+     <width>151</width>
+     <height>61</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>12</pointsize>
+     <family>Showcard Gothic</family>
+     <pointsize>18</pointsize>
     </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: #573C27;</string>
    </property>
    <property name="text">
     <string>username:</string>
@@ -80,17 +65,21 @@ border: none;</string>
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>120</y>
-     <width>71</width>
-     <height>16</height>
+     <y>140</y>
+     <width>101</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>12</pointsize>
+     <family>Showcard Gothic</family>
+     <pointsize>18</pointsize>
      <bold>false</bold>
      <strikeout>false</strikeout>
     </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: #573C27;</string>
    </property>
    <property name="text">
     <string>score:</string>
@@ -101,14 +90,18 @@ border: none;</string>
     <rect>
      <x>20</x>
      <y>250</y>
-     <width>181</width>
-     <height>21</height>
+     <width>361</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>12</pointsize>
+     <family>Showcard Gothic</family>
+     <pointsize>18</pointsize>
     </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: #573C27;</string>
    </property>
    <property name="text">
     <string>number of played hours:</string>
@@ -119,14 +112,18 @@ border: none;</string>
     <rect>
      <x>20</x>
      <y>210</y>
-     <width>81</width>
-     <height>16</height>
+     <width>181</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>12</pointsize>
+     <family>Showcard Gothic</family>
+     <pointsize>18</pointsize>
     </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: #573C27;</string>
    </property>
    <property name="text">
     <string>total wins:</string>
@@ -137,17 +134,39 @@ border: none;</string>
     <rect>
      <x>20</x>
      <y>300</y>
-     <width>161</width>
-     <height>16</height>
+     <width>291</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>12</pointsize>
+     <family>Showcard Gothic</family>
+     <pointsize>18</pointsize>
     </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: #573C27;</string>
    </property>
    <property name="text">
     <string>total unused cards:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>-10</x>
+     <y>0</y>
+     <width>251</width>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+    border-image:url(:/Client/Your-profile-26-11-2025.png);
+}</string>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>

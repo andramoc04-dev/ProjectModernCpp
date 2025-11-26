@@ -127,6 +127,8 @@
     <Image Include="CardsDeck.jpg" />
     <Image Include="GameBackground.jpg" />
     <Image Include="SizedCardPlacer.png" />
+    <Image Include="WelcomeToTheGame.png" />
+    <Image Include="Your-profile-26-11-2025.png" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="GamePage.h" />

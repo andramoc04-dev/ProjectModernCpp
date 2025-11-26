@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/Client">
         <file>profileImg.jpg</file>
+        <file>WelcomeToTheGame.png</file>
+        <file>Your-profile-26-11-2025.png</file>
     </qresource>
 </RCC>

@@ -13,53 +13,101 @@
   <property name="windowTitle">
    <string>StartupPage</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"> background-color: #FDEED9;</string>
+  </property>
   <widget class="QPushButton" name="playButton">
    <property name="geometry">
     <rect>
-     <x>250</x>
+     <x>220</x>
      <y>140</y>
-     <width>101</width>
-     <height>51</height>
+     <width>131</width>
+     <height>61</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Showcard Gothic</family>
+     <pointsize>20</pointsize>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LayoutDirection::RightToLeft</enum>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+  background-color: #FFADC6;
+  color: #573C27;
+ 
+}
+
+QPushButton:hover {
+   background-color: #E34989;
+}
+</string>
+   </property>
    <property name="text">
-    <string>Play</string>
+    <string>PLAY</string>
    </property>
   </widget>
   <widget class="QPushButton" name="profileButton">
    <property name="geometry">
     <rect>
-     <x>250</x>
-     <y>220</y>
-     <width>101</width>
-     <height>51</height>
+     <x>220</x>
+     <y>230</y>
+     <width>131</width>
+     <height>61</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Showcard Gothic</family>
+     <pointsize>20</pointsize>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+  background-color: #FFADC6;
+  color: #573C27;
+ 
+}
+
+QPushButton:hover {
+   background-color: #E34989;
+}
+</string>
+   </property>
    <property name="text">
-    <string>Profile</string>
+    <string>PROFILE</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>60</y>
-     <width>211</width>
-     <height>41</height>
+     <x>80</x>
+     <y>0</y>
+     <width>421</width>
+     <height>141</height>
     </rect>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>14</pointsize>
-     <bold>true</bold>
-    </font>
+   <property name="layoutDirection">
+    <enum>Qt::LayoutDirection::LeftToRight</enum>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+    border-image: url(:/Client/WelcomeToTheGame.png);
+}</string>
    </property>
    <property name="text">
-    <string>Welcome to THE GAME</string>
+    <string/>
    </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="Client.qrc"/>
+ </resources>
  <connections/>
 </ui>
