@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>789</width>
-    <height>477</height>
+    <width>910</width>
+    <height>527</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@ background-size: contain;
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>130</y>
+     <y>160</y>
      <width>171</width>
      <height>181</height>
     </rect>
@@ -53,8 +53,8 @@ QPushButton:hover {
   <widget class="QPushButton" name="AscendingStack1_2">
    <property name="geometry">
     <rect>
-     <x>310</x>
-     <y>130</y>
+     <x>350</x>
+     <y>150</y>
      <width>181</width>
      <height>191</height>
     </rect>
@@ -82,7 +82,7 @@ QPushButton:hover {
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>-20</y>
+     <y>0</y>
      <width>181</width>
      <height>181</height>
     </rect>
@@ -108,9 +108,9 @@ QPushButton:hover {
   <widget class="QPushButton" name="DescendingStack2">
    <property name="geometry">
     <rect>
-     <x>310</x>
-     <y>-20</y>
-     <width>171</width>
+     <x>350</x>
+     <y>-10</y>
+     <width>181</width>
      <height>181</height>
     </rect>
    </property>
@@ -135,10 +135,10 @@ QPushButton:hover {
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>550</x>
+     <x>640</x>
      <y>0</y>
-     <width>241</width>
-     <height>261</height>
+     <width>271</width>
+     <height>281</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -160,6 +160,30 @@ QPushButton:hover {
     <string/>
    </property>
   </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>911</width>
+     <height>531</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+    border-image:url(:/Game/GameBackground.jpg);
+}</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <zorder>label</zorder>
+  <zorder>AscendingStack2</zorder>
+  <zorder>AscendingStack1_2</zorder>
+  <zorder>DescendingStack1</zorder>
+  <zorder>DescendingStack2</zorder>
+  <zorder>pushButton</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
