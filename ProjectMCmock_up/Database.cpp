@@ -1,4 +1,4 @@
-#include "Database.h"
+﻿#include "Database.h"
 
 bool http::PlayerProfiles::Initialize()
 {
@@ -11,9 +11,20 @@ bool http::PlayerProfiles::Initialize()
     return playersCount != 0;
 }
 
-std::vector<Player> http::PlayerProfiles::GetPlayer()
+std::vector<Player> http::PlayerProfiles::GetPlayers()
 {
     return m_db.get_all<Player>();
+}
+
+std::optional<Player> http::PlayerProfiles::GetPlayerById(int id)
+{
+    for (const auto& player : GetPlayers()){   // players_ este vectorul tău de Player
+        if (player.GetId() == id) {
+            return player;
+        }
+    }
+
+    return std::nullopt;
 }
 
 void http::PlayerProfiles::AddPlayerToGame(const std::string& name, const std::string& password)

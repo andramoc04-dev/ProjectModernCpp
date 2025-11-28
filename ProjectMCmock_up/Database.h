@@ -37,7 +37,8 @@ namespace http
 	public:
 		bool Initialize();
 
-		std::vector<Player> GetPlayer();
+		std::vector<Player> GetPlayers();
+		std::optional<Player> GetPlayerById(int id);
 		void AddPlayerToGame(const std::string& name, const std::string& password = "");
 
 
