@@ -18,7 +18,7 @@ std::vector<Player> http::PlayerProfiles::GetPlayers()
 
 std::optional<Player> http::PlayerProfiles::GetPlayerById(int id)
 {
-    for (const auto& player : GetPlayers()){   // players_ este vectorul tău de Player
+    for (const auto& player : GetPlayers()){   
         if (player.GetId() == id) {
             return player;
         }
@@ -40,6 +40,16 @@ void http::PlayerProfiles::AddPlayerToGame(const std::string& name, const std::s
 
 void http::PlayerProfiles::PopulateGame()
 {
+    std::vector<Player> players{
+            Player{ -1, "Milk"},
+            Player{ -1, "Egg"},
+            Player{ -1, "Flour"},
+            Player{ -1, "Butter"},
+            Player{ -1, "Salt"},
+            Player{ -1, "Jam"},
+            Player{ -1, "Viorica"}
+    };
+    m_db.insert_range(players.begin(), players.end());
 }
 
 http::AddPlayerToGameHandler::AddPlayerToGameHandler(PlayerProfiles& profiles)

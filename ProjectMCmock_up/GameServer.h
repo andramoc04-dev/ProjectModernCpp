@@ -9,7 +9,7 @@ namespace http
 		void Run(PlayerProfiles& storage);
 
 	private:
-		crow::response AddPlayersToGame(PlayerProfiles& storage, const crow::request& req, int playerId)const;
+		crow::response AddPlayersToGameRute(PlayerProfiles& storage, const crow::request& req, int playerId)const;
 
 	private:
 		crow::SimpleApp m_app;

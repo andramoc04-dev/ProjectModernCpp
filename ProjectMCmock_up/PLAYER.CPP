@@ -7,7 +7,8 @@ Player::Player():
 	m_hoursPlayed(0),
 	m_wins(0),
 	m_gamesPlayed(0),
-	m_unusedCards(0)
+	m_unusedCards(0),
+	m_performanceScore(0)
 {
 }
 Player::Player(const std::string& name) :
@@ -17,8 +18,23 @@ Player::Player(const std::string& name) :
 	m_wins(0),
 	m_gamesPlayed(0),
 	m_unusedCards(0),
-	m_password("")
+	m_password(""),
+	m_performanceScore(0)
 {
+}
+
+Player::Player(int id, const std::string& name):
+	m_id(id),
+	m_name(name),
+	m_hand(),
+	m_hoursPlayed(0),
+	m_wins(0),
+	m_gamesPlayed(0),
+	m_unusedCards(0),
+	m_password(""),
+	m_performanceScore(0)
+{
+
 }
 
 Player::Player(std::string name, std::list<Card> hand, std::uint16_t hoursPlayed, std::uint16_t wins, std::uint16_t gamesPlayed, std::uint16_t unusedCards,std::string password)
@@ -28,7 +44,8 @@ Player::Player(std::string name, std::list<Card> hand, std::uint16_t hoursPlayed
 	m_wins(wins),
 	m_gamesPlayed(gamesPlayed),
 	m_unusedCards(unusedCards),
-	m_password(password)
+	m_password(password),
+	m_performanceScore(0)
 {
 }
 void Player::Score()

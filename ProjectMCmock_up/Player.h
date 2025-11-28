@@ -12,6 +12,8 @@ public:
 
 	Player(const std::string& name);
 
+	Player(int id, const std::string& name);
+
 	Player(
 		std::string name,
 		std::list<Card> hand,

@@ -26,9 +26,24 @@ void http::Routing::Run(PlayerProfiles& storage)
 
 		});
 
+
+	CROW_ROUTE(m_app, "/addplayer").methods(crow::HTTPMethod::POST)
+		([&storage](const crow::request& req) {
+		auto body = crow::json::load(req.body);
+		if (!body) return crow::response(400);
+
+		std::string name = body["name"].s();
+		std::string password = body["password"].s();
+
+		storage.AddPlayerToGame(name, password);
+		return crow::response(201);
+			});
+
+	m_app.port(18080).multithreaded().run();
 }
 
-crow::response http::Routing::AddPlayersToGame(PlayerProfiles& profiles, const crow::request& req, int playerId) const
+crow::response http::Routing::AddPlayersToGameRute(PlayerProfiles& storage, const crow::request& req, int playerId) const
 {
 	return crow::response();
 }
+
