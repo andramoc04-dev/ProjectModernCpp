@@ -32,8 +32,22 @@ void http::PlayerProfiles::AddPlayerToGame(const std::string& name, const std::s
     Player newPlayer(name);
     newPlayer.SetPassword(password);
 
-    m_db.insert(newPlayer);
+    auto insertedId = m_db.insert(newPlayer);
 
+    // setează id-ul în obiect (opțional, util pentru logging)
+    newPlayer.SetId(static_cast<int>(insertedId));
+
+}
+
+bool http::PlayerProfiles::HasPlayerWithName(const std::string& name)
+{
+    auto players = m_db.get_all<Player>();
+    for (const auto& p : players)
+    {
+        if (p.GetName() == name)
+            return true;
+    }
+    return false;
 }
 
 
@@ -57,9 +71,9 @@ http::AddPlayerToGameHandler::AddPlayerToGameHandler(PlayerProfiles& profiles)
 {
 }
 
-crow::response http::AddPlayerToGameHandler::operator()(const crow::request& req) const
+crow::response http::AddPlayerToGameHandler::operator()(const crow::request& req)
 {
-    auto bodyArgs = parseUrlArgs(req.body);
+  /*  auto bodyArgs = parseUrlArgs(req.body);
     auto end = bodyArgs.end();
     auto nameIter = bodyArgs.find("name");
     auto passwordIter = bodyArgs.find("password");
@@ -67,5 +81,43 @@ crow::response http::AddPlayerToGameHandler::operator()(const crow::request& req
     {
         m_db.AddPlayerToGame(nameIter->second, passwordIter->second);
     }
-    return crow::response(201);
+    return crow::response(201);*/
+
+
+    auto body = crow::json::load(req.body);
+    if (!body) {
+        crow::json::wvalue e;
+        e["error"] = "Invalid JSON";
+        auto resp = crow::response(400, e.dump());
+        resp.set_header("Content-Type", "application/json");
+        return resp;
+    }
+
+    std::string name = body["name"].s();
+    std::string password = body["password"].s();
+
+    if (name.empty() || password.empty()) {
+        crow::json::wvalue e;
+        e["error"] = "Missing name or password";
+        auto resp = crow::response(400, e.dump());
+        resp.set_header("Content-Type", "application/json");
+        return resp;
+    }
+
+    if (m_db.HasPlayerWithName(name)) {
+        crow::json::wvalue e;
+        e["error"] = "Player already exists";
+        auto resp = crow::response(409, e.dump());
+        resp.set_header("Content-Type", "application/json");
+        return resp;
+    }
+
+    // Adăugăm jucătorul și returnăm 201; dacă AddPlayerToGame ar returna id, îl putem include
+    m_db.AddPlayerToGame(name, password);
+
+    crow::json::wvalue success;
+    success["message"] = "Player created";
+    auto resp = crow::response(201, success.dump());
+    resp.set_header("Content-Type", "application/json");
+    return resp;
 }

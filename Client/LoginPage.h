@@ -1,5 +1,13 @@
 #pragma once
 
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QNetworkRequest>
+#include <QUrl>
+
+
 #include <QDialog>
 #include <QMessageBox>
 #include <QLabel>
@@ -20,8 +28,11 @@ private slots:
 	
 	void on_loginButton_clicked();
 	void on_registerButton_clicked();
+
+	void onRegisterReply(QNetworkReply* reply);
 private:
 	Ui::LoginPageClass ui;
+	QNetworkAccessManager* manager;
 
 	
 };

@@ -30,14 +30,26 @@ void http::Routing::Run(PlayerProfiles& storage)
 	CROW_ROUTE(m_app, "/addplayer").methods(crow::HTTPMethod::POST)
 		([&storage](const crow::request& req) {
 		auto body = crow::json::load(req.body);
-		if (!body) return crow::response(400);
+		if (!body) {
+			return crow::response(400, R"({"error":"Invalid JSON"})");
+		}
 
 		std::string name = body["name"].s();
 		std::string password = body["password"].s();
 
+		if (name.empty() || password.empty()) {
+			return crow::response(400, R"({"error":"Missing name or password"})");
+		}
+
+		if (storage.HasPlayerWithName(name)) {
+			return crow::response(409, R"({"error":"Player already exists"})");
+		}
+
 		storage.AddPlayerToGame(name, password);
-		return crow::response(201);
+
+		return crow::response(201, R"({"status":"Player created"})");
 			});
+
 
 	m_app.port(18080).multithreaded().run();
 }

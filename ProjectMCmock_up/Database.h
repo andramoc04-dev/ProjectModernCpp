@@ -40,7 +40,7 @@ namespace http
 		std::vector<Player> GetPlayers();
 		std::optional<Player> GetPlayerById(int id);
 		void AddPlayerToGame(const std::string& name, const std::string& password = "");
-
+		bool HasPlayerWithName(const std::string& name);
 
 	private:
 		void PopulateGame();
@@ -56,7 +56,7 @@ namespace http
 	public:
 		AddPlayerToGameHandler(PlayerProfiles& profiles);
 
-		crow::response operator() (const crow::request& req) const;
+		crow::response operator() (const crow::request& req);
 
 	private:
 		PlayerProfiles& m_db;

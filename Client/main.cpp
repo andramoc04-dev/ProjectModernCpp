@@ -2,7 +2,7 @@
 #include <QtWidgets/QApplication>
 #include"StartupPage.h"
 #include "GamePage.h"
-
+#include"LoginPage.h"
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -16,6 +16,8 @@ int main(int argc, char *argv[])
     GamePage game;
     game.show();
 
+    LoginPage lg;
+    lg.show();
     
     return app.exec();
 }
