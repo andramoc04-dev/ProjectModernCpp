@@ -12,7 +12,8 @@
 
 LoginPage::LoginPage(QWidget *parent)
 	: QDialog(parent),
-    manager(new QNetworkAccessManager(this))
+    manager(new QNetworkAccessManager(this)), 
+    loggedIn(false)
   
 {
 	ui.setupUi(this);
@@ -26,6 +27,11 @@ LoginPage::LoginPage(QWidget *parent)
 LoginPage::~LoginPage()
 {
 
+}
+
+bool LoginPage::getLoggedIn()
+{
+    return loggedIn;
 }
 
 void LoginPage::on_registerButton_clicked()
@@ -91,7 +97,10 @@ void LoginPage::on_loginButton_clicked()
         return;
     }
     QMessageBox::information(this, "Login", "Login succesful!!!");
-    accept();
+    loggedIn = true;
+    lobbyPage = new LobbyPage(this);
+    lobbyPage->show();
+    this->hide();
 }
 
 

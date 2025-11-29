@@ -3,5 +3,9 @@
         <file>profileImg.jpg</file>
         <file>WelcomeToTheGame.png</file>
         <file>Your-profile-26-11-2025.png</file>
+        <file>GameBackground.jpg</file>
+        <file>AscendinDeck.png</file>
+        <file>DescendingDeck.png</file>
+        <file>CardsDeck.jpg</file>
     </qresource>
 </RCC>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>910</width>
-    <height>527</height>
+    <width>1002</width>
+    <height>706</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,24 +26,22 @@ background-size: contain;
   <widget class="QPushButton" name="AscendingStack2">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>160</y>
-     <width>171</width>
-     <height>181</height>
+     <x>110</x>
+     <y>210</y>
+     <width>201</width>
+     <height>501</height>
     </rect>
    </property>
    <property name="styleSheet">
     <string notr="true">QPushButton {
     background-color: transparent;
-    background-image: url(:/Game/SizedCardPlacer.png);
+    background-image: url(:/Client/AscendinDeck.png);
     background-repeat: no-repeat;
     background-position: center;
     border: none;
 }
 
-QPushButton:hover {
-    background-image:  url(:/Game/SizedCardPlacer.png);
-}
+
 </string>
    </property>
    <property name="text">
@@ -53,25 +51,23 @@ QPushButton:hover {
   <widget class="QPushButton" name="AscendingStack1_2">
    <property name="geometry">
     <rect>
-     <x>350</x>
-     <y>150</y>
-     <width>181</width>
-     <height>191</height>
+     <x>370</x>
+     <y>210</y>
+     <width>201</width>
+     <height>511</height>
     </rect>
    </property>
    <property name="styleSheet">
     <string notr="true">QPushButton {
     background-color: transparent;
-    background-image: url(:/Game/SizedCardPlacer.png);
+    background-image: url(:/Client/AscendinDeck.png);
     background-repeat: no-repeat;
     background-position: center;
     border: none;
 background-size: contain;
 }
 
-QPushButton:hover {
-    background-image:  url(:/Game/SizedCardPlacer.png);
-}
+
 </string>
    </property>
    <property name="text">
@@ -81,24 +77,22 @@ QPushButton:hover {
   <widget class="QPushButton" name="DescendingStack1">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>0</y>
-     <width>181</width>
-     <height>181</height>
+     <x>110</x>
+     <y>-300</y>
+     <width>201</width>
+     <height>511</height>
     </rect>
    </property>
    <property name="styleSheet">
     <string notr="true">QPushButton {
     background-color: transparent;
-    background-image: url(:/Game/SizedCardPlacer.png);
+    background-image: url(:/Client/DescendingDeck.png);
     background-repeat: no-repeat;
     background-position: center;
     border: none;
 }
 
-QPushButton:hover {
-    background-image:  url(:/Game/SizedCardPlacer.png);
-}
+
 </string>
    </property>
    <property name="text">
@@ -108,52 +102,21 @@ QPushButton:hover {
   <widget class="QPushButton" name="DescendingStack2">
    <property name="geometry">
     <rect>
-     <x>350</x>
-     <y>-10</y>
-     <width>181</width>
-     <height>181</height>
+     <x>370</x>
+     <y>-290</y>
+     <width>201</width>
+     <height>501</height>
     </rect>
    </property>
    <property name="styleSheet">
     <string notr="true">QPushButton {
     background-color: transparent;
-    background-image: url(:/Game/SizedCardPlacer.png);
+    background-image: url(:/Client/DescendingDeck.png);
     background-repeat: no-repeat;
     background-position: center;
     border: none;
 }
 
-QPushButton:hover {
-    background-image:  url(:/Game/SizedCardPlacer.png);
-}
-</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton">
-   <property name="geometry">
-    <rect>
-     <x>640</x>
-     <y>0</y>
-     <width>271</width>
-     <height>281</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">
-QPushButton {
-    background-color: transparent;
-    background-image: url(:/Game/CardsDeck.jpg);
-    background-repeat: no-repeat;
-    background-position: center;
-    border: none;
-}
-
-QPushButton:hover {
-    background-image:  url(:/Game/CardsDeck.jpg);
-}
 </string>
    </property>
    <property name="text">
@@ -165,14 +128,38 @@ QPushButton:hover {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>911</width>
-     <height>531</height>
+     <width>1001</width>
+     <height>671</height>
     </rect>
    </property>
    <property name="styleSheet">
     <string notr="true">QLabel {
-    border-image:url(:/Game/GameBackground.jpg);
+    border-image:url(:/Client/GameBackground.jpg);
 }</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>700</x>
+     <y>-70</y>
+     <width>331</width>
+     <height>431</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    background-color: transparent;
+    background-image:url(:/Client/CardsDeck.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none;
+background-size: contain;
+}
+</string>
    </property>
    <property name="text">
     <string/>
@@ -187,7 +174,7 @@ QPushButton:hover {
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="Game.qrc"/>
+  <include location="Client.qrc"/>
  </resources>
  <connections/>
 </ui>

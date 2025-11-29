@@ -38,9 +38,6 @@
     <ClCompile Include="Client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <QtRcc Include="Game.qrc">
-      <Filter>Resource Files</Filter>
-    </QtRcc>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -116,6 +113,12 @@
       <Filter>Resource Files\images</Filter>
     </Image>
     <Image Include="Your-profile-26-11-2025.png">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="DescendingDeck.png">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="AscendinDeck.png">
       <Filter>Resource Files\images</Filter>
     </Image>
   </ItemGroup>

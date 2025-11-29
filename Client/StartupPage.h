@@ -5,6 +5,8 @@
 #include <QMessageBox>
 #include <QLabel>
 #include "ProfilePage.h"
+#include "LoginPage.h"
+#include "LobbyPage.h"
 
 class StartupPage : public QDialog
 {
@@ -17,8 +19,11 @@ public:
 private:
 	Ui::StartupPageClass ui;
 	ProfilePage* profilepage;
+	LoginPage* loginPage;
+	LobbyPage* lobbyPage;
 
 private slots:
 	void openProfilePage();
+	void OpenLoginPageOrLobbyPage();
 };
 

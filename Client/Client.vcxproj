@@ -63,6 +63,16 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
   </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp23</LanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp23</LanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ClCompile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -98,7 +108,6 @@
     <ClCompile Include="ProfilePage.cpp" />
     <ClCompile Include="StartupPage.cpp" />
     <QtRcc Include="Client.qrc" />
-    <QtRcc Include="Game.qrc" />
     <QtUic Include="Client.ui" />
     <QtMoc Include="Client.h" />
     <ClCompile Include="Client.cpp" />
@@ -124,7 +133,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\profileImg.jpg" />
+    <Image Include="AscendinDeck.png" />
     <Image Include="CardsDeck.jpg" />
+    <Image Include="DescendingDeck.png" />
     <Image Include="GameBackground.jpg" />
     <Image Include="SizedCardPlacer.png" />
     <Image Include="WelcomeToTheGame.png" />

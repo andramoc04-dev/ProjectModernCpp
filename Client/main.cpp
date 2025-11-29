@@ -7,17 +7,15 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
    
-   Client window;
+    Client window;
     window.show();
 
-    StartupPage startup;
-    startup.show();
-   
     GamePage game;
     game.show();
 
-    LoginPage lg;
-    lg.show();
+    StartupPage startup;
+    startup.show();
+    
     
     return app.exec();
 }

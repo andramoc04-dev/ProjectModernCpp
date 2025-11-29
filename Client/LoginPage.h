@@ -13,6 +13,7 @@
 #include <QLabel>
 #include<QRegularExpression>
 #include "ui_LoginPage.h"
+#include "LobbyPage.h"
 
 class LoginPage : public QDialog
 {
@@ -21,7 +22,7 @@ class LoginPage : public QDialog
 public:
 	LoginPage(QWidget *parent = nullptr);
 	~LoginPage();
-
+	bool getLoggedIn();
 
 
 private slots:
@@ -30,10 +31,11 @@ private slots:
 	void on_registerButton_clicked();
 
 	void onRegisterReply(QNetworkReply* reply);
+	
 private:
 	Ui::LoginPageClass ui;
 	QNetworkAccessManager* manager;
-
-	
+	bool loggedIn;
+	LobbyPage* lobbyPage;
 };
 
