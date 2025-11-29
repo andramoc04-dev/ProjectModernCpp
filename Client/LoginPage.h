@@ -15,6 +15,7 @@
 #include "ui_LoginPage.h"
 #include "LobbyPage.h"
 
+
 class LoginPage : public QDialog
 {
 	Q_OBJECT
@@ -31,7 +32,6 @@ private slots:
 	void on_registerButton_clicked();
 
 	void onRegisterReply(QNetworkReply* reply);
-	
 private:
 	Ui::LoginPageClass ui;
 	QNetworkAccessManager* manager;

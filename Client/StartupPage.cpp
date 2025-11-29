@@ -1,7 +1,7 @@
 #include "StartupPage.h"
 
 StartupPage::StartupPage(QWidget *parent)
-	: QDialog(parent), profilepage(nullptr)
+	: QDialog(parent), profilePage(nullptr),loginPage(nullptr), lobbyPage(nullptr)
 {
 	ui.setupUi(this);
 	connect(ui.profileButton, &QPushButton::clicked, this, &StartupPage::openProfilePage);
@@ -14,10 +14,10 @@ StartupPage::~StartupPage()
 
 void StartupPage::openProfilePage()
 {
-    if (!profilepage)
-        profilepage = new ProfilePage(this);  
+    if (!profilePage)
+        profilePage = new ProfilePage(this);  
 
-    profilepage->show();   
+    profilePage->show();   
     this->hide();          
 }
 

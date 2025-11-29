@@ -18,7 +18,7 @@ public:
 
 private:
 	Ui::StartupPageClass ui;
-	ProfilePage* profilepage;
+	ProfilePage* profilePage;
 	LoginPage* loginPage;
 	LobbyPage* lobbyPage;
 

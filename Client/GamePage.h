@@ -3,6 +3,7 @@
 #include <QDialog>
 #include "ui_GamePage.h"
 
+
 class GamePage : public QDialog
 {
 	Q_OBJECT
@@ -15,7 +16,9 @@ public:
 	void OnAscendingStack2Clicked();
 	void OnDescendingStack1Clicked();
 	void OnDescendingStack2Clicked();
+
 private:
 	Ui::GameClass ui;
+
 };
 

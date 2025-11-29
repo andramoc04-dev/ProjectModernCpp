@@ -18,7 +18,6 @@ LoginPage::LoginPage(QWidget *parent)
 {
 	ui.setupUi(this);
 	ui.Password->setEchoMode(QLineEdit::Password);
-
     // conectăm managerul la slotul pentru reply-uri POST
     connect(manager, &QNetworkAccessManager::finished,
         this, &LoginPage::onRegisterReply);
@@ -157,7 +156,6 @@ void LoginPage::onRegisterReply(QNetworkReply* reply)
 
     reply->deleteLater();
 }
-
 
 
 

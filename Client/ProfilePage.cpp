@@ -1,4 +1,5 @@
 #include "ProfilePage.h"
+#include "StartupPage.h"
 
 ProfilePage::ProfilePage(QWidget *parent)
 	: QDialog(parent)
@@ -8,4 +9,7 @@ ProfilePage::ProfilePage(QWidget *parent)
 
 ProfilePage::~ProfilePage()
 {}
+
+
+
 

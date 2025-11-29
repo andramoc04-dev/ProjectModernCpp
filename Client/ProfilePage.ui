@@ -154,7 +154,7 @@ border: none;</string>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>-10</x>
+     <x>50</x>
      <y>0</y>
      <width>251</width>
      <height>81</height>
@@ -169,6 +169,44 @@ border: none;</string>
     <string/>
    </property>
   </widget>
+  <widget class="QPushButton" name="BackButton">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>20</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>20</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+  background-color: #FFADC6;
+  color: #573C27;
+ 
+}
+
+QPushButton:hover {
+   background-color: #E34989;
+}
+</string>
+   </property>
+   <property name="text">
+    <string>←</string>
+   </property>
+  </widget>
+  <zorder>label</zorder>
+  <zorder>label_2</zorder>
+  <zorder>label_3</zorder>
+  <zorder>label_4</zorder>
+  <zorder>label_5</zorder>
+  <zorder>label_6</zorder>
+  <zorder>label_7</zorder>
+  <zorder>BackButton</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

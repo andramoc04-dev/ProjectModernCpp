@@ -14,6 +14,7 @@ public:
 	LobbyPage(QWidget *parent = nullptr);
 	~LobbyPage();
 
+
 private:
 	Ui::LobbyPageClass ui;
 };
