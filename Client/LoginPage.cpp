@@ -202,8 +202,8 @@ void LoginPage::onLoginReply(QNetworkReply* reply)
         QMessageBox::information(this, "Login", "Login successful!\nWelcome " + name);
         loggedIn = true;
 
-        lobbyPage = new LobbyPage(this);
-        lobbyPage->show();
+        menu = new MenuPage(this);
+        menu->show();
         this->hide();
     }
     else if (statusCode == 401) {

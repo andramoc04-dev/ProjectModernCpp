@@ -1,6 +1,6 @@
 #include "Client.h"
 #include <QtWidgets/QApplication>
-#include"StartupPage.h"
+#include"MenuPage.h"
 #include "GamePage.h"
 #include"LoginPage.h"
 #include "MinigamePage.h"
@@ -17,8 +17,8 @@ int main(int argc, char *argv[])
     MinigamePage minigame;
     minigame.show();
 
-    StartupPage startup;
-    startup.show();
+    LoginPage login;
+    login.show();
     
     
     return app.exec();

@@ -13,7 +13,7 @@
 #include <QLabel>
 #include<QRegularExpression>
 #include "ui_LoginPage.h"
-#include "LobbyPage.h"
+#include "MenuPage.h"
 
 
 class LoginPage : public QDialog
@@ -37,6 +37,6 @@ private:
 	Ui::LoginPageClass ui;
 	QNetworkAccessManager* manager;
 	bool loggedIn;
-	LobbyPage* lobbyPage;
+	MenuPage* menu;
 };
 

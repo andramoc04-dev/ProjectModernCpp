@@ -1,5 +1,5 @@
 ﻿#include "ProfilePage.h"
-#include "StartupPage.h"
+#include "MenuPage.h"
 
 ProfilePage::ProfilePage(QWidget *parent)
 	: QDialog(parent)

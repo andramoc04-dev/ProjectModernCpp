@@ -46,7 +46,7 @@
     <ClCompile Include="LoginPage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StartupPage.cpp">
+    <ClCompile Include="MenuPage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LobbyPage.cpp">
@@ -69,7 +69,7 @@
     <QtUic Include="LoginPage.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="StartupPage.ui">
+    <QtUic Include="MenuPage.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="LobbyPage.ui">
@@ -89,7 +89,7 @@
     <QtMoc Include="LoginPage.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="StartupPage.h">
+    <QtMoc Include="MenuPage.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="LobbyPage.h">

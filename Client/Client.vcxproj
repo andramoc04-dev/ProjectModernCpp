@@ -107,7 +107,7 @@
     <ClCompile Include="LobbyPage.cpp" />
     <ClCompile Include="MinigamePage.cpp" />
     <ClCompile Include="ProfilePage.cpp" />
-    <ClCompile Include="StartupPage.cpp" />
+    <ClCompile Include="MenuPage.cpp" />
     <QtRcc Include="Client.qrc" />
     <QtUic Include="Client.ui" />
     <QtMoc Include="Client.h" />
@@ -119,13 +119,13 @@
     <QtUic Include="LoginPage.ui" />
     <QtUic Include="MinigamePage.ui" />
     <QtUic Include="ProfilePage.ui" />
-    <QtUic Include="StartupPage.ui" />
+    <QtUic Include="MenuPage.ui" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="LoginPage.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="StartupPage.h" />
+    <QtMoc Include="MenuPage.h" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="LobbyPage.h" />

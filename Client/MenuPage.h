@@ -1,29 +1,28 @@
 ﻿#pragma once
 
 #include <QDialog>
-#include "ui_StartupPage.h"
+#include "ui_MenuPage.h"
 #include <QMessageBox>
 #include <QLabel>
 #include "ProfilePage.h"
-#include "LoginPage.h"
 #include "LobbyPage.h"
 
-class StartupPage : public QDialog
+class MenuPage : public QDialog
 {
 	Q_OBJECT
 
 public:
-	StartupPage(QWidget *parent = nullptr);
-	~StartupPage();
+	MenuPage(QWidget *parent = nullptr);
+	~MenuPage();
 
 private:
 	Ui::StartupPageClass ui;
 	ProfilePage* profilePage;
-	LoginPage* loginPage;
+	
 	LobbyPage* lobbyPage;
 
 private slots:
 	void openProfilePage();
-	void OpenLoginPageOrLobbyPage();
+	void OpenLobbyPage();
 };
 
