@@ -32,7 +32,7 @@ bool Game::EndGame(int numberOfPlacedCards)
 		std::cout << "You lost..." << std::endl;
 		for (auto& player : m_players)
 		{
-			player.SetUnusedCards(player.GetUnusedCards()+1);
+			player.SetUnusedCards(player.GetUnusedCards()+player.GetHand().size());
 		}
 		return true;
 	}

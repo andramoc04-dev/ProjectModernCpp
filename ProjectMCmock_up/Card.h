@@ -11,7 +11,7 @@ public:
 	};
 
 	Card(std::uint16_t number);
-	Card()=default;
+	Card();
 	
 	std::uint16_t GetNumber() const;
 	OrderDirection GetDirection() const;
@@ -24,7 +24,7 @@ public:
 
 	
 private:
-	std::uint16_t m_number=0;
-	OrderDirection m_direction=OrderDirection::Unknown;
+	std::uint16_t m_number;
+	OrderDirection m_direction;
 };
 

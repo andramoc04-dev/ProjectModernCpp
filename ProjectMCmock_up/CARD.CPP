@@ -5,6 +5,12 @@ Card::Card(std::uint16_t number)
     m_number = number;
 }
 
+Card::Card()
+{
+    m_number = 0;
+    m_direction = OrderDirection::Unknown;
+}
+
 std::uint16_t Card::GetNumber() const
 {
     return m_number;

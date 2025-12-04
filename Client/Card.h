@@ -11,7 +11,7 @@ public:
 	};
 
 	Card(std::uint16_t number);
-	Card() = default;
+	Card();
 
 	std::uint16_t GetNumber() const;
 	OrderDirection GetDirection() const;

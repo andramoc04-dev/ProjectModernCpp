@@ -5,6 +5,7 @@
 #include <format>
 
 using namespace std::chrono;
+
 void Chat::AddMessage(Player player, std::string text)
 {
     Message message;
