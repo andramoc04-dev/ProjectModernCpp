@@ -59,59 +59,66 @@ void Player::Score()
 		m_performanceScore = 0;
 }
 
+
+
 bool Player::PlaceCard(Card choosenCard, Card& descendingDeck1, Card& descendingDeck2, Card& ascendingDeck1, Card& ascendingDeck2)
 {
-	auto foundCard = std::find(m_hand.begin(), m_hand.end(), choosenCard);
-	if (foundCard == m_hand.end())
-	{
-		std::cout << "This card isn't in your hand! Choose another one.";
-		return 0;
-	}
-
-	if (!m_hand.empty())
-	{
-		using enum Card::OrderDirection;
-		if (choosenCard.GetNumber() - descendingDeck1.GetNumber() == 10 || choosenCard.GetNumber() < descendingDeck1.GetNumber())
-		{
-			descendingDeck1 = std::move(*foundCard); 
-			
-			descendingDeck1.SetDirection(Descending);
-		}
-		else
-			if (choosenCard.GetNumber() - descendingDeck2.GetNumber() == 10 || choosenCard.GetNumber() < descendingDeck2.GetNumber())
-			{
-				descendingDeck2 = std::move(*foundCard);  
-			
-				descendingDeck2.SetDirection(Descending);
-			}
-			else
-				if (ascendingDeck1.GetNumber() - choosenCard.GetNumber() == 10 || choosenCard.GetNumber() > ascendingDeck1.GetNumber())
-				{
-					ascendingDeck1 = std::move(*foundCard);  
-					
-					ascendingDeck1.SetDirection(Ascending);
-				}
-				else
-					if (ascendingDeck2.GetNumber() - choosenCard.GetNumber() == 10 || choosenCard.GetNumber() > ascendingDeck2.GetNumber())
-					{
-						ascendingDeck1 = std::move(*foundCard); 
-						ascendingDeck2.SetDirection(Ascending);
-					}
-					else
-					{
-						std::cout << "This card doesn't belong in any of the stacks!";
-						return false;
-					}
-
-		m_hand.erase(foundCard);
-		return true;
-	}
-	else
+	
+	if (m_hand.empty())
 	{
 		std::cout << "Your hand is empty!!!\n";
 		return false;
 	}
+
+
+	auto foundCard = std::find(m_hand.begin(), m_hand.end(), choosenCard);
+	if (foundCard == m_hand.end())
+	{
+		std::cout << "This card isn't in your hand! Choose another one.";
+		return false;
+	}
+
+	using enum Card::OrderDirection;
+	auto canPlace = [](const Card& chosen, const Card& target, Card::OrderDirection dir) -> bool {
+		if (dir == Descending) {
+			
+			return (chosen.GetNumber() - target.GetNumber() == 10) || (chosen.GetNumber() < target.GetNumber());
+		}
+		else { 
+			
+			return (target.GetNumber() - chosen.GetNumber() == 10) || (chosen.GetNumber() > target.GetNumber());
+		}
+		};
+
+	
+	struct Target {
+		Card* card;
+		Card::OrderDirection dir;
+	};
+
+	Target targets[] = {
+		{ &descendingDeck1, Descending },
+		{ &descendingDeck2, Descending },
+		{ &ascendingDeck1,  Ascending  },
+		{ &ascendingDeck2,  Ascending  }
+	};
+
+	for (auto& t : targets) {
+		if (canPlace(choosenCard, *t.card, t.dir)) {
+			
+			*t.card = std::move(*foundCard);
+			t.card->SetDirection(t.dir);
+
+			
+			m_hand.erase(foundCard);
+			return true;
+		}
+	}
+
+	std::cout << "This card doesn't belong in any of the stacks!";
+	return false;
 }
+
 
 void Player::TakeCard(std::stack<Card>& Deck)
 {

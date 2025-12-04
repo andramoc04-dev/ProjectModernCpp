@@ -6,7 +6,7 @@
 class Chat
 {
 public:
-	Chat() = default;
+	Chat()=default;
 
 	void AddMessage(Player player, std::string text);
 	void PrintMessages();
