@@ -18,9 +18,7 @@ LoginPage::LoginPage(QWidget *parent)
 {
 	ui.setupUi(this);
 	ui.Password->setEchoMode(QLineEdit::Password);
-    //// conectăm managerul la slotul pentru reply-uri POST
-    //connect(manager, &QNetworkAccessManager::finished,
-    //    this, &LoginPage::onRegisterReply);
+    
 }
 
 LoginPage::~LoginPage()
@@ -104,6 +102,24 @@ void LoginPage::on_loginButton_clicked()
         return;
     }
     
+    QJsonObject root;
+    root["name"] = username;
+    root["password"] = password;
+
+    QJsonDocument doc(root);
+    QByteArray payload = doc.toJson(QJsonDocument::Compact);
+
+    QUrl url("http://localhost:18080/login");
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setRawHeader("Accept", "application/json");
+
+
+    QNetworkReply* reply = manager->post(request, payload);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        this->onLoginReply(reply);
+        });
+    ui.loginButton->setEnabled(false);
 
    
 }
