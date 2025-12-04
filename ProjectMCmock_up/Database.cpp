@@ -1,24 +1,24 @@
 ﻿#include "Database.h"
 
-bool http::PlayerProfiles::Initialize()
+bool http::UserProfiles::Initialize()
 {
     m_db.sync_schema();
-    auto initPlayersCount = m_db.count<Player>();
+    auto initPlayersCount = m_db.count<User>();
     if (initPlayersCount == 0)
         PopulateGame();
 
-    auto playersCount = m_db.count<Player>();
+    auto playersCount = m_db.count<User>();
     return playersCount != 0;
 }
 
-std::vector<Player> http::PlayerProfiles::GetPlayers()
+std::vector<User> http::UserProfiles::GetUsers()
 {
-    return m_db.get_all<Player>();
+    return m_db.get_all<User>();
 }
 
-std::optional<Player> http::PlayerProfiles::GetPlayerById(int id)
+std::optional<User> http::UserProfiles::GetUserById(int id)
 {
-    for (const auto& player : GetPlayers()){   
+    for (const auto& player : GetUsers()){   
         if (player.GetId() == id) {
             return player;
         }
@@ -27,24 +27,24 @@ std::optional<Player> http::PlayerProfiles::GetPlayerById(int id)
     return std::nullopt;
 }
 
-void http::PlayerProfiles::AddPlayerToGame(const std::string& name, const std::string& password)
+void http::UserProfiles::AddUserToGame(const std::string& name, const std::string& password)
 {
-    Player newPlayer(name);
+    User newPlayer(name);
     newPlayer.SetPassword(password);
 
     auto insertedId = m_db.insert(newPlayer);
 
-    // setează id-ul în obiect (opțional, util pentru logging)
+   
     newPlayer.SetId(static_cast<int>(insertedId));
 
 }
 
-bool http::PlayerProfiles::HasPlayerWithName(const std::string& name)
+bool http::UserProfiles::HasUserWithName(const std::string& name)
 {
-    auto players = m_db.get_all<Player>();
+    auto players = m_db.get_all<User>();
     for (const auto& p : players)
     {
-        if (p.GetName() == name)
+        if (p.GetUsername() == name)
             return true;
     }
     return false;
@@ -52,26 +52,26 @@ bool http::PlayerProfiles::HasPlayerWithName(const std::string& name)
 
 
 
-void http::PlayerProfiles::PopulateGame()
+void http::UserProfiles::PopulateGame()
 {
-    std::vector<Player> players{
-            Player{ -1, "Milk"},
-            Player{ -1, "Egg"},
-            Player{ -1, "Flour"},
-            Player{ -1, "Butter"},
-            Player{ -1, "Salt"},
-            Player{ -1, "Jam"},
-            Player{ -1, "Viorica"}
+    std::vector<User> players{
+            User{ -1, "Milk"},
+            User{ -1, "Egg"},
+            User{ -1, "Flour"},
+            User{ -1, "Butter"},
+            User{ -1, "Salt"},
+            User{ -1, "Jam"},
+            User{ -1, "Viorica"}
     };
     m_db.insert_range(players.begin(), players.end());
 }
 
-http::AddPlayerToGameHandler::AddPlayerToGameHandler(PlayerProfiles& profiles)
+http::AddUserToGameHandler::AddUserToGameHandler(UserProfiles& profiles)
     : m_db{ profiles }
 {
 }
 
-crow::response http::AddPlayerToGameHandler::operator()(const crow::request& req)
+crow::response http::AddUserToGameHandler::operator()(const crow::request& req)
 {
   /*  auto bodyArgs = parseUrlArgs(req.body);
     auto end = bodyArgs.end();
@@ -104,7 +104,7 @@ crow::response http::AddPlayerToGameHandler::operator()(const crow::request& req
         return resp;
     }
 
-    if (m_db.HasPlayerWithName(name)) {
+    if (m_db.HasUserWithName(name)) {
         crow::json::wvalue e;
         e["error"] = "Player already exists";
         auto resp = crow::response(409, e.dump());
@@ -113,7 +113,7 @@ crow::response http::AddPlayerToGameHandler::operator()(const crow::request& req
     }
 
     // Adăugăm jucătorul și returnăm 201; dacă AddPlayerToGame ar returna id, îl putem include
-    m_db.AddPlayerToGame(name, password);
+    m_db.AddUserToGame(name, password);
 
     crow::json::wvalue success;
     success["message"] = "Player created";

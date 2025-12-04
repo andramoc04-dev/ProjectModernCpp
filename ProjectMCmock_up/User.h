@@ -13,14 +13,13 @@ public:
 	User(int id, const std::string& username);
 
 	User(
+		std::uint32_t id,
 		std::string username,
-		std::uint16_t hoursPlayed = 0,
-		std::uint16_t wins = 0,
-		std::uint16_t gamesPlayed = 0,
-		std::uint16_t unusedCards = 0,
-		std::string password = "",
-		std::uint32_t id = 0,
-		std::uint16_t performanceScore=0
+		std::string password,
+		std::uint16_t score,
+		std::uint16_t wins,
+		std::uint16_t hoursPlayed,
+		std::uint16_t unusedCards
 	);
 
 	void SetUsername(std::string username);

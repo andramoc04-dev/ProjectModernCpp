@@ -22,9 +22,9 @@ std::chrono::system_clock::time_point Message::GetTimeStamp() const
 }
 
 
-void Message::SetPlayerName(Player player)
+void Message::SetPlayerName(User player)
 {
-    m_player_name = player.GetName();
+    m_player_name = player.GetUsername();
 }
 
 void Message::SetTextFromPlayer(std::string text)

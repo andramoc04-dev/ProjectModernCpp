@@ -37,21 +37,22 @@ m_performanceScore(0)
 {
 }
 
-User::User(std::string username, std::uint16_t hoursPlayed, std::uint16_t wins, std::uint16_t gamesPlayed, std::uint16_t unusedCards, std::string password, std::uint32_t id, std::uint16_t performanceScore):
+User::User(std::uint32_t id, std::string username, std::string password, std::uint16_t score, std::uint16_t wins, std::uint16_t hoursPlayed, std::uint16_t unusedCards):
+		m_id(id),
 	m_username(username),
-	m_hoursPlayed(hoursPlayed),
-	m_wins(wins),
-	m_gamesPlayed(gamesPlayed),
-	m_unusedCards(unusedCards),
 	m_password(password),
-	m_id(id),
-	m_performanceScore(0)
+	m_performanceScore(score),
+	m_wins(wins),
+	m_hoursPlayed(hoursPlayed),
+	m_unusedCards(unusedCards)
 {
 }
 
-void User::SetUsername(std::string name)
+
+
+void User::SetUsername(std::string username)
 {
-	m_username = name;
+	m_username = username;
 }
 
 std::string User::GetUsername() const
@@ -77,6 +78,14 @@ void User::SetGamesPlayed(std::uint16_t gamesPlayed)
 std::uint16_t User::GetGamesPlayed() const
 {
 	return m_gamesPlayed;
+}
+
+void User::ViewProfile() const
+{
+	std::cout << "Username: " << m_username << "\n";
+	std::cout << "Total hours played: " << m_hoursPlayed << "\n";
+	std::cout << "Total number of games played: " << m_gamesPlayed << "\n";
+	std::cout << "Score: " << m_performanceScore << "\n";
 }
 
 void User::SetWins(std::uint16_t gamesWon)

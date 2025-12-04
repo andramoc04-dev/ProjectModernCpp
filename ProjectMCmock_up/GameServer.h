@@ -6,10 +6,10 @@ namespace http
 	class Routing
 	{
 	public:
-		void Run(PlayerProfiles& storage);
+		void Run(UserProfiles& storage);
 
 	private:
-		crow::response AddPlayersToGameRute(PlayerProfiles& storage, const crow::request& req, int playerId)const;
+		crow::response AddUsersToGameRute(UserProfiles& storage, const crow::request& req, int playerId)const;
 
 	private:
 		crow::SimpleApp m_app;

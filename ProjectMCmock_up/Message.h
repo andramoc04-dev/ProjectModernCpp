@@ -1,7 +1,7 @@
 #pragma once
 #include<string>
 #include<chrono>
-#include"Player.h"
+#include"User.h"
 
 class Message {
 public:
@@ -11,7 +11,7 @@ public:
 	std::string GetTextFromPlayer()const;
 	std::chrono::system_clock::time_point GetTimeStamp() const;
 
-	void SetPlayerName(Player player);
+	void SetPlayerName(User player);
 	void SetTextFromPlayer(std::string text);
 	void SetTimeStamp(std::chrono::system_clock::time_point time);
 	

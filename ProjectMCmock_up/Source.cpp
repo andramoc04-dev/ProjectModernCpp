@@ -17,7 +17,7 @@ int main()
 	game.RunGame();*/
 
 
-	PlayerProfiles storage;
+	UserProfiles storage;
 	if (!storage.Initialize())
 	{
 		std::cout << "Faild to initialize the database!";

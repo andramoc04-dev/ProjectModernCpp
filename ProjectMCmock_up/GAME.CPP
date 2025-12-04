@@ -71,7 +71,7 @@ void Game::RunGame()
 	{
 		for (int i = 0; i < m_players.size(); i++)
 		{
-			std::cout << "It's " << m_players[i].GetName() << "'s turn.\n";
+			std::cout << "It's " << m_players[i].GetUsername() << "'s turn.\n";
 
 			numberOfPlacedCards = 0;
 			if (m_cardsDeck.empty())

@@ -7,7 +7,7 @@
 namespace sql = sqlite_orm;
 
 #include "Utils.h"
-#include "Player.h"
+#include "User.h"
 #include "Game.h"
 
 namespace http
@@ -17,14 +17,14 @@ namespace http
 		return sql::make_storage(
 			filename,
 			sql::make_table(
-				"Players",
-				sql::make_column("id", &Player::SetId, &Player::GetId, sql::primary_key().autoincrement()),
-				sql::make_column("name", &Player::SetName, &Player::GetName),
-				sql::make_column("password", &Player::SetPassword, &Player::GetPassword),
-				sql::make_column("score", &Player::SetScore, &Player::GetScore),
-				sql::make_column("wins", &Player::SetWins, &Player::GetWins),
-				sql::make_column("hoursPlayed", &Player::SetHoursPlayed, &Player::GetHoursPlayed),
-				sql::make_column("unusedCards", &Player::SetUnusedCards, &Player::GetUnusedCards)
+				"Users",
+				sql::make_column("id", &User::SetId, &User::GetId, sql::primary_key().autoincrement()),
+				sql::make_column("name", &User::SetUsername, &User::GetUsername),
+				sql::make_column("password", &User::SetPassword, &User::GetPassword),
+				sql::make_column("score", &User::SetScore, &User::GetScore),
+				sql::make_column("wins", &User::SetWins, &User::GetWins),
+				sql::make_column("hoursPlayed", &User::SetHoursPlayed, &User::GetHoursPlayed),
+				sql::make_column("unusedCards", &User::SetUnusedCards, &User::GetUnusedCards)
 
 			)
 		);
@@ -32,15 +32,15 @@ namespace http
 
 	using DataBase = decltype(CreateDataBase(""));
 
-	class PlayerProfiles
+	class UserProfiles
 	{
 	public:
 		bool Initialize();
 
-		std::vector<Player> GetPlayers();
-		std::optional<Player> GetPlayerById(int id);
-		void AddPlayerToGame(const std::string& name, const std::string& password = "");
-		bool HasPlayerWithName(const std::string& name);
+		std::vector<User> GetUsers();
+		std::optional<User> GetUserById(int id);
+		void AddUserToGame(const std::string& name, const std::string& password = "");
+		bool HasUserWithName(const std::string& name);
 
 	private:
 		void PopulateGame();
@@ -52,14 +52,14 @@ namespace http
 		DataBase m_db = CreateDataBase(kDbFile);
 	};
 
-	class AddPlayerToGameHandler {
+	class AddUserToGameHandler {
 	public:
-		AddPlayerToGameHandler(PlayerProfiles& profiles);
+		AddUserToGameHandler(UserProfiles& profiles);
 
 		crow::response operator() (const crow::request& req);
 
 	private:
-		PlayerProfiles& m_db;
+		UserProfiles& m_db;
 	};
 
 }

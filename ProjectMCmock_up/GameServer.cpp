@@ -1,10 +1,10 @@
 ﻿#include "GameServer.h"
 
-void http::Routing::Run(PlayerProfiles& storage)
+void http::Routing::Run(UserProfiles& storage)
 {
 	CROW_ROUTE(m_app, "/player/<int>")([&storage](int id) {
 
-		auto player = storage.GetPlayerById(id);
+		auto player = storage.GetUserById(id);
 
 		if (!player.has_value()) {
 			return crow::response(404, "Player not found");
@@ -15,7 +15,7 @@ void http::Routing::Run(PlayerProfiles& storage)
 		
 		crow::json::wvalue json{
 				{"id", p.GetId()},  
-				{"name", p.GetName()},
+				{"name", p.GetUsername()},
 				{"score", p.GetScore()},
 				{"wins", p.GetWins()},
 				{"hoursPlayed", p.GetHoursPlayed()},
@@ -41,11 +41,11 @@ void http::Routing::Run(PlayerProfiles& storage)
 			return crow::response(400, R"({"error":"Missing name or password"})");
 		}
 
-		if (storage.HasPlayerWithName(name)) {
+		if (storage.HasUserWithName(name)) {
 			return crow::response(409, R"({"error":"Player already exists"})");
 		}
 
-		storage.AddPlayerToGame(name, password);
+		storage.AddUserToGame(name, password);
 
 		return crow::response(201, R"({"status":"Player created"})");
 			});
@@ -66,12 +66,12 @@ void http::Routing::Run(PlayerProfiles& storage)
 		}
 
 		// verificăm dacă există jucătorul
-		auto players = storage.GetPlayers();
+		auto players = storage.GetUsers();
 		for (const auto& p : players) {
-			if (p.GetName() == name && p.GetPassword() == password) {
+			if (p.GetUsername() == name && p.GetPassword() == password) {
 				crow::json::wvalue success;
 				success["id"] = p.GetId();
-				success["name"] = p.GetName();
+				success["name"] = p.GetUsername();
 				success["score"] = p.GetScore();
 				success["wins"] = p.GetWins();
 				success["hoursPlayed"] = p.GetHoursPlayed();
@@ -88,7 +88,7 @@ void http::Routing::Run(PlayerProfiles& storage)
 	m_app.port(18080).multithreaded().run();
 }
 
-crow::response http::Routing::AddPlayersToGameRute(PlayerProfiles& storage, const crow::request& req, int playerId) const
+crow::response http::Routing::AddUsersToGameRute(UserProfiles& storage, const crow::request& req, int playerId) const
 {
 	return crow::response();
 }

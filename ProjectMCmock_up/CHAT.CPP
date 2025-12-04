@@ -6,10 +6,10 @@
 
 using namespace std::chrono;
 
-void Chat::AddMessage(Player player, std::string text)
+void Chat::AddMessage(User player, std::string text)
 {
     Message message;
-    message.SetPlayerName(player.GetName());
+    message.SetPlayerName(player.GetUsername());
     message.SetTextFromPlayer(text);
     message.SetTimeStamp(std::chrono::system_clock::now());
 
