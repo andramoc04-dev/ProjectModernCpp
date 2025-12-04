@@ -18,9 +18,9 @@ LoginPage::LoginPage(QWidget *parent)
 {
 	ui.setupUi(this);
 	ui.Password->setEchoMode(QLineEdit::Password);
-    // conectăm managerul la slotul pentru reply-uri POST
-    connect(manager, &QNetworkAccessManager::finished,
-        this, &LoginPage::onRegisterReply);
+    //// conectăm managerul la slotul pentru reply-uri POST
+    //connect(manager, &QNetworkAccessManager::finished,
+    //    this, &LoginPage::onRegisterReply);
 }
 
 LoginPage::~LoginPage()
@@ -68,11 +68,19 @@ void LoginPage::on_registerButton_clicked()
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     request.setRawHeader("Accept", "application/json");
 
-    // Trimitem POST
-    manager->post(request, payload);
+    //// Trimitem POST
+    //manager->post(request, payload);
 
-    // Optional: dezactivezi butonul în timp ce așteptăm
+    //// Optional: dezactivezi butonul în timp ce așteptăm
+    //ui.registerButton->setEnabled(false);
+
+
+    QNetworkReply* reply = manager->post(request, payload);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        this->onRegisterReply(reply);
+        });
     ui.registerButton->setEnabled(false);
+
 }
 
 void LoginPage::on_loginButton_clicked()
@@ -95,11 +103,9 @@ void LoginPage::on_loginButton_clicked()
             "Invalid Password!\n You need 8 characters(letters, digits or symbols like @!#)");
         return;
     }
-    QMessageBox::information(this, "Login", "Login succesful!!!");
-    loggedIn = true;
-    lobbyPage = new LobbyPage(this);
-    lobbyPage->show();
-    this->hide();
+    
+
+   
 }
 
 
@@ -156,6 +162,8 @@ void LoginPage::onRegisterReply(QNetworkReply* reply)
 
     reply->deleteLater();
 }
+
+
 
 
 
