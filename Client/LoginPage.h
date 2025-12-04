@@ -32,7 +32,7 @@ private slots:
 	void on_registerButton_clicked();
 
 	void onRegisterReply(QNetworkReply* reply);
-	//void onLoginReply(QNetworkReply* reply);
+	void onLoginReply(QNetworkReply* reply);
 private:
 	Ui::LoginPageClass ui;
 	QNetworkAccessManager* manager;

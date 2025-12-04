@@ -164,6 +164,43 @@ void LoginPage::onRegisterReply(QNetworkReply* reply)
 }
 
 
+void LoginPage::onLoginReply(QNetworkReply* reply)
+{
+    ui.loginButton->setEnabled(true);
+
+    if (reply->error() != QNetworkReply::NoError) {
+        QMessageBox::warning(this, "Eroare rețea", reply->errorString());
+        reply->deleteLater();
+        return;
+    }
+
+    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    QByteArray body = reply->readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(body);
+
+    if (statusCode == 200 && doc.isObject()) {
+        QJsonObject obj = doc.object();
+        QString name = obj["name"].toString();
+        int score = obj["score"].toInt();
+
+        QMessageBox::information(this, "Login", "Login successful!\nWelcome " + name);
+        loggedIn = true;
+
+        lobbyPage = new LobbyPage(this);
+        lobbyPage->show();
+        this->hide();
+    }
+    else if (statusCode == 401) {
+        QMessageBox::warning(this, "Eroare", "Invalid credentials!");
+    }
+    else {
+        QMessageBox::warning(this, "Eroare server",
+            QString("HTTP %1\n\n%2").arg(statusCode).arg(QString::fromUtf8(body)));
+    }
+
+    reply->deleteLater();
+
+}
 
 
 
