@@ -3,6 +3,7 @@
 #include"StartupPage.h"
 #include "GamePage.h"
 #include"LoginPage.h"
+#include "MinigamePage.h"
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -12,6 +13,9 @@ int main(int argc, char *argv[])
 
     GamePage game;
     game.show();
+
+    MinigamePage minigame;
+    minigame.show();
 
     StartupPage startup;
     startup.show();

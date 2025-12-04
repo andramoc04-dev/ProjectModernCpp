@@ -105,6 +105,7 @@
     <ClCompile Include="GameClient.cpp" />
     <ClCompile Include="GamePage.cpp" />
     <ClCompile Include="LobbyPage.cpp" />
+    <ClCompile Include="MinigamePage.cpp" />
     <ClCompile Include="ProfilePage.cpp" />
     <ClCompile Include="StartupPage.cpp" />
     <QtRcc Include="Client.qrc" />
@@ -116,6 +117,7 @@
     <QtUic Include="GamePage.ui" />
     <QtUic Include="LobbyPage.ui" />
     <QtUic Include="LoginPage.ui" />
+    <QtUic Include="MinigamePage.ui" />
     <QtUic Include="ProfilePage.ui" />
     <QtUic Include="StartupPage.ui" />
   </ItemGroup>
@@ -135,10 +137,10 @@
     <Image Include="..\profileImg.jpg" />
     <Image Include="AscendinDeck.png" />
     <Image Include="BackButton.png" />
+    <Image Include="CardPlacer.png" />
     <Image Include="CardsDeck.jpg" />
     <Image Include="DescendingDeck.png" />
     <Image Include="GameBackground.jpg" />
-    <Image Include="SizedCardPlacer.png" />
     <Image Include="WelcomeToTheGame.png" />
     <Image Include="Your-profile-26-11-2025.png" />
   </ItemGroup>
@@ -148,6 +150,7 @@
   <ItemGroup>
     <ClInclude Include="GameClient.h" />
     <ClInclude Include="Card.h" />
+    <QtMoc Include="MinigamePage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

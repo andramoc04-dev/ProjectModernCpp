@@ -7,6 +7,6 @@
         <file>AscendinDeck.png</file>
         <file>DescendingDeck.png</file>
         <file>CardsDeck.jpg</file>
-        <file>BackButton.png</file>
+        <file>CardPlacer.png</file>
     </qresource>
 </RCC>
