@@ -1,4 +1,4 @@
-#include "StartupPage.h"
+﻿#include "StartupPage.h"
 
 StartupPage::StartupPage(QWidget *parent)
 	: QDialog(parent), profilePage(nullptr),loginPage(nullptr), lobbyPage(nullptr)

@@ -1,4 +1,4 @@
-#include "ProfilePage.h"
+﻿#include "ProfilePage.h"
 #include "StartupPage.h"
 
 ProfilePage::ProfilePage(QWidget *parent)
