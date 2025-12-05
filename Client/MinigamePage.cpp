@@ -18,7 +18,7 @@ void MinigamePage::RunMinigame()
     QString style =
         "QPushButton {"
         "    border: none;"
-        "    background-image: url(:/Client/CardPlacer.png);"
+        "    background-image: url(:/Client/resources/CardPlacer.png);"
         "}";
 
     for (int i = 0; i < 3; i++) {

@@ -16,7 +16,7 @@ public:
 	void OnAscendingStack2Clicked();
 	void OnDescendingStack1Clicked();
 	void OnDescendingStack2Clicked();
-
+	void ShowButton(uint16_t number);
 private:
 	Ui::GameClass ui;
 

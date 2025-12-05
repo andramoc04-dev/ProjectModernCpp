@@ -133,12 +133,15 @@
     <Image Include="CardPlacer.png">
       <Filter>Resource Files\images</Filter>
     </Image>
+    <Image Include="resources\1.png">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="resources\100.png">
+      <Filter>Resource Files\images</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameClient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Card.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

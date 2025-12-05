@@ -97,7 +97,7 @@ QPushButton:hover {
    </property>
    <property name="styleSheet">
     <string notr="true">QLabel {
-    border-image: url(:/Client/WelcomeToTheGame.png);
+    border-image: url(:/Client/resources/WelcomeToTheGame.png);
 }</string>
    </property>
    <property name="text">

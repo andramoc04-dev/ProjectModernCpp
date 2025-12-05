@@ -1,12 +1,24 @@
 <RCC>
     <qresource prefix="/Client">
-        <file>profileImg.jpg</file>
-        <file>WelcomeToTheGame.png</file>
-        <file>Your-profile-26-11-2025.png</file>
-        <file>GameBackground.jpg</file>
-        <file>AscendinDeck.png</file>
-        <file>DescendingDeck.png</file>
-        <file>CardsDeck.jpg</file>
-        <file>CardPlacer.png</file>
+        <file>resources/AscendinDeck.png</file>
+        <file>resources/Card.png</file>
+        <file>resources/CardPlacer.png</file>
+        <file>resources/CardsDeck.jpg</file>
+        <file>resources/DescendingDeck.png</file>
+        <file>resources/GameBackground.jpg</file>
+        <file>resources/profileImg.jpg</file>
+        <file>resources/WelcomeToTheGame.png</file>
+        <file>resources/Your-profile-26-11-2025.png</file>
+        <file>resources/0.png</file>
+        <file>resources/2.png</file>
+        <file>resources/3.png</file>
+        <file>resources/4.png</file>
+        <file>resources/5.png</file>
+        <file>resources/6.png</file>
+        <file>resources/7.png</file>
+        <file>resources/8.png</file>
+        <file>resources/9.png</file>
+        <file>resources/1.png</file>
+        <file>resources/100.png</file>
     </qresource>
 </RCC>

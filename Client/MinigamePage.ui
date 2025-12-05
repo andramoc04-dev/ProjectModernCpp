@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Minigame</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"> background-color: #FDEED9;</string>
+  </property>
   <widget class="QLabel" name="Score">
    <property name="geometry">
     <rect>

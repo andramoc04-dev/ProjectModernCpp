@@ -23,7 +23,7 @@ background-repeat: no-repeat;
 background-size: contain;
 </string>
   </property>
-  <widget class="QPushButton" name="AscendingStack2">
+  <widget class="QPushButton" name="AscendingCardPlacer2">
    <property name="geometry">
     <rect>
      <x>110</x>
@@ -35,7 +35,7 @@ background-size: contain;
    <property name="styleSheet">
     <string notr="true">QPushButton {
     background-color: transparent;
-    background-image: url(:/Client/AscendinDeck.png);
+    background-image: url(:/Client/resources/AscendinDeck.png);
     background-repeat: no-repeat;
     background-position: center;
     border: none;
@@ -48,7 +48,7 @@ background-size: contain;
     <string/>
    </property>
   </widget>
-  <widget class="QPushButton" name="AscendingStack1_2">
+  <widget class="QPushButton" name="AscendingCardPlacer2_2">
    <property name="geometry">
     <rect>
      <x>370</x>
@@ -60,7 +60,7 @@ background-size: contain;
    <property name="styleSheet">
     <string notr="true">QPushButton {
     background-color: transparent;
-    background-image: url(:/Client/AscendinDeck.png);
+    background-image:url(:/Client/resources/AscendinDeck.png);
     background-repeat: no-repeat;
     background-position: center;
     border: none;
@@ -74,7 +74,7 @@ background-size: contain;
     <string/>
    </property>
   </widget>
-  <widget class="QPushButton" name="DescendingStack1">
+  <widget class="QPushButton" name="DescendingCardPlacer1">
    <property name="geometry">
     <rect>
      <x>110</x>
@@ -86,7 +86,7 @@ background-size: contain;
    <property name="styleSheet">
     <string notr="true">QPushButton {
     background-color: transparent;
-    background-image: url(:/Client/DescendingDeck.png);
+    background-image: url(:/Client/resources/DescendingDeck.png);
     background-repeat: no-repeat;
     background-position: center;
     border: none;
@@ -99,7 +99,7 @@ background-size: contain;
     <string/>
    </property>
   </widget>
-  <widget class="QPushButton" name="DescendingStack2">
+  <widget class="QPushButton" name="DescendingCardPlacer2">
    <property name="geometry">
     <rect>
      <x>370</x>
@@ -111,7 +111,7 @@ background-size: contain;
    <property name="styleSheet">
     <string notr="true">QPushButton {
     background-color: transparent;
-    background-image: url(:/Client/DescendingDeck.png);
+    background-image: url(:/Client/resources/DescendingDeck.png);
     background-repeat: no-repeat;
     background-position: center;
     border: none;
@@ -134,7 +134,7 @@ background-size: contain;
    </property>
    <property name="styleSheet">
     <string notr="true">QLabel {
-    border-image:url(:/Client/GameBackground.jpg);
+    border-image:url(:/Client/resources/GameBackground.jpg);
 }</string>
    </property>
    <property name="text">
@@ -153,7 +153,7 @@ background-size: contain;
    <property name="styleSheet">
     <string notr="true">QPushButton {
     background-color: transparent;
-    background-image:url(:/Client/CardsDeck.jpg);
+    background-image:url(:/Client/resources/CardsDeck.jpg);
     background-repeat: no-repeat;
     background-position: center;
     border: none;
@@ -195,13 +195,125 @@ QPushButton:hover {
     <string>←</string>
    </property>
   </widget>
+  <widget class="QLabel" name="AscendingDeck1Number">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>360</y>
+     <width>31</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="AscendingDeck1Number_2">
+   <property name="geometry">
+    <rect>
+     <x>500</x>
+     <y>670</y>
+     <width>31</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="AscendingDeck1Number_3">
+   <property name="geometry">
+    <rect>
+     <x>740</x>
+     <y>640</y>
+     <width>31</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="AscendingDeck1Number_4">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>640</y>
+     <width>31</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="AscendingDeck2Number">
+   <property name="geometry">
+    <rect>
+     <x>460</x>
+     <y>360</y>
+     <width>31</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="AscendingDeck1Number_6">
+   <property name="geometry">
+    <rect>
+     <x>680</x>
+     <y>630</y>
+     <width>31</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="DescendingDeck1Number">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>20</y>
+     <width>31</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="DescendingDeck2Number">
+   <property name="geometry">
+    <rect>
+     <x>460</x>
+     <y>30</y>
+     <width>31</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
   <zorder>label</zorder>
-  <zorder>AscendingStack2</zorder>
-  <zorder>AscendingStack1_2</zorder>
-  <zorder>DescendingStack1</zorder>
-  <zorder>DescendingStack2</zorder>
+  <zorder>AscendingCardPlacer2</zorder>
+  <zorder>AscendingCardPlacer2_2</zorder>
+  <zorder>DescendingCardPlacer1</zorder>
+  <zorder>DescendingCardPlacer2</zorder>
   <zorder>pushButton</zorder>
   <zorder>BackButton</zorder>
+  <zorder>AscendingDeck1Number</zorder>
+  <zorder>AscendingDeck1Number_2</zorder>
+  <zorder>AscendingDeck1Number_3</zorder>
+  <zorder>AscendingDeck1Number_4</zorder>
+  <zorder>AscendingDeck2Number</zorder>
+  <zorder>AscendingDeck1Number_6</zorder>
+  <zorder>DescendingDeck1Number</zorder>
+  <zorder>DescendingDeck2Number</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
