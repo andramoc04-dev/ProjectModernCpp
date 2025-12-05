@@ -50,7 +50,7 @@ public:
 
 	void ViewProfile() const;
 
-private:
+protected:
 	std::uint32_t m_id;
 	std::string m_password;
 	std::string m_username;

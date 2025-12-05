@@ -2,13 +2,18 @@
 
 Message::Message()
 {
-	m_player_name ="";
+	m_playerName ="";
 	m_text ="";
+}
+
+Message::Message(std::string text, std::string playerName, std::chrono::system_clock::time_point time):
+    m_text(text), m_playerName(playerName), m_time(time)
+{
 }
 
 std::string Message::GetPlayerName() const
 {
-    return m_player_name;
+    return m_playerName;
 }
 
 std::string Message::GetTextFromPlayer() const
@@ -22,9 +27,9 @@ std::chrono::system_clock::time_point Message::GetTimeStamp() const
 }
 
 
-void Message::SetPlayerName(User player)
+void Message::SetPlayerName(Player player)
 {
-    m_player_name = player.GetUsername();
+    m_playerName = player.GetUsername();
 }
 
 void Message::SetTextFromPlayer(std::string text)

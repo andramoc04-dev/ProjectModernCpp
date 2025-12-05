@@ -1,23 +1,24 @@
 #pragma once
 #include<string>
 #include<chrono>
-#include"User.h"
+#include"Player.h"
 
 class Message {
 public:
 	Message();
+	Message(std::string text, std::string playerName, std::chrono::system_clock::time_point m_time);
 
 	std::string GetPlayerName()const;
 	std::string GetTextFromPlayer()const;
 	std::chrono::system_clock::time_point GetTimeStamp() const;
 
-	void SetPlayerName(User player);
+	void SetPlayerName(Player player);
 	void SetTextFromPlayer(std::string text);
 	void SetTimeStamp(std::chrono::system_clock::time_point time);
 	
 
 private:
 	std::string m_text;
-	std::string m_player_name;
+	std::string m_playerName;
 	std::chrono::system_clock::time_point m_time;
 };
