@@ -1,4 +1,4 @@
-#include "GamePage.h"
+﻿#include "GamePage.h"
 
 
 GamePage::GamePage(QWidget *parent)
@@ -26,6 +26,11 @@ GamePage::GamePage(QWidget *parent)
 		"background-position: center;"
 	);
 	ShowCards(2);
+}
+
+GamePage::GamePage(int playerId, int gameId, int opponentId, QWidget* parent) : GamePage(parent)
+{
+	initializeGame(playerId, gameId, opponentId);
 }
 
 GamePage::~GamePage()
@@ -113,6 +118,16 @@ void GamePage::ShowCards(uint16_t number)
 
 	}
 
+}
+
+void GamePage::initializeGame(int playerId, int gameId, int opponentId)
+{
+	m_playerId = playerId;
+	m_gameId = gameId;
+	m_opponentId = opponentId;
+
+	// Setăm un titlu util pentru fereastră
+	this->setWindowTitle(QString("Game %1 — You: %2 vs %3").arg(m_gameId).arg(m_playerId).arg(m_opponentId));
 }
 
 

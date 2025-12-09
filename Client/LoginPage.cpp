@@ -1,5 +1,5 @@
 ﻿#include "LoginPage.h"
-
+#include "ui_LoginPage.h"
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -8,22 +8,19 @@
 #include <QJsonDocument>
 #include <QDebug>
 
-
-
-LoginPage::LoginPage(QWidget *parent)
-	: QDialog(parent),
-    manager(new QNetworkAccessManager(this)), 
-    loggedIn(false)
-  
+LoginPage::LoginPage(QWidget* parent)
+    : QDialog(parent),
+    ui(new Ui::LoginPageClass),
+    manager(new QNetworkAccessManager(this)),
+    loggedIn(false),
+    menu(nullptr)
 {
-	ui.setupUi(this);
-	ui.Password->setEchoMode(QLineEdit::Password);
-    
+    ui->setupUi(this);
+    ui->Password->setEchoMode(QLineEdit::Password);
 }
 
 LoginPage::~LoginPage()
 {
-
 }
 
 bool LoginPage::getLoggedIn()
@@ -33,8 +30,8 @@ bool LoginPage::getLoggedIn()
 
 void LoginPage::on_registerButton_clicked()
 {
-    QString username = ui.Username->text().trimmed();
-    QString password = ui.Password->text();
+    QString username = ui->Username->text().trimmed();
+    QString password = ui->Password->text();
 
     QRegularExpression usernameRegex("^[A-Za-z][A-Za-z0-9]*$");
     QRegularExpression passwordRegex("^.{8,}$");
@@ -45,14 +42,12 @@ void LoginPage::on_registerButton_clicked()
         return;
     }
 
-
     if (!passwordRegex.match(password).hasMatch()) {
         QMessageBox::warning(this, "Eroare",
             "Invalid Password!\n You need 8 characters(letters, digits or symbols like @!#)");
         return;
     }
-    
-    // Construim JSON pentru request
+
     QJsonObject root;
     root["name"] = username;
     root["password"] = password;
@@ -60,48 +55,38 @@ void LoginPage::on_registerButton_clicked()
     QJsonDocument doc(root);
     QByteArray payload = doc.toJson(QJsonDocument::Compact);
 
-    // Pregătim request-ul
     QUrl url("http://localhost:18080/addplayer");
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     request.setRawHeader("Accept", "application/json");
 
-    //// Trimitem POST
-    //manager->post(request, payload);
-
-    //// Optional: dezactivezi butonul în timp ce așteptăm
-    //ui.registerButton->setEnabled(false);
-
-
     QNetworkReply* reply = manager->post(request, payload);
     connect(reply, &QNetworkReply::finished, this, [this, reply]() {
         this->onRegisterReply(reply);
         });
-    ui.registerButton->setEnabled(false);
-
+    ui->registerButton->setEnabled(false);
 }
 
 void LoginPage::on_loginButton_clicked()
 {
-	QString username = ui.Username->text();
-	QString password = ui.Password->text();
+    QString username = ui->Username->text();
+    QString password = ui->Password->text();
 
-	QRegularExpression usernameRegex("^[A-Za-z][A-Za-z0-9]*$");
-	QRegularExpression passwordRegex("^.{8,}$");
+    QRegularExpression usernameRegex("^[A-Za-z][A-Za-z0-9]*$");
+    QRegularExpression passwordRegex("^.{8,}$");
 
     if (!usernameRegex.match(username).hasMatch()) {
         QMessageBox::warning(this, "Eroare",
             "Invalid Username!\n Only digits and letters are accepted and the username should always start with a letter!");
         return;
     }
-    
-    
+
     if (!passwordRegex.match(password).hasMatch()) {
         QMessageBox::warning(this, "Eroare",
             "Invalid Password!\n You need 8 characters(letters, digits or symbols like @!#)");
         return;
     }
-    
+
     QJsonObject root;
     root["name"] = username;
     root["password"] = password;
@@ -114,30 +99,23 @@ void LoginPage::on_loginButton_clicked()
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     request.setRawHeader("Accept", "application/json");
 
-
     QNetworkReply* reply = manager->post(request, payload);
     connect(reply, &QNetworkReply::finished, this, [this, reply]() {
         this->onLoginReply(reply);
         });
-    ui.loginButton->setEnabled(false);
-
-   
+    ui->loginButton->setEnabled(false);
 }
-
 
 void LoginPage::onRegisterReply(QNetworkReply* reply)
 {
-    // re-activăm butonul
-    ui.registerButton->setEnabled(true);
+    ui->registerButton->setEnabled(true);
 
-    // Erori de rețea
     if (reply->error() != QNetworkReply::NoError) {
         QMessageBox::warning(this, "Eroare rețea", reply->errorString());
         reply->deleteLater();
         return;
     }
 
-    // Citim codul HTTP (dacă e disponibil)
     QVariant sc = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     int statusCode = sc.isValid() ? sc.toInt() : -1;
 
@@ -146,16 +124,10 @@ void LoginPage::onRegisterReply(QNetworkReply* reply)
     qDebug() << "Register reply. HTTP:" << statusCode << "Body:" << bodyStr;
 
     if (statusCode == 201) {
-        // Creat cu succes
-        // Dacă serverul trimite JSON cu id etc. îl poți parse-a aici
         QMessageBox::information(this, "Succes", "Cont creat cu succes!");
-        // eventual accept(); // închide dialogul sau lasă userul să se logheze
     }
     else if (statusCode == 409) {
-        // Resursă deja existentă
-        // Dacă serverul a trimis un JSON cu { "error": "..." } îl poți afișa
         QString msg = "User already exists.";
-        // încercăm să parse-ăm mesajul din body dacă e JSON
         QJsonParseError err;
         QJsonDocument doc = QJsonDocument::fromJson(body, &err);
         if (err.error == QJsonParseError::NoError && doc.isObject()) {
@@ -171,7 +143,6 @@ void LoginPage::onRegisterReply(QNetworkReply* reply)
         QMessageBox::warning(this, "Eroare", "Bad request (server rejected payload).");
     }
     else {
-        // Alte coduri: arată conținutul body-ului pentru debugging
         QMessageBox::warning(this, "Eroare server",
             QString("HTTP %1\n\n%2").arg(statusCode).arg(bodyStr));
     }
@@ -179,10 +150,9 @@ void LoginPage::onRegisterReply(QNetworkReply* reply)
     reply->deleteLater();
 }
 
-
 void LoginPage::onLoginReply(QNetworkReply* reply)
 {
-    ui.loginButton->setEnabled(true);
+    ui->loginButton->setEnabled(true);
 
     if (reply->error() != QNetworkReply::NoError) {
         QMessageBox::warning(this, "Eroare rețea", reply->errorString());
@@ -199,10 +169,25 @@ void LoginPage::onLoginReply(QNetworkReply* reply)
         QString name = obj["name"].toString();
         int score = obj["score"].toInt();
 
+        // extragem ID din răspunsul serverului
+        int id = -1;
+        if (obj.contains("id")) {
+            id = obj["id"].toInt(-1);
+        }
+
         QMessageBox::information(this, "Login", "Login successful!\nWelcome " + name);
         loggedIn = true;
 
+        // cream MenuPage, setam playerId si o aratam
         menu = new MenuPage(this);
+        if (id >= 0) {
+            menu->setPlayerId(id);
+        }
+        else {
+            // dacă serverul nu a trimis id, poți decide: fie refuzi, fie folosești altă logică
+            qWarning() << "Login reply: no id field returned by server";
+        }
+
         menu->show();
         this->hide();
     }
@@ -215,11 +200,4 @@ void LoginPage::onLoginReply(QNetworkReply* reply)
     }
 
     reply->deleteLater();
-
 }
-
-
-
-
-
-

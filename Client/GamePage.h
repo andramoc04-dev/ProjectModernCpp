@@ -11,6 +11,7 @@ class GamePage : public QDialog
 
 public:
 	GamePage(QWidget *parent = nullptr);
+	GamePage(int playerId, int gameId, int opponentId, QWidget* parent = nullptr);
 	~GamePage();
 
 	void OnAscendingStack1Clicked();
@@ -20,5 +21,10 @@ public:
 	void ShowCards(uint16_t number);
 private:
 	Ui::GameClass ui;
+	int m_playerId = -1;
+	int m_gameId = -1;
+	int m_opponentId = -1;
+
+	void initializeGame(int playerId, int gameId, int opponentId);
 };
 
