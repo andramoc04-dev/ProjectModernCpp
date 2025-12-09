@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDialog>
+#include <QGridLayout>
 #include "ui_GamePage.h"
 
 
@@ -16,9 +17,8 @@ public:
 	void OnAscendingStack2Clicked();
 	void OnDescendingStack1Clicked();
 	void OnDescendingStack2Clicked();
-	void ShowButton(uint16_t number);
+	void ShowCards(uint16_t number);
 private:
 	Ui::GameClass ui;
-
 };
 

@@ -143,6 +143,15 @@
     <Image Include="GameBackground.jpg" />
     <Image Include="resources\1.png" />
     <Image Include="resources\100.png" />
+    <Image Include="resources\2.png" />
+    <Image Include="resources\3.png" />
+    <Image Include="resources\4.png" />
+    <Image Include="resources\5.png" />
+    <Image Include="resources\6.png" />
+    <Image Include="resources\7.png" />
+    <Image Include="resources\8.png" />
+    <Image Include="resources\9.png" />
+    <Image Include="resources\Card.png" />
     <Image Include="WelcomeToTheGame.png" />
     <Image Include="Your-profile-26-11-2025.png" />
   </ItemGroup>

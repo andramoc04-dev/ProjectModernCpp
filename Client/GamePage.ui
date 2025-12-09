@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1002</width>
+    <width>971</width>
     <height>706</height>
    </rect>
   </property>
@@ -299,6 +299,17 @@ QPushButton:hover {
     <string/>
    </property>
   </widget>
+  <widget class="QWidget" name="gridLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>-10</x>
+     <y>360</y>
+     <width>721</width>
+     <height>391</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="layout"/>
+  </widget>
   <zorder>label</zorder>
   <zorder>AscendingCardPlacer2</zorder>
   <zorder>AscendingCardPlacer2_2</zorder>
@@ -314,6 +325,7 @@ QPushButton:hover {
   <zorder>AscendingDeck1Number_6</zorder>
   <zorder>DescendingDeck1Number</zorder>
   <zorder>DescendingDeck2Number</zorder>
+  <zorder>gridLayoutWidget</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
