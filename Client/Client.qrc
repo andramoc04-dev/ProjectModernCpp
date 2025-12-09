@@ -20,5 +20,6 @@
         <file>resources/9.png</file>
         <file>resources/1.png</file>
         <file>resources/100.png</file>
+        <file>resources/CardButton.png</file>
     </qresource>
 </RCC>

@@ -61,14 +61,14 @@ void GamePage::ShowCards(uint16_t number)
 	QString style =
 		"QPushButton {"
 		"    border: none;"
-		"    background-image: url(:/Client/resources/Card.png);"
+		"    background-image: url(:/Client/resources/CardButton.png);"
 		"}";
 	ui.layout->setSpacing(0);
 	ui.layout->setContentsMargins(0, 0, 0, 0);
 	for (int i = 0; i < 8; i++) {
 		QPushButton* button = new QPushButton(this);
 		button->setStyleSheet(style);
-		button->setFixedSize(121, 492);
+		button->setFixedSize(100, 315);
 
 		int randomCard = std::rand() % 99+1;
 
@@ -76,7 +76,7 @@ void GamePage::ShowCards(uint16_t number)
 		{
 			QLabel* nr1 = new QLabel("", button);
 			nr1->setFixedSize(32, 41);
-			nr1->move(28, 90);
+			nr1->move(22, 45);
 			QString imgPath1 = QString(":/Client/resources/%1.png").arg(randomCard/10);
 			qDebug() << "Image path 1:" << imgPath1;
 			nr1->setStyleSheet(
@@ -88,7 +88,7 @@ void GamePage::ShowCards(uint16_t number)
 			);
 			QLabel* nr2 = new QLabel("", button);
 			nr2->setFixedSize(32, 41);
-			nr2->move(56, 90);
+			nr2->move(50, 45);
 			QString imgPath2 = QString(":/Client/resources/%1.png").arg(randomCard % 10);
 			qDebug() << "Image path 2:" << imgPath2;
 			nr2->setStyleSheet(
@@ -103,7 +103,7 @@ void GamePage::ShowCards(uint16_t number)
 		{
 			QLabel* nr = new QLabel("", button);
 			nr->setFixedSize(32, 41);
-			nr->move(45, 90);
+			nr->move(32, 45);
 			QString imgPath1 = QString(":/Client/resources/%1.png").arg(randomCard);
 			qDebug() << "Image path 1:" << imgPath1;
 			nr->setStyleSheet(

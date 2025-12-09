@@ -139,9 +139,6 @@
     <Image Include="resources\100.png">
       <Filter>Resource Files\images</Filter>
     </Image>
-    <Image Include="resources\Card.png">
-      <Filter>Resource Files\images</Filter>
-    </Image>
     <Image Include="resources\2.png">
       <Filter>Resource Files\images</Filter>
     </Image>
@@ -164,6 +161,9 @@
       <Filter>Resource Files\images</Filter>
     </Image>
     <Image Include="resources\9.png">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="resources\CardButton.png">
       <Filter>Resource Files\images</Filter>
     </Image>
   </ItemGroup>

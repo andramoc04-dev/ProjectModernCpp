@@ -151,7 +151,7 @@
     <Image Include="resources\7.png" />
     <Image Include="resources\8.png" />
     <Image Include="resources\9.png" />
-    <Image Include="resources\Card.png" />
+    <Image Include="resources\CardButton.png" />
     <Image Include="WelcomeToTheGame.png" />
     <Image Include="Your-profile-26-11-2025.png" />
   </ItemGroup>
