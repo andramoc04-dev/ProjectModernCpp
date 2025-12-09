@@ -2,13 +2,8 @@
 
 bool http::UserProfiles::Initialize()
 {
-    m_db.sync_schema();
-    auto initPlayersCount = m_db.count<User>();
-    if (initPlayersCount == 0)
-        PopulateGame();
-
-    auto playersCount = m_db.count<User>();
-    return playersCount != 0;
+    m_db.sync_schema(); 
+    return true;
 }
 
 std::vector<User> http::UserProfiles::GetUsers()
@@ -31,6 +26,12 @@ void http::UserProfiles::AddUserToGame(const std::string& name, const std::strin
 {
     User newPlayer(name);
     newPlayer.SetPassword(password);
+    newPlayer.SetScore(0);
+    newPlayer.SetWins(0);
+    newPlayer.SetHoursPlayed(0);
+    newPlayer.SetUnusedCards(0);
+    newPlayer.SetGamesPlayed(0);
+    newPlayer.SetId(0);
 
     auto insertedId = m_db.insert(newPlayer);
 
@@ -52,19 +53,6 @@ bool http::UserProfiles::HasUserWithName(const std::string& name)
 
 
 
-void http::UserProfiles::PopulateGame()
-{
-    std::vector<User> players{
-            User{ -1, "Milk"},
-            User{ -1, "Egg"},
-            User{ -1, "Flour"},
-            User{ -1, "Butter"},
-            User{ -1, "Salt"},
-            User{ -1, "Jam"},
-            User{ -1, "Viorica"}
-    };
-    m_db.insert_range(players.begin(), players.end());
-}
 
 http::AddUserToGameHandler::AddUserToGameHandler(UserProfiles& profiles)
     : m_db{ profiles }
@@ -73,16 +61,6 @@ http::AddUserToGameHandler::AddUserToGameHandler(UserProfiles& profiles)
 
 crow::response http::AddUserToGameHandler::operator()(const crow::request& req)
 {
-  /*  auto bodyArgs = parseUrlArgs(req.body);
-    auto end = bodyArgs.end();
-    auto nameIter = bodyArgs.find("name");
-    auto passwordIter = bodyArgs.find("password");
-    if (nameIter != end && passwordIter != end)
-    {
-        m_db.AddPlayerToGame(nameIter->second, passwordIter->second);
-    }
-    return crow::response(201);*/
-
 
     auto body = crow::json::load(req.body);
     if (!body) {
@@ -112,12 +90,19 @@ crow::response http::AddUserToGameHandler::operator()(const crow::request& req)
         return resp;
     }
 
-    // Adăugăm jucătorul și returnăm 201; dacă AddPlayerToGame ar returna id, îl putem include
-    m_db.AddUserToGame(name, password);
+    try {
+        m_db.AddUserToGame(name, password);
+    }
+    catch (const std::exception& ex) {
+        crow::json::wvalue e;
+        e["error"] = std::string("Database error: ") + ex.what();
+        return crow::response(500, e.dump());
+    }
 
     crow::json::wvalue success;
     success["message"] = "Player created";
     auto resp = crow::response(201, success.dump());
     resp.set_header("Content-Type", "application/json");
     return resp;
+    
 }

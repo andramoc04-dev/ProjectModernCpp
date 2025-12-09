@@ -42,8 +42,6 @@ namespace http
 		void AddUserToGame(const std::string& name, const std::string& password = "");
 		bool HasUserWithName(const std::string& name);
 
-	private:
-		void PopulateGame();
 
 	private:
 		const std::string kDbFile{ "players.sqlite" };

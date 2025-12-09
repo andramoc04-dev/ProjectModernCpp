@@ -14,13 +14,7 @@ Player::Player(int id, const std::string& name):
 
 }
 
-//Player::Player(std::string name, std::list<Card> hand, std::uint16_t hoursPlayed, std::uint16_t wins, std::uint16_t gamesPlayed, std::uint16_t unusedCards,std::string password, std::uint16_t performanceScore)
-//	:
-//	User(name, hoursPlayed, wins, gamesPlayed, unusedCards, password,performanceScore),
-//	m_hand(hand)
-//	
-//{
-//}
+
 void Player::Score()
 {
 	if (this->GetGamesPlayed() > 0)
