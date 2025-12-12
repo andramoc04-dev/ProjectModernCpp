@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>971</width>
-    <height>671</height>
+    <width>1014</width>
+    <height>685</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -126,7 +126,7 @@ background-size: contain;
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>10</x>
      <y>0</y>
      <width>1001</width>
      <height>671</height>
@@ -256,6 +256,9 @@ QPushButton:hover {
      <height>41</height>
     </rect>
    </property>
+   <property name="cursor">
+    <cursorShape>ArrowCursor</cursorShape>
+   </property>
    <property name="text">
     <string/>
    </property>
@@ -310,6 +313,71 @@ QPushButton:hover {
    </property>
    <layout class="QGridLayout" name="layout"/>
   </widget>
+  <widget class="QTextEdit" name="chatMessages">
+   <property name="geometry">
+    <rect>
+     <x>723</x>
+     <y>379</y>
+     <width>271</width>
+     <height>221</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: #573C27;
+background: transparent;
+border: none;
+</string>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="chatInput">
+   <property name="geometry">
+    <rect>
+     <x>720</x>
+     <y>620</y>
+     <width>191</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: #573C27;
+background: transparent;
+border: none;
+ </string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="sendButton">
+   <property name="geometry">
+    <rect>
+     <x>910</x>
+     <y>610</y>
+     <width>91</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Showcard Gothic</family>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+  background-color: #FFADC6;
+  color: #573C27;
+ 
+}
+
+QPushButton:hover {
+   background-color: #E34989;
+}</string>
+   </property>
+   <property name="text">
+    <string>Send</string>
+   </property>
+  </widget>
   <zorder>label</zorder>
   <zorder>AscendingCardPlacer2</zorder>
   <zorder>AscendingCardPlacer2_2</zorder>
@@ -326,6 +394,9 @@ QPushButton:hover {
   <zorder>DescendingDeck1Number</zorder>
   <zorder>DescendingDeck2Number</zorder>
   <zorder>gridLayoutWidget</zorder>
+  <zorder>chatMessages</zorder>
+  <zorder>chatInput</zorder>
+  <zorder>sendButton</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

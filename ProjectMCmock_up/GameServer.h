@@ -1,5 +1,9 @@
 ﻿#include <crow.h>
 #include "Database.h"
+#include <mutex>
+#include <vector>
+#include "Chat.h"
+#include "Message.h"
 
 namespace http
 {
@@ -13,5 +17,8 @@ namespace http
 
 	private:
 		crow::SimpleApp m_app;
+
+		Chat m_chat; 
+		std::mutex m_chatMutex;
 	};
 }

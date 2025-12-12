@@ -167,6 +167,69 @@ void http::Routing::Run(UserProfiles& storage)
 
 
 
+	
+	using namespace std::chrono;
+
+	
+	CROW_ROUTE(m_app, "/chat/send").methods(crow::HTTPMethod::POST)
+		([&](const crow::request& req) {
+		auto body = crow::json::load(req.body);
+		if (!body) return crow::response(400, R"({"error":"Invalid JSON"})");
+
+		std::string text = body["text"].s();
+		std::string playerName = body["playerName"].s(); // sau află din id: body["playerId"]
+
+		// creează Message (folosesc timestamp acum)
+		auto now = system_clock::now();
+		Message msg{ text, playerName, now };
+
+		{
+			std::lock_guard<std::mutex> lk(m_chatMutex);
+			m_chat.AddMessage(msg);
+		}
+
+		crow::json::wvalue resp;
+		resp["status"] = "ok";
+		return crow::response{ resp.dump() };
+			});
+
+	
+
+
+	CROW_ROUTE(m_app, "/chat/messages").methods(crow::HTTPMethod::GET)
+		([&](const crow::request&) {
+
+		crow::json::wvalue response;
+
+		{
+			std::lock_guard<std::mutex> lk(m_chatMutex);
+			const auto& msgs = m_chat.GetMessages();
+
+			int index = 0;
+			for (const auto& m : msgs)
+			{
+				crow::json::wvalue item;
+
+				item["playerName"] = m.GetPlayerName();
+				item["text"] = m.GetTextFromPlayer();
+
+				auto ts = std::chrono::duration_cast<std::chrono::milliseconds>(
+					m.GetTimeStamp().time_since_epoch()
+				).count();
+
+				item["ts"] = ts;
+
+				response[index] = std::move(item); 
+				index++;
+			}
+		}
+
+		return crow::response(response.dump());
+			});
+
+
+
+
 
 
 	m_app.port(18080).multithreaded().run();

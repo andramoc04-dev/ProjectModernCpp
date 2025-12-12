@@ -1,8 +1,11 @@
-#pragma once
+﻿#pragma once
 
 #include <QDialog>
 #include <QGridLayout>
 #include "ui_GamePage.h"
+#include <QNetworkAccessManager>
+#include <QTimer>
+
 
 
 class GamePage : public QDialog
@@ -19,11 +22,21 @@ public:
 	void OnDescendingStack1Clicked();
 	void OnDescendingStack2Clicked();
 	void ShowCards(uint16_t number);
+
+private slots:
+	void onSendClicked();
+	void fetchMessages();
+
 private:
 	Ui::GameClass ui;
 	int m_playerId = -1;
 	int m_gameId = -1;
 	int m_opponentId = -1;
+
+	QNetworkAccessManager* net;
+	QTimer* chatTimer;
+
+	QString playerName = "Player"; // setat după login
 
 	void initializeGame(int playerId, int gameId, int opponentId);
 };

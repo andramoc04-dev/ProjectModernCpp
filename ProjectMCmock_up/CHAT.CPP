@@ -11,6 +11,11 @@ void Chat::AddMessage(Message message)
     m_messages.push_back(message);
 }
 
+std::vector<Message> Chat::GetMessages() const
+{
+    return m_messages;
+}
+
 void Chat::PrintMessages()
 {
     

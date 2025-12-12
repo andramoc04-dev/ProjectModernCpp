@@ -1,10 +1,47 @@
 ﻿#include "GamePage.h"
-
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QNetworkReply>
+#include <QDateTime>
+#include <QScrollBar>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QDebug>
+#include <cstdlib>
 
 GamePage::GamePage(QWidget *parent)
 	: QDialog(parent)
 {
 	ui.setupUi(this);
+	net = new QNetworkAccessManager(this);
+
+	connect(ui.sendButton, &QPushButton::clicked, this, &GamePage::onSendClicked);
+
+	chatTimer = new QTimer(this);
+	connect(chatTimer, &QTimer::timeout, this, &GamePage::fetchMessages);
+	chatTimer->start(800);
+
+	ui.chatInput->setStyleSheet(
+		"   background: transparent;"
+		"   border: none;"
+		"   color: #573C27;"
+		"   font-family: 'Showcard Gothic';"
+		"   font-weight: bold;"
+		"   font-size: 14pt;"
+	);
+
+	ui.chatMessages->setStyleSheet(
+		"   background: transparent;"
+		"   border: none;"
+		"   color: #573C27;"
+		"   font-family: 'Showcard Gothic';"
+		"   font-weight: bold;"
+		"   font-size: 14pt;"
+	);
+
+
 	ui.AscendingDeck1Number->setStyleSheet(
 		"background-image: url(:/Client/resources/1.png);"
 		"background-repeat: no-repeat;"
@@ -130,4 +167,46 @@ void GamePage::initializeGame(int playerId, int gameId, int opponentId)
 	this->setWindowTitle(QString("Game %1 — You: %2 vs %3").arg(m_gameId).arg(m_playerId).arg(m_opponentId));
 }
 
+void GamePage::onSendClicked()
+{
+	QString text = ui.chatInput->text().trimmed();
+	if (text.isEmpty()) return;
+
+	QJsonObject obj;
+	obj["playerName"] = playerName;
+	obj["text"] = text;
+
+	QNetworkRequest req(QUrl("http://127.0.0.1:18080/chat/send"));
+	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+	net->post(req, QJsonDocument(obj).toJson());
+	ui.chatInput->clear();
+}
+
+void GamePage::fetchMessages()
+{
+	QNetworkRequest req(QUrl("http://127.0.0.1:18080/chat/messages"));
+	QNetworkReply* reply = net->get(req);
+
+	connect(reply, &QNetworkReply::finished, [this, reply]()
+		{
+			if (reply->error() == QNetworkReply::NoError)
+			{
+				QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+				if (doc.isArray())
+				{
+					QString all;
+					for (auto v : doc.array())
+					{
+						auto o = v.toObject();
+						all += QString("%1: %2\n")
+							.arg(o["playerName"].toString())
+							.arg(o["text"].toString());
+					}
+					ui.chatMessages->setPlainText(all);
+				}
+			}
+			reply->deleteLater();
+		});
+}
 
