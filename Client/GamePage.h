@@ -14,7 +14,7 @@ class GamePage : public QDialog
 
 public:
 	GamePage(QWidget *parent = nullptr);
-	GamePage(int playerId, int gameId, int opponentId, QWidget* parent = nullptr);
+	GamePage(int playerId,const QString& playerName, int gameId, int opponentId, QWidget* parent = nullptr);
 	~GamePage();
 
 	void OnAscendingStack1Clicked();
@@ -22,7 +22,7 @@ public:
 	void OnDescendingStack1Clicked();
 	void OnDescendingStack2Clicked();
 	void ShowCards(uint16_t number);
-
+	
 private slots:
 	void onSendClicked();
 	void fetchMessages();
@@ -36,8 +36,8 @@ private:
 	QNetworkAccessManager* net;
 	QTimer* chatTimer;
 
-	QString playerName = "Player"; // setat după login
+	QString m_playerName; // setat după login
 
-	void initializeGame(int playerId, int gameId, int opponentId);
+	void initializeGame(int playerId,const QString& playerName, int gameId, int opponentId);
 };
 

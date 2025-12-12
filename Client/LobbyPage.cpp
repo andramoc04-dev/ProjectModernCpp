@@ -8,12 +8,13 @@
 #include <QUrl>
 #include <QDebug>
 
-LobbyPage::LobbyPage(int playerId, const QString& serverBaseUrl, QWidget* parent)
+LobbyPage::LobbyPage(int playerId,const QString& playerName, const QString& serverBaseUrl, QWidget* parent)
     : QDialog(parent),
     ui(new Ui::LobbyPageClass),
     network(new QNetworkAccessManager(this)),
     pollTimer(new QTimer(this)),
     m_playerId(playerId),
+    m_playerName(playerName),
     m_serverBase(serverBaseUrl)
 {
     ui->setupUi(this);
@@ -85,7 +86,7 @@ void LobbyPage::onStatusReplyFinished()
                 GamePage* gp = nullptr;
                 // Dacă GamePage are constructor (int playerId, int gameId, int opponentId, QWidget*)
                 // folosește-l; altfel adaptează după implementarea ta.
-                gp = new GamePage(m_playerId, gameId, opponentId, nullptr);
+                gp = new GamePage(m_playerId,m_playerName, gameId, opponentId, nullptr);
                 gp->show();
 
                 // închide/hide lobby

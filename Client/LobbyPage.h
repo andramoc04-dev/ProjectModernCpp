@@ -10,7 +10,7 @@ class LobbyPage : public QDialog
 {
     Q_OBJECT
 public:
-    LobbyPage(int playerId, const QString& serverBaseUrl, QWidget* parent = nullptr);
+    LobbyPage(int playerId,const QString& playerName, const QString& serverBaseUrl, QWidget* parent = nullptr);
     ~LobbyPage();
 
 private slots:
@@ -24,4 +24,5 @@ private:
     QTimer* pollTimer;
     int m_playerId;
     QString m_serverBase;
+    QString m_playerName;
 };

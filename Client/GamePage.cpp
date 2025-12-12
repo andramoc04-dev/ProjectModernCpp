@@ -65,9 +65,9 @@ GamePage::GamePage(QWidget *parent)
 	ShowCards(2);
 }
 
-GamePage::GamePage(int playerId, int gameId, int opponentId, QWidget* parent) : GamePage(parent)
+GamePage::GamePage(int playerId,const QString& playerName, int gameId, int opponentId, QWidget* parent) : GamePage(parent)
 {
-	initializeGame(playerId, gameId, opponentId);
+	initializeGame(playerId,playerName, gameId, opponentId);
 }
 
 GamePage::~GamePage()
@@ -157,9 +157,10 @@ void GamePage::ShowCards(uint16_t number)
 
 }
 
-void GamePage::initializeGame(int playerId, int gameId, int opponentId)
+void GamePage::initializeGame(int playerId,const QString& playerName, int gameId, int opponentId)
 {
 	m_playerId = playerId;
+	m_playerName = playerName;
 	m_gameId = gameId;
 	m_opponentId = opponentId;
 
@@ -173,8 +174,8 @@ void GamePage::onSendClicked()
 	if (text.isEmpty()) return;
 
 	QJsonObject obj;
-	obj["playerName"] = playerName;
-	obj["text"] = text;
+	obj["playerName"] = m_playerName;
+	obj["text"] = ui.chatInput->text();
 
 	QNetworkRequest req(QUrl("http://127.0.0.1:18080/chat/send"));
 	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");

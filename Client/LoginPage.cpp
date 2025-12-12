@@ -182,12 +182,13 @@ void LoginPage::onLoginReply(QNetworkReply* reply)
         menu = new MenuPage(this);
         if (id >= 0) {
             menu->setPlayerId(id);
+          
         }
         else {
             // dacă serverul nu a trimis id, poți decide: fie refuzi, fie folosești altă logică
             qWarning() << "Login reply: no id field returned by server";
         }
-
+        menu->setPlayerName(name);
         menu->show();
         this->hide();
     }

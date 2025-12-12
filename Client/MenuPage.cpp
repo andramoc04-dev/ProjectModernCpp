@@ -23,6 +23,9 @@ void MenuPage::openProfilePage()
     this->hide();
 }
 
+
+
+
 void MenuPage::OpenLobbyPage()
 {
     if (m_playerId < 0) {
@@ -31,7 +34,7 @@ void MenuPage::OpenLobbyPage()
     }
 
     QString serverUrl = "http://127.0.0.1:18080";
-    lobbyPage = new LobbyPage(m_playerId, serverUrl, this);
+    lobbyPage = new LobbyPage(m_playerId,playerName, serverUrl, this);
     lobbyPage->show();
     this->hide();
 }

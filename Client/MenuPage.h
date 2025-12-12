@@ -17,7 +17,8 @@ public:
 
     void setPlayerId(int id) { m_playerId = id; }
     int playerId() const { return m_playerId; }
-
+    void setPlayerName(const QString& name) { playerName = name; }
+    QString getPlayerName() const { return playerName; }
 private slots:
     void openProfilePage();
     void OpenLobbyPage();
@@ -27,4 +28,5 @@ private:
     ProfilePage* profilePage;
     LobbyPage* lobbyPage;
     int m_playerId = -1; // id-ul jucătorului - setat după login
+    QString playerName;
 };
