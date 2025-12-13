@@ -22,6 +22,8 @@ public:
 		std::uint16_t unusedCards
 	);
 
+	User(const User& other);
+
 	void SetUsername(std::string username);
 	std::string GetUsername() const;
 

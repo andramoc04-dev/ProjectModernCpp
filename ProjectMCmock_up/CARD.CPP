@@ -1,14 +1,23 @@
 #include "Card.h"
 
 Card::Card(std::uint16_t number)
+    : m_number(number),
+    m_direction(OrderDirection::Unknown)
 {
-    m_number = number;
+   
 }
 
 Card::Card()
+    : m_number(0),
+    m_direction(OrderDirection::Unknown)
 {
-    m_number = 0;
-    m_direction = OrderDirection::Unknown;
+  
+}
+
+Card::Card(const Card& other)
+    : m_number(other.m_number),
+    m_direction(other.m_direction)
+{
 }
 
 std::uint16_t Card::GetNumber() const

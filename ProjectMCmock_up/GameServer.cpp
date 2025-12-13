@@ -2,6 +2,7 @@
 #include <mutex>
 #include <vector>
 #include <unordered_map>
+#include "Game.h"
 
 
 struct LobbyInfo {

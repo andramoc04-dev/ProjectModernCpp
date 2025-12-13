@@ -14,6 +14,12 @@ Player::Player(int id, const std::string& name):
 
 }
 
+Player::Player(const Player& other)
+	: User(other), 
+	m_hand(other.m_hand)
+{
+}
+
 
 void Player::Score()
 {

@@ -48,6 +48,18 @@ User::User(std::uint32_t id, std::string username, std::string password, std::ui
 {
 }
 
+User::User(const User& other)
+	: m_id(other.m_id),
+	m_username(other.m_username),
+	m_password(other.m_password),
+	m_hoursPlayed(other.m_hoursPlayed),
+	m_wins(other.m_wins),
+	m_gamesPlayed(other.m_gamesPlayed),
+	m_unusedCards(other.m_unusedCards),
+	m_performanceScore(other.m_performanceScore)
+{
+}
+
 
 
 void User::SetUsername(std::string username)
