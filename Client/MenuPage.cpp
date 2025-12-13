@@ -17,10 +17,11 @@ MenuPage::~MenuPage()
 void MenuPage::openProfilePage()
 {
     if (!profilePage)
-        profilePage = new ProfilePage(this);
+        profilePage = new ProfilePage(m_playerId, "http://127.0.0.1:18080", this);
 
     profilePage->show();
     this->hide();
+
 }
 
 

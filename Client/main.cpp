@@ -1,4 +1,3 @@
-#include "Client.h"
 #include <QtWidgets/QApplication>
 #include"MenuPage.h"
 #include "GamePage.h"
