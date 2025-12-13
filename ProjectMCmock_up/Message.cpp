@@ -6,7 +6,7 @@ Message::Message()
 	m_text ="";
 }
 
-Message::Message(std::string text, std::string playerName, std::chrono::system_clock::time_point time):
+Message::Message(const std::string& text, const std::string& playerName, std::chrono::system_clock::time_point time):
     m_text(text), m_playerName(playerName), m_time(time)
 {
 }
@@ -27,12 +27,12 @@ std::chrono::system_clock::time_point Message::GetTimeStamp() const
 }
 
 
-void Message::SetPlayerName(Player player)
+void Message::SetPlayerName(const Player& player)
 {
     m_playerName = player.GetUsername();
 }
 
-void Message::SetTextFromPlayer(std::string text)
+void Message::SetTextFromPlayer(const std::string& text)
 {
     bool contains_numbers = false;
     for (const char& c : text)

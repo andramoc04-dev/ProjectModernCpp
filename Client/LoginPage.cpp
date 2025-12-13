@@ -30,11 +30,11 @@ bool LoginPage::getLoggedIn()
 
 void LoginPage::on_registerButton_clicked()
 {
-    QString username = ui->Username->text().trimmed();
-    QString password = ui->Password->text();
+    const QString username = ui->Username->text().trimmed();
+    const QString password = ui->Password->text();
 
-    QRegularExpression usernameRegex("^[A-Za-z][A-Za-z0-9]*$");
-    QRegularExpression passwordRegex("^.{8,}$");
+    const QRegularExpression usernameRegex("^[A-Za-z][A-Za-z0-9]*$");
+    const QRegularExpression passwordRegex("^.{8,}$");
 
     if (!usernameRegex.match(username).hasMatch()) {
         QMessageBox::warning(this, "Eroare",
@@ -69,8 +69,8 @@ void LoginPage::on_registerButton_clicked()
 
 void LoginPage::on_loginButton_clicked()
 {
-    QString username = ui->Username->text();
-    QString password = ui->Password->text();
+    const QString username = ui->Username->text();
+    const QString password = ui->Password->text();
 
     QRegularExpression usernameRegex("^[A-Za-z][A-Za-z0-9]*$");
     QRegularExpression passwordRegex("^.{8,}$");
@@ -92,7 +92,7 @@ void LoginPage::on_loginButton_clicked()
     root["password"] = password;
 
     QJsonDocument doc(root);
-    QByteArray payload = doc.toJson(QJsonDocument::Compact);
+    const QByteArray payload = doc.toJson(QJsonDocument::Compact);
 
     QUrl url("http://localhost:18080/login");
     QNetworkRequest request(url);
@@ -119,8 +119,8 @@ void LoginPage::onRegisterReply(QNetworkReply* reply)
     QVariant sc = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     int statusCode = sc.isValid() ? sc.toInt() : -1;
 
-    QByteArray body = reply->readAll();
-    QString bodyStr = QString::fromUtf8(body);
+    const QByteArray body = reply->readAll();
+    const QString bodyStr = QString::fromUtf8(body);
     qDebug() << "Register reply. HTTP:" << statusCode << "Body:" << bodyStr;
 
     if (statusCode == 201) {
@@ -129,9 +129,9 @@ void LoginPage::onRegisterReply(QNetworkReply* reply)
     else if (statusCode == 409) {
         QString msg = "User already exists.";
         QJsonParseError err;
-        QJsonDocument doc = QJsonDocument::fromJson(body, &err);
+        const QJsonDocument doc = QJsonDocument::fromJson(body, &err);
         if (err.error == QJsonParseError::NoError && doc.isObject()) {
-            QJsonObject obj = doc.object();
+            const QJsonObject obj = doc.object();
             if (obj.contains("error")) msg = obj.value("error").toString();
         }
         else if (!bodyStr.isEmpty()) {
@@ -161,12 +161,12 @@ void LoginPage::onLoginReply(QNetworkReply* reply)
     }
 
     int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    QByteArray body = reply->readAll();
-    QJsonDocument doc = QJsonDocument::fromJson(body);
+    const QByteArray body = reply->readAll();
+    const QJsonDocument doc = QJsonDocument::fromJson(body);
 
     if (statusCode == 200 && doc.isObject()) {
-        QJsonObject obj = doc.object();
-        QString name = obj["name"].toString();
+        const QJsonObject obj = doc.object();
+        const QString name = obj["name"].toString();
         int score = obj["score"].toInt();
 
         // extragem ID din răspunsul serverului

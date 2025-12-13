@@ -231,7 +231,7 @@ void GamePage::fetchMessages()
 				if (doc.isArray())
 				{
 					QString all;
-					for (auto v : doc.array())
+					for (const auto& v : doc.array())
 					{
 						auto o = v.toObject();
 						all += QString("%1: %2\n")

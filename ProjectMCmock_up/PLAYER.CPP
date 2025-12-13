@@ -36,7 +36,7 @@ void Player::Score()
 
 
 
-bool Player::PlaceCard(Card choosenCard, Card& descendingDeck1, Card& descendingDeck2, Card& ascendingDeck1, Card& ascendingDeck2)
+bool Player::PlaceCard(const Card& choosenCard, Card& descendingDeck1, Card& descendingDeck2, Card& ascendingDeck1, Card& ascendingDeck2)
 {
 	
 	if (m_hand.empty())
@@ -105,6 +105,11 @@ void Player::TakeCard(std::stack<Card>& Deck)
 
 
 std::unordered_set<Card>& Player::GetHand()
+{
+	return m_hand;
+}
+
+const std::unordered_set<Card>& Player::GetHand() const
 {
 	return m_hand;
 }

@@ -14,8 +14,8 @@ public:
 
 	User(
 		std::uint32_t id,
-		std::string username,
-		std::string password,
+		const std::string& username,
+		const std::string& password,
 		std::uint16_t score,
 		std::uint16_t wins,
 		std::uint16_t hoursPlayed,
@@ -24,15 +24,15 @@ public:
 
 	User(const User& other);
 
-	void SetUsername(std::string username);
+	void SetUsername(const std::string& username);
 	std::string GetUsername() const;
 
 	void SetHoursPlayed(std::uint16_t hoursPlayed);
 	std::uint16_t GetHoursPlayed() const;
 
+	void SetPassword(const std::string& password);
 	std::string GetPassword() const;
-	void SetPassword(std::string password);
-
+	
 	void SetId(std::uint32_t id);
 	std::uint32_t GetId() const;
 

@@ -56,8 +56,8 @@ void LobbyPage::onJoinReplyFinished()
 
 void LobbyPage::pollStatus()
 {
-    QString url = QString("%1/status/%2").arg(m_serverBase).arg(m_playerId);
-    QUrl qurl(url);
+    const QString url = QString("%1/status/%2").arg(m_serverBase).arg(m_playerId);
+    const QUrl qurl(url);
     QNetworkRequest req(qurl);
     QNetworkReply* reply = network->get(req);
     connect(reply, &QNetworkReply::finished, this, &LobbyPage::onStatusReplyFinished);
@@ -69,11 +69,11 @@ void LobbyPage::onStatusReplyFinished()
     if (!reply) return;
 
     if (reply->error() == QNetworkReply::NoError) {
-        QByteArray bytes = reply->readAll();
+        const QByteArray bytes = reply->readAll();
         QJsonParseError err;
         QJsonDocument doc = QJsonDocument::fromJson(bytes, &err);
         if (err.error == QJsonParseError::NoError && doc.isObject()) {
-            QJsonObject obj = doc.object();
+            const QJsonObject obj = doc.object();
             bool started = obj.value("started").toBool(false);
             if (started) {
                 int gameId = obj.value("gameId").toInt(-1);

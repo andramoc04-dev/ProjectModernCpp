@@ -3,7 +3,7 @@
 #include <ranges>
 #include <deque>
 
-Game::Game(std::vector<Player>& players, std::stack<Card>& cardsDeck, Chat& chat):
+Game::Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck, const Chat& chat):
 	m_players(players), m_cardsDeck(cardsDeck), m_chat(chat)
 {
 }
@@ -106,7 +106,7 @@ void Game::RunGame()
 }
 
 void Game::DisplayGameState(const Card& descending1, const Card& descending2, const Card& ascending1, 
-	const Card& ascending2, Player& player)
+	const Card& ascending2, const Player& player)
 {
 
 	std::cout << "First descending deck: " << static_cast<int>(descending1.GetNumber()) << " ->place lower cards\n";

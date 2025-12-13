@@ -33,7 +33,7 @@ void MenuPage::OpenLobbyPage()
         return;
     }
 
-    QString serverUrl = "http://127.0.0.1:18080";
+    const QString serverUrl = "http://127.0.0.1:18080";
     lobbyPage = new LobbyPage(m_playerId,playerName, serverUrl, this);
     lobbyPage->show();
     this->hide();

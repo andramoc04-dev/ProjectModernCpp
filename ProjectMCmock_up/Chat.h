@@ -9,9 +9,9 @@ class Chat
 public:
 	Chat()=default;
 
-	void AddMessage(Message message);
+	void AddMessage(const Message& message);
 	std::vector<Message> GetMessages() const;
-	void PrintMessages();
+	void PrintMessages() const;
 private:
 	std::vector<Message>m_messages;
 };

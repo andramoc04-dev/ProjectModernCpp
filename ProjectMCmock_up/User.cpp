@@ -37,7 +37,8 @@ m_performanceScore(0)
 {
 }
 
-User::User(std::uint32_t id, std::string username, std::string password, std::uint16_t score, std::uint16_t wins, std::uint16_t hoursPlayed, std::uint16_t unusedCards):
+User::User(std::uint32_t id, const std::string& username, const std::string& password, 
+	std::uint16_t score, std::uint16_t wins, std::uint16_t hoursPlayed, std::uint16_t unusedCards):
 		m_id(id),
 	m_username(username),
 	m_password(password),
@@ -62,7 +63,7 @@ User::User(const User& other)
 
 
 
-void User::SetUsername(std::string username)
+void User::SetUsername(const std::string& username)
 {
 	m_username = username;
 }
@@ -145,7 +146,7 @@ std::string User::GetPassword() const
 	return m_password;
 }
 
-void User::SetPassword(std::string password)
+void User::SetPassword(const std::string& password)
 {
 	m_password = password;
 }

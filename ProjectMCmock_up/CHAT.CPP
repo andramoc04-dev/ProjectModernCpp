@@ -6,7 +6,7 @@
 
 using namespace std::chrono;
 
-void Chat::AddMessage(Message message)
+void Chat::AddMessage(const Message& message)
 {
     m_messages.push_back(message);
 }
@@ -16,7 +16,7 @@ std::vector<Message> Chat::GetMessages() const
     return m_messages;
 }
 
-void Chat::PrintMessages()
+void Chat::PrintMessages() const
 {
     
     for (const auto& message : m_messages)

@@ -15,7 +15,7 @@ void MinigamePage::RunMinigame()
     m_counter = 0;
     QGridLayout* layout = new QGridLayout(this);
 
-    QString style =
+    const QString style =
         "QPushButton {"
         "    border: none;"
         "    background-image: url(:/Client/resources/CardPlacer.png);"

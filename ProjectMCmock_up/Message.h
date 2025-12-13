@@ -6,14 +6,14 @@
 class Message {
 public:
 	Message();
-	Message(std::string text, std::string playerName, std::chrono::system_clock::time_point m_time);
+	Message(const std::string& text, const std::string& playerName, std::chrono::system_clock::time_point m_time);
 
 	std::string GetPlayerName()const;
 	std::string GetTextFromPlayer()const;
 	std::chrono::system_clock::time_point GetTimeStamp() const;
 
-	void SetPlayerName(Player player);
-	void SetTextFromPlayer(std::string text);
+	void SetPlayerName(const Player& player);
+	void SetTextFromPlayer(const std::string& text);
 	void SetTimeStamp(std::chrono::system_clock::time_point time);
 	
 
