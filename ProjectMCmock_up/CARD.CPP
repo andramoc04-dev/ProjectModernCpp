@@ -35,7 +35,7 @@ void Card::SetDirection(OrderDirection direction)
     m_direction = direction;
 }
 
-bool Card::operator==(const Card& other)
+bool Card::operator==(const Card& other) const
 {
     return m_number == other.m_number;
 }

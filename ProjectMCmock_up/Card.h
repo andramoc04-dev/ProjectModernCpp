@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include<iostream>
+#include <functional>
 class Card
 {
 public:
@@ -21,11 +22,22 @@ public:
 
 	friend std::istream& operator>>(std::istream& in,Card& c);
 
-	bool operator ==(const Card& other);
+	bool operator ==(const Card& other) const;
 
 	
 private:
 	std::uint16_t m_number;
 	OrderDirection m_direction;
 };
+
+
+    template<>
+    struct std::hash<Card>
+    {
+        std::size_t operator()(Card const& c) const noexcept
+        {
+            return std::hash<std::uint16_t>()(c.GetNumber());
+        }
+    };
+
 

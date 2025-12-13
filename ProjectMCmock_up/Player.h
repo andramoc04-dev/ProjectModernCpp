@@ -2,7 +2,7 @@
 #include "Card.h"
 #include "User.h"
 #include <cstdint>
-#include <list>
+#include <unordered_set>
 #include <string>
 #include <stack>
 
@@ -23,13 +23,13 @@ public:
 	bool PlaceCard(Card choosenCard, Card& descendingDeck1, Card& descendingDeck2, Card& ascendingDeck1, Card& ascendingDeck2);
 	void TakeCard(std::stack<Card>& Deck);
 	
-	std::list<Card>& GetHand();
+	std::unordered_set<Card>& GetHand();
 
 
 
 private:
 	
-	std::list<Card> m_hand;
+	std::unordered_set<Card> m_hand;
 	
 };
 

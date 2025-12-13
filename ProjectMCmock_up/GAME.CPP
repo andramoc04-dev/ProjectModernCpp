@@ -114,8 +114,8 @@ void Game::DisplayGameState(const Card& descending1, const Card& descending2, co
 	std::cout << "First ascending deck: " << static_cast<int>(ascending1.GetNumber()) << " ->place higher cards\n";
 	std::cout << "Second ascending deck: " << static_cast<int>(ascending2.GetNumber()) << " ->place higher cards\n";
 	std::cout << "Cards remaining in deck: " << m_cardsDeck.size() << "\n";
-	std::list<Card> hand = player.GetHand();
-	for (auto card : hand)
+	const auto& hand = player.GetHand();
+	for (const auto& card : hand)
 	{
 		std::cout << static_cast<int>(card.GetNumber()) << " ";
 	}
@@ -146,7 +146,7 @@ void Game::CardsDistribution()
 	size_t totalCards = cardsPerPlayer * numberOfPlayers;
 	for (auto i : std::views::iota(0u, totalCards)) 
 	{
-		m_players[i % numberOfPlayers].GetHand().push_back(m_cardsDeck.top());
+		m_players[i % numberOfPlayers].GetHand().insert(m_cardsDeck.top());
 		m_cardsDeck.pop();
 	}
 

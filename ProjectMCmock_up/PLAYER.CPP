@@ -97,14 +97,14 @@ bool Player::PlaceCard(Card choosenCard, Card& descendingDeck1, Card& descending
 
 void Player::TakeCard(std::stack<Card>& Deck)
 {
-		m_hand.push_back(Deck.top());
+		m_hand.insert(Deck.top());
 		Deck.pop();
 	
 	
 }
 
 
-std::list<Card>& Player::GetHand() 
+std::unordered_set<Card>& Player::GetHand()
 {
 	return m_hand;
 }
