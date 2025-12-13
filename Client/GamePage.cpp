@@ -10,6 +10,8 @@
 #include <QLabel>
 #include <QDebug>
 #include <cstdlib>
+#include <QNetworkRequest> 
+#include <QNetworkAccessManager> 
 
 GamePage::GamePage(QWidget *parent)
 	: QDialog(parent)
@@ -68,6 +70,7 @@ GamePage::GamePage(QWidget *parent)
 GamePage::GamePage(int playerId,const QString& playerName, int gameId, int opponentId, QWidget* parent) : GamePage(parent)
 {
 	initializeGame(playerId,playerName, gameId, opponentId);
+	shuffleDeck();
 }
 
 GamePage::~GamePage()
@@ -155,6 +158,37 @@ void GamePage::ShowCards(uint16_t number)
 
 	}
 
+}
+
+void GamePage::shuffleDeck()
+{
+	QJsonObject obj;
+	obj["gameId"] = m_gameId;
+
+	QString urlString = QString("http://127.0.0.1:18080/game/%1/shuffle").arg(m_gameId);
+	QUrl url(urlString);
+
+	QNetworkRequest request;
+	request.setUrl(url);
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+	QByteArray jsonData = QJsonDocument(obj).toJson();
+	QNetworkReply* reply = net->post(request, jsonData);
+
+	connect(reply, &QNetworkReply::finished, [this, reply]() {
+		if (reply->error() == QNetworkReply::NoError) {
+			QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+			QJsonObject obj = doc.object();
+
+			qDebug() << "Deck shuffled successfully for game" << obj["gameId"].toInt();
+			qDebug() << "Cards in deck:" << obj["cardsInDeck"].toInt();
+		}
+		else {
+			qDebug() << "Error shuffling deck:" << reply->errorString();
+		}
+		reply->deleteLater();
+		});
+	
 }
 
 void GamePage::initializeGame(int playerId,const QString& playerName, int gameId, int opponentId)

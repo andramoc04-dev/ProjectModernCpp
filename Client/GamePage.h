@@ -2,9 +2,10 @@
 
 #include <QDialog>
 #include <QGridLayout>
-#include "ui_GamePage.h"
 #include <QNetworkAccessManager>
 #include <QTimer>
+#include "ui_GamePage.h"
+
 
 
 
@@ -22,6 +23,7 @@ public:
 	void OnDescendingStack1Clicked();
 	void OnDescendingStack2Clicked();
 	void ShowCards(uint16_t number);
+	void shuffleDeck();
 	
 private slots:
 	void onSendClicked();

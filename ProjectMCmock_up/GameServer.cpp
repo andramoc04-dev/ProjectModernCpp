@@ -5,6 +5,14 @@
 #include "Game.h"
 
 
+struct GameInstance {
+	std::stack<Card> cardsDeck;
+	std::vector<int> playerIds;  
+	bool shuffled = false;
+};
+
+static std::unordered_map<int, GameInstance> activeGames;
+
 struct LobbyInfo {
 	int gameId = -1;
 	bool started = false;
@@ -134,6 +142,10 @@ void http::Routing::Run(UserProfiles& storage)
 				infoA.gameId = gid;
 				infoB.gameId = gid;
 
+				GameInstance& gameInst = activeGames[gid];
+				gameInst.playerIds.push_back(a);
+				gameInst.playerIds.push_back(b);
+
 				playerLobbyMap[a] = infoA;
 				playerLobbyMap[b] = infoB;
 
@@ -229,7 +241,42 @@ void http::Routing::Run(UserProfiles& storage)
 			});
 
 
+	CROW_ROUTE(m_app, "/game/<int>/shuffle").methods(crow::HTTPMethod::POST)
+		([&storage](int gameId) {
+		std::lock_guard<std::mutex> lk(lobbyMutex);
 
+		auto it = activeGames.find(gameId);
+		if (it == activeGames.end()) {
+			return crow::response(404, R"({"error":"Game not found"})");
+		}
+
+		GameInstance& gameInst = it->second;
+
+		
+		if (!gameInst.shuffled) {
+			std::srand(std::time(0));
+			std::deque<int> sortedCards;
+			for (int i = 2; i <= 99; i++)
+				sortedCards.push_back(i);
+
+			int position;
+			while (!sortedCards.empty()) {
+				position = std::rand() % sortedCards.size();
+				Card card(sortedCards[position]);
+				gameInst.cardsDeck.push(card);
+				sortedCards.erase(sortedCards.begin() + position);
+			}
+
+			gameInst.shuffled = true;
+		}
+
+		crow::json::wvalue resp;
+		resp["gameId"] = gameId;
+		resp["status"] = "shuffled";
+		resp["cardsInDeck"] = gameInst.cardsDeck.size();
+
+		return crow::response{ resp.dump() };
+			});
 
 
 
