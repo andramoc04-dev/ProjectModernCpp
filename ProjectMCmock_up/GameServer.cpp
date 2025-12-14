@@ -150,10 +150,9 @@ void http::Routing::Run(UserProfiles& storage)
 				playerLobbyMap[a] = infoA;
 				playerLobbyMap[b] = infoB;
 
-				Player player1;
-				player1.ConvertUserToPlayer(storage.GetUserById(a).value());
-				Player player2;
-				player2.ConvertUserToPlayer(storage.GetUserById(b).value());
+				Player player1 = Player().ConvertUserToPlayer(storage.GetUserById(a).value());
+				Player player2 = Player().ConvertUserToPlayer(storage.GetUserById(b).value());
+
 				gameInst.game = Game({ player1, player2 }, std::stack<Card>{}, Chat());
 				
 				
@@ -312,7 +311,33 @@ void http::Routing::Run(UserProfiles& storage)
 			return crow::response{ resp.dump() };
 			});
 			
+		CROW_ROUTE(m_app, "/game/<int>/player/<int>/hand").methods(crow::HTTPMethod::GET)
+			([&storage](int gameId, int playerId) {
+			std::lock_guard<std::mutex> lk(lobbyMutex);
+    
+			auto it = activeGames.find(gameId);
+			if (it == activeGames.end()) {
+				return crow::response(404, R"({"error":"Game not found"})");
+			}
+    
+			GameInstance& gameInst = it->second;
 			
+			crow::json::wvalue resp;
+			resp["playerId"] = playerId;
+			resp["gameId"] = gameId;
+			
+			const auto& hand = gameInst.game.GetPlayer(playerId).GetHand(); 
+			
+			int index = 0;
+			for (const auto& card : hand)
+			{
+				crow::json::wvalue cardJson;
+				cardJson["value"] = card.GetNumber();
+				resp["hand"][index++] = std::move(cardJson);
+			}
+    
+			return crow::response{ resp.dump() };
+		});
 
 	m_app.port(18080).multithreaded().run();
 }

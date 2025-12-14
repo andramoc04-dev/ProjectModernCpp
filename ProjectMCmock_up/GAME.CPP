@@ -158,6 +158,19 @@ void Game::SetCardsDeck(std::stack<Card> cardsDeck)
 	m_cardsDeck = cardsDeck;
 }
 
+const Player& Game::GetPlayer(int id) const
+{
+	auto it = std::find_if(m_players.begin(), m_players.end(),
+		[id](const Player& p) {
+			return p.GetId() == id;
+		});
+
+	if (it != m_players.end()) {
+		return *it;
+	}
+	throw std::runtime_error("Player with id " + std::to_string(id) + " not found in game");
+}
+
 bool Game::GetAreCardsDealt() const
 {
 	return m_areCardsDealt;

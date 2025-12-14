@@ -64,21 +64,57 @@ GamePage::GamePage(QWidget *parent)
 		"background-repeat: no-repeat;"
 		"background-position: center;"
 	);
-	ShowCards(2);
 }
 
 GamePage::GamePage(int playerId,const QString& playerName, int gameId, int opponentId, QWidget* parent) : GamePage(parent)
 {
 	initializeGame(playerId,playerName, gameId, opponentId);
 	shuffleDeck();
-	DistributeCards();
 }
 
 GamePage::~GamePage()
 {}
 
 
-void GamePage::ShowCards(uint16_t number)
+void GamePage::FetchHand()
+{
+
+	QString urlString = QString("http://127.0.0.1:18080/game/%1/player/%2/hand")
+		.arg(m_gameId)
+		.arg(m_playerId);
+	QUrl url(urlString);
+
+	QNetworkRequest request;
+	request.setUrl(url);
+	QNetworkReply* reply = net->get(request);
+
+	connect(reply, &QNetworkReply::finished, [this, reply]() {
+		if (reply->error() == QNetworkReply::NoError) {
+			QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+			QJsonObject obj = doc.object();
+
+			qDebug() << "Hand received for player" << obj["playerId"].toInt();
+			qDebug() << "Game ID:" << obj["gameId"].toInt();
+
+			QJsonArray handArray = obj["hand"].toArray();
+			qDebug() << "Cards in hand:";
+			std::vector<int> cardsValues;
+			for (const QJsonValue& cardValue : handArray) {
+				QJsonObject card = cardValue.toObject();
+				qDebug() << "  Card value:" << card["value"].toInt();
+				cardsValues.push_back(card["value"].toInt());
+			}
+			 
+			ShowCards(cardsValues);
+		}
+		else {
+			qDebug() << "Error fetching hand:" << reply->errorString();
+		}
+		reply->deleteLater();
+		});
+}
+
+void GamePage::ShowCards(const std::vector<int>& cardsValues)
 {
 	QString style =
 		"QPushButton {"
@@ -87,19 +123,18 @@ void GamePage::ShowCards(uint16_t number)
 		"}";
 	ui.layout->setSpacing(0);
 	ui.layout->setContentsMargins(0, 0, 0, 0);
-	for (int i = 0; i < 8; i++) {
+	int index = 0;
+	for (const auto& cardValue: cardsValues) {
 		QPushButton* button = new QPushButton(this);
 		button->setStyleSheet(style);
 		button->setFixedSize(100, 315);
 
-		int randomCard = std::rand() % 99+1;
-
-		if(randomCard>=10)
+		if(cardValue >=10)
 		{
 			QLabel* nr1 = new QLabel("", button);
 			nr1->setFixedSize(32, 41);
 			nr1->move(22, 45);
-			QString imgPath1 = QString(":/Client/resources/%1.png").arg(randomCard/10);
+			QString imgPath1 = QString(":/Client/resources/%1.png").arg(cardValue /10);
 			qDebug() << "Image path 1:" << imgPath1;
 			nr1->setStyleSheet(
 				QString("QLabel {"
@@ -111,7 +146,7 @@ void GamePage::ShowCards(uint16_t number)
 			QLabel* nr2 = new QLabel("", button);
 			nr2->setFixedSize(32, 41);
 			nr2->move(50, 45);
-			QString imgPath2 = QString(":/Client/resources/%1.png").arg(randomCard % 10);
+			QString imgPath2 = QString(":/Client/resources/%1.png").arg(cardValue % 10);
 			qDebug() << "Image path 2:" << imgPath2;
 			nr2->setStyleSheet(
 				QString("QLabel {"
@@ -126,7 +161,7 @@ void GamePage::ShowCards(uint16_t number)
 			QLabel* nr = new QLabel("", button);
 			nr->setFixedSize(32, 41);
 			nr->move(32, 45);
-			QString imgPath1 = QString(":/Client/resources/%1.png").arg(randomCard);
+			QString imgPath1 = QString(":/Client/resources/%1.png").arg(cardValue);
 			qDebug() << "Image path 1:" << imgPath1;
 			nr->setStyleSheet(
 				QString("QLabel {"
@@ -136,8 +171,7 @@ void GamePage::ShowCards(uint16_t number)
 					"}").arg(imgPath1)
 			);
 		}
-		ui.layout->addWidget(button, 0, i);
-
+		ui.layout->addWidget(button, 0, index++);
 	}
 
 }
@@ -168,6 +202,7 @@ void GamePage::shuffleDeck()
 		else {
 			qDebug() << "Error shuffling deck:" << reply->errorString();
 		}
+		DistributeCards();
 		reply->deleteLater();
 		});
 	
@@ -199,6 +234,7 @@ void GamePage::DistributeCards()
 		else {
 			qDebug() << "Error distributing cards:" << reply->errorString();
 		}
+		FetchHand();
 		reply->deleteLater();
 		});
 }
@@ -209,8 +245,7 @@ void GamePage::initializeGame(int playerId,const QString& playerName, int gameId
 	m_playerName = playerName;
 	m_gameId = gameId;
 	m_opponentId = opponentId;
-
-	// Setăm un titlu util pentru fereastră
+	
 	this->setWindowTitle(QString("Game %1 — You: %2 vs %3").arg(m_gameId).arg(m_playerId).arg(m_opponentId));
 }
 

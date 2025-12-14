@@ -18,7 +18,8 @@ public:
 	GamePage(int playerId,const QString& playerName, int gameId, int opponentId, QWidget* parent = nullptr);
 	~GamePage();
 
-	void ShowCards(uint16_t number);
+	void FetchHand();
+	void ShowCards(const std::vector<int>& cardsValues);
 	void shuffleDeck();
 	void DistributeCards();
 	

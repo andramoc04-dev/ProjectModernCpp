@@ -114,7 +114,7 @@ const std::unordered_set<Card>& Player::GetHand() const
 	return m_hand;
 }
 
-Player Player::ConvertUserToPlayer(User user) const
+Player Player::ConvertUserToPlayer(const User& user)
 {
 	return Player(user.GetId(), user.GetUsername());
 }

@@ -18,6 +18,7 @@ public:
 	void CardsDistribution();
 	bool GetAreCardsDealt() const;
 	void SetCardsDeck(std::stack<Card> cardsDeck);
+	const Player& GetPlayer(int id)const;
 private:
 	std::vector<Player> m_players;
 	std::stack<Card> m_cardsDeck;
