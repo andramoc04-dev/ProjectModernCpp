@@ -9,6 +9,7 @@ struct GameInstance {
 	std::stack<Card> cardsDeck;
 	std::vector<int> playerIds;  
 	bool shuffled = false;
+	Game game;
 };
 
 static std::unordered_map<int, GameInstance> activeGames;
@@ -20,7 +21,7 @@ struct LobbyInfo {
 };
 
 static std::mutex lobbyMutex;
-static std::vector<int> waitingPlayers; // coadă de jucători în lobby
+static std::vector<int> waitingPlayers;
 static std::unordered_map<int, LobbyInfo> playerLobbyMap;
 static int nextGameId = 1;
 
@@ -149,9 +150,16 @@ void http::Routing::Run(UserProfiles& storage)
 				playerLobbyMap[a] = infoA;
 				playerLobbyMap[b] = infoB;
 
-				// scoatem primii doi din coadă
+				Player player1;
+				player1.ConvertUserToPlayer(storage.GetUserById(a).value());
+				Player player2;
+				player2.ConvertUserToPlayer(storage.GetUserById(b).value());
+				gameInst.game = Game({ player1, player2 }, std::stack<Card>{}, Chat());
+				
+				
 				waitingPlayers.erase(waitingPlayers.begin());
 				waitingPlayers.erase(waitingPlayers.begin());
+				
 			}
 		}
 
@@ -200,7 +208,6 @@ void http::Routing::Run(UserProfiles& storage)
 			std::lock_guard<std::mutex> lk(m_chatMutex);
 			m_chat.AddMessage(msg);
 		}
-
 		crow::json::wvalue resp;
 		resp["status"] = "ok";
 		return crow::response{ resp.dump() };
@@ -269,7 +276,7 @@ void http::Routing::Run(UserProfiles& storage)
 
 			gameInst.shuffled = true;
 		}
-
+		gameInst.game.SetCardsDeck(gameInst.cardsDeck);
 		crow::json::wvalue resp;
 		resp["gameId"] = gameId;
 		resp["status"] = "shuffled";
@@ -277,8 +284,35 @@ void http::Routing::Run(UserProfiles& storage)
 
 		return crow::response{ resp.dump() };
 			});
+	    CROW_ROUTE(m_app, "/game/<int>/distribution").methods(crow::HTTPMethod::POST)
+			([&storage](int gameId) {
+			std::lock_guard<std::mutex> lk(lobbyMutex);
 
+			auto it = activeGames.find(gameId);
+			if (it == activeGames.end()) {
+				return crow::response(404, R"({"error":"Game not found"})");
+			}
 
+			GameInstance& gameInst = it->second;
+
+			if (!gameInst.shuffled) {
+				return crow::response(400, R"({"error":"Deck not shuffled yet"})");
+			}
+
+			if (gameInst.game.GetAreCardsDealt()==true) {
+				return crow::response(400, R"({"error":"Cards already dealt"})");
+			}
+
+			gameInst.game.CardsDistribution(); 
+
+			crow::json::wvalue resp;
+			resp["gameId"] = gameId;
+			resp["status"] = "cards dealt";
+
+			return crow::response{ resp.dump() };
+			});
+			
+			
 
 	m_app.port(18080).multithreaded().run();
 }

@@ -48,9 +48,8 @@ public:
 	void SetGamesPlayed(std::uint16_t gamesPlayed);
 	std::uint16_t GetGamesPlayed() const;
 
-
-
 	void ViewProfile() const;
+
 
 protected:
 	std::uint32_t m_id;

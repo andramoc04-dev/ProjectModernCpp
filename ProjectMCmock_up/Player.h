@@ -25,7 +25,8 @@ public:
 	
 	std::unordered_set<Card>& GetHand();
 	const std::unordered_set<Card>& GetHand() const;
-
+	
+	Player ConvertUserToPlayer(User user) const;
 
 private:
 	

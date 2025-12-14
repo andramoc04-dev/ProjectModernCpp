@@ -4,7 +4,8 @@
 #include <deque>
 
 Game::Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck, const Chat& chat):
-	m_players(players), m_cardsDeck(cardsDeck), m_chat(chat)
+	m_players(players), m_cardsDeck(cardsDeck), m_chat(chat), m_descendingDeck1(100), m_descendingDeck2(100),
+	m_ascendingDeck1(1), m_ascendingDeck2(1), m_areCardsDealt(false)
 {
 }
 
@@ -59,7 +60,7 @@ bool Game::EndGame(int numberOfPlacedCards)
 
 void Game::RunGame()
 {
-	Card descendingDeck1(100), descendingDeck2(100), ascendingDeck1(1), ascendingDeck2(1);
+	
 	Card choosenCard; int numberOfPlacedCards=0;
 	ShuffleCards();
 	bool gameEnded = false;
@@ -78,12 +79,12 @@ void Game::RunGame()
 				std::cout << "Choose one card to place\n";
 			else
 			std::cout << "Choose at least two cards\n";
-			DisplayGameState(descendingDeck1, descendingDeck2, ascendingDeck1, ascendingDeck2, m_players[i]);
+			DisplayGameState(m_descendingDeck1, m_descendingDeck2, m_ascendingDeck1, m_ascendingDeck2, m_players[i]);
 			std::cin >> choosenCard;
 			while (choosenCard.GetNumber() != 0)
 			{
 				std::cout << "Choosed card value is " << static_cast<int>( choosenCard.GetNumber() )<< "\n";
-				numberOfPlacedCards += m_players[i].PlaceCard(choosenCard, descendingDeck1, descendingDeck2, ascendingDeck1, ascendingDeck2);
+				numberOfPlacedCards += m_players[i].PlaceCard(choosenCard, m_descendingDeck1, m_descendingDeck2, m_ascendingDeck1, m_ascendingDeck2);
 				std::cout << "Press 0 if you are done\n";
 				std::cin >> choosenCard;
 			}
@@ -149,6 +150,16 @@ void Game::CardsDistribution()
 		m_players[i % numberOfPlayers].GetHand().insert(m_cardsDeck.top());
 		m_cardsDeck.pop();
 	}
+	m_areCardsDealt = true;
+}
 
+void Game::SetCardsDeck(std::stack<Card> cardsDeck)
+{
+	m_cardsDeck = cardsDeck;
+}
+
+bool Game::GetAreCardsDealt() const
+{
+	return m_areCardsDealt;
 }
 

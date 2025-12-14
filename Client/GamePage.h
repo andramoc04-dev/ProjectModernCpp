@@ -18,12 +18,9 @@ public:
 	GamePage(int playerId,const QString& playerName, int gameId, int opponentId, QWidget* parent = nullptr);
 	~GamePage();
 
-	void OnAscendingStack1Clicked();
-	void OnAscendingStack2Clicked();
-	void OnDescendingStack1Clicked();
-	void OnDescendingStack2Clicked();
 	void ShowCards(uint16_t number);
 	void shuffleDeck();
+	void DistributeCards();
 	
 private slots:
 	void onSendClicked();

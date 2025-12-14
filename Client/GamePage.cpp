@@ -71,30 +71,12 @@ GamePage::GamePage(int playerId,const QString& playerName, int gameId, int oppon
 {
 	initializeGame(playerId,playerName, gameId, opponentId);
 	shuffleDeck();
+	DistributeCards();
 }
 
 GamePage::~GamePage()
 {}
 
-void GamePage::OnAscendingStack1Clicked()
-{
-	qDebug() << "Ascending Stack 1 clicked!";
-}
-
-void GamePage::OnAscendingStack2Clicked()
-{
-	qDebug() << "Ascending Stack 2 clicked!";
-}
-
-void GamePage::OnDescendingStack1Clicked()
-{
-	qDebug() << "Descending Stack 1 clicked!";
-}
-
-void GamePage::OnDescendingStack2Clicked()
-{
-	qDebug() << "Descending Stack 1 clicked!";
-}
 
 void GamePage::ShowCards(uint16_t number)
 {
@@ -189,6 +171,36 @@ void GamePage::shuffleDeck()
 		reply->deleteLater();
 		});
 	
+}
+
+void GamePage::DistributeCards()
+{
+	QJsonObject obj;
+	obj["gameId"] = m_gameId;
+
+	QString urlString = QString("http://127.0.0.1:18080/game/%1/distribution").arg(m_gameId);
+	QUrl url(urlString);
+
+	QNetworkRequest request;
+	request.setUrl(url);
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+	QByteArray jsonData = QJsonDocument(obj).toJson();
+	QNetworkReply* reply = net->post(request, jsonData);
+
+	connect(reply, &QNetworkReply::finished, [this, reply]() {
+		if (reply->error() == QNetworkReply::NoError) {
+			QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+			QJsonObject obj = doc.object();
+
+			qDebug() << "Cards distributed successfully for game" << obj["gameId"].toInt();
+			qDebug() << "Current status:" << obj["status"].toInt();
+		}
+		else {
+			qDebug() << "Error distributing cards:" << reply->errorString();
+		}
+		reply->deleteLater();
+		});
 }
 
 void GamePage::initializeGame(int playerId,const QString& playerName, int gameId, int opponentId)
