@@ -23,7 +23,7 @@ background-repeat: no-repeat;
 background-size: contain;
 </string>
   </property>
-  <widget class="QPushButton" name="AscendingCardPlacer2">
+  <widget class="QPushButton" name="AscendingCardPlacer1">
    <property name="geometry">
     <rect>
      <x>110</x>
@@ -48,7 +48,7 @@ background-size: contain;
     <string/>
    </property>
   </widget>
-  <widget class="QPushButton" name="AscendingCardPlacer2_2">
+  <widget class="QPushButton" name="AscendingCardPlacer2">
    <property name="geometry">
     <rect>
      <x>370</x>
@@ -379,8 +379,8 @@ QPushButton:hover {
    </property>
   </widget>
   <zorder>label</zorder>
+  <zorder>AscendingCardPlacer1</zorder>
   <zorder>AscendingCardPlacer2</zorder>
-  <zorder>AscendingCardPlacer2_2</zorder>
   <zorder>DescendingCardPlacer1</zorder>
   <zorder>DescendingCardPlacer2</zorder>
   <zorder>pushButton</zorder>

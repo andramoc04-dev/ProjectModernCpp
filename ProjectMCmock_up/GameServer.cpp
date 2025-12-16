@@ -283,6 +283,8 @@ void http::Routing::Run(UserProfiles& storage)
 
 		return crow::response{ resp.dump() };
 			});
+
+
 	    CROW_ROUTE(m_app, "/game/<int>/distribution").methods(crow::HTTPMethod::POST)
 			([&storage](int gameId) {
 			std::lock_guard<std::mutex> lk(lobbyMutex);
@@ -338,6 +340,115 @@ void http::Routing::Run(UserProfiles& storage)
     
 			return crow::response{ resp.dump() };
 		});
+
+		/////////////////////////////////////////////////////////
+		CROW_ROUTE(m_app, "/game/<int>/player/<int>/place").methods(crow::HTTPMethod::POST)
+			([&storage](const crow::request& req, int gameId, int playerId) {
+			auto body = crow::json::load(req.body);
+			if (!body) return crow::response(400, R"({"error":"Invalid JSON"})");
+			if (!body.has("cardValue") || !body.has("pileId"))
+				return crow::response(400, R"({"error":"Missing cardValue or pileId"})");
+
+			int cardValue = (int)body["cardValue"].i();
+			int pileId = (int)body["pileId"].i();
+
+			std::lock_guard<std::mutex> lk(lobbyMutex);
+			auto it = activeGames.find(gameId);
+			if (it == activeGames.end()) {
+				return crow::response(404, R"({"error":"Game not found"})");
+			}
+
+			GameInstance& gameInst = it->second;
+
+			try {
+				Player& player = gameInst.game.GetPlayer(playerId);
+				Card chosen(cardValue);
+
+				bool placed = player.PlaceCard(
+					chosen,
+					gameInst.game.GetDescendingDeck1(),
+					gameInst.game.GetDescendingDeck2(),
+					gameInst.game.GetAscendingDeck1(),
+					gameInst.game.GetAscendingDeck2(),
+					pileId
+				);
+
+				crow::json::wvalue resp;
+				resp["success"] = placed;
+				resp["cardValue"] = cardValue;
+				resp["pileId"] = pileId;
+
+
+				switch (pileId) {
+				case 0:
+					resp["newPileValue"] = gameInst.game.GetDescendingDeck1().GetNumber();
+					std::cout << "Pile 0 updated to " << gameInst.game.GetDescendingDeck1().GetNumber() << std::endl;
+					break;
+				case 1:
+					resp["newPileValue"] = gameInst.game.GetDescendingDeck2().GetNumber();
+					std::cout << "Pile 1 updated to " << gameInst.game.GetDescendingDeck2().GetNumber() << std::endl;
+					break;
+				case 2:
+					resp["newPileValue"] = gameInst.game.GetAscendingDeck1().GetNumber();
+					std::cout << "Pile 2 updated to " << gameInst.game.GetAscendingDeck1().GetNumber() << std::endl;
+					break;
+				case 3:
+					resp["newPileValue"] = gameInst.game.GetAscendingDeck2().GetNumber();
+					std::cout << "Pile 3 updated to " << gameInst.game.GetAscendingDeck2().GetNumber() << std::endl;
+					break;
+				}
+
+
+				return crow::response{ resp.dump() };
+			}
+			catch (const std::exception& e) {
+				return crow::response(400, R"({"error":")" + std::string(e.what()) + "\"}");
+			}
+				});
+
+
+		//CROW_ROUTE(m_app, "/game/<int>/state").methods(crow::HTTPMethod::GET)
+		//	([&storage](int gameId) {
+		//	std::lock_guard<std::mutex> lk(lobbyMutex);
+		//	auto it = activeGames.find(gameId);
+		//	if (it == activeGames.end()) {
+		//		return crow::response(404, R"({"error":"Game not found"})");
+		//	}
+
+		//	GameInstance& gameInst = it->second;
+
+		//	crow::json::wvalue resp;
+		//	resp["gameId"] = gameId;
+
+		//	// piles
+		//	resp["piles"] = std::vector<crow::json::wvalue>{
+		//		gameInst.game.GetDescendingDeck1().GetNumber(),
+		//		gameInst.game.GetDescendingDeck2().GetNumber(),
+		//		gameInst.game.GetAscendingDeck1().GetNumber(),
+		//		gameInst.game.GetAscendingDeck2().GetNumber()
+		//	};
+
+		//	// players
+		//	std::vector<crow::json::wvalue> playersArray;
+		//	for (const auto& player : gameInst.game.GetPlayers()) {
+		//		crow::json::wvalue playerJson;
+		//		playerJson["id"] = player.GetId();                // moștenit din User
+		//		playerJson["username"] = player.GetUsername();    // moștenit din User
+
+		//		// hand
+		//		std::vector<crow::json::wvalue> handArray;
+		//		for (const auto& card : player.GetHand()) {
+		//			handArray.push_back(card.GetNumber());
+		//		}
+		//		playerJson["hand"] = std::move(handArray);
+
+		//		playersArray.push_back(std::move(playerJson));
+		//	}
+		//	resp["players"] = std::move(playersArray);
+
+		//	return crow::response{ resp.dump() };
+		//		});
+		/////////////////////////////////////
 
 	m_app.port(18080).multithreaded().run();
 }

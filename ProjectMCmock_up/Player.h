@@ -20,11 +20,19 @@ public:
 	Player(const Player& other);
 
 	void Score();
-	bool PlaceCard(const Card& choosenCard, Card& descendingDeck1, Card& descendingDeck2, Card& ascendingDeck1, Card& ascendingDeck2);
+	bool PlaceCard(const Card& choosenCard, 
+		Card& descendingDeck1,
+		Card& descendingDeck2, 
+		Card& ascendingDeck1, 
+		Card& ascendingDeck2,
+		int pileId);
 	void TakeCard(std::stack<Card>& Deck);
 	
 	std::unordered_set<Card>& GetHand();
 	const std::unordered_set<Card>& GetHand() const;
+
+	
+
 	
 	static Player ConvertUserToPlayer(const User& user);
 

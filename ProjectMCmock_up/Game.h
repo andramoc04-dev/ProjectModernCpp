@@ -19,6 +19,16 @@ public:
 	bool GetAreCardsDealt() const;
 	void SetCardsDeck(std::stack<Card> cardsDeck);
 	const Player& GetPlayer(int id)const;
+	Player& GetPlayer(int id);
+
+	Card& GetDescendingDeck1() { return m_descendingDeck1; }
+	Card& GetDescendingDeck2() { return m_descendingDeck2; }
+	Card& GetAscendingDeck1() { return m_ascendingDeck1; }
+	Card& GetAscendingDeck2() { return m_ascendingDeck2; }
+
+	const std::vector<Player>& GetPlayers() const { return m_players; }
+	std::vector<Player>& GetPlayers() { return m_players; }
+
 private:
 	std::vector<Player> m_players;
 	std::stack<Card> m_cardsDeck;

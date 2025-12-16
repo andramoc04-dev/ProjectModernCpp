@@ -7,6 +7,11 @@ Game::Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck
 	m_players(players), m_cardsDeck(cardsDeck), m_chat(chat), m_descendingDeck1(100), m_descendingDeck2(100),
 	m_ascendingDeck1(1), m_ascendingDeck2(1), m_areCardsDealt(false)
 {
+	m_descendingDeck1 = Card(100);
+	m_descendingDeck2 = Card(100);
+	m_ascendingDeck1 = Card(1);
+	m_ascendingDeck2 = Card(1);
+
 }
 
 void Game::ShuffleCards()
@@ -81,10 +86,15 @@ void Game::RunGame()
 			std::cout << "Choose at least two cards\n";
 			DisplayGameState(m_descendingDeck1, m_descendingDeck2, m_ascendingDeck1, m_ascendingDeck2, m_players[i]);
 			std::cin >> choosenCard;
+
+			int pileId;
+			std::cout << "Choose pile (0=desc1, 1=desc2, 2=asc1, 3=asc2): ";
+			std::cin >> pileId;
+
 			while (choosenCard.GetNumber() != 0)
 			{
 				std::cout << "Choosed card value is " << static_cast<int>( choosenCard.GetNumber() )<< "\n";
-				numberOfPlacedCards += m_players[i].PlaceCard(choosenCard, m_descendingDeck1, m_descendingDeck2, m_ascendingDeck1, m_ascendingDeck2);
+				numberOfPlacedCards += m_players[i].PlaceCard(choosenCard, m_descendingDeck1, m_descendingDeck2, m_ascendingDeck1, m_ascendingDeck2,pileId);
 				std::cout << "Press 0 if you are done\n";
 				std::cin >> choosenCard;
 			}
@@ -169,6 +179,18 @@ const Player& Game::GetPlayer(int id) const
 		return *it;
 	}
 	throw std::runtime_error("Player with id " + std::to_string(id) + " not found in game");
+}
+
+Player& Game::GetPlayer(int id)
+{
+	auto it = std::find_if(m_players.begin(), m_players.end(),
+		[id](const Player& p) { return p.GetId() == id; });
+
+	if (it != m_players.end()) {
+		return *it;
+	}
+	throw std::runtime_error("Player with id " + std::to_string(id) + " not found in game");
+
 }
 
 bool Game::GetAreCardsDealt() const

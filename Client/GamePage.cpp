@@ -12,6 +12,8 @@
 #include <cstdlib>
 #include <QNetworkRequest> 
 #include <QNetworkAccessManager> 
+#include <QMessageBox>
+#include <QPainter>
 
 GamePage::GamePage(QWidget *parent)
 	: QDialog(parent)
@@ -24,6 +26,7 @@ GamePage::GamePage(QWidget *parent)
 	chatTimer = new QTimer(this);
 	connect(chatTimer, &QTimer::timeout, this, &GamePage::fetchMessages);
 	chatTimer->start(800);
+
 
 	ui.chatInput->setStyleSheet(
 		"   background: transparent;"
@@ -64,6 +67,8 @@ GamePage::GamePage(QWidget *parent)
 		"background-repeat: no-repeat;"
 		"background-position: center;"
 	);
+	
+
 }
 
 GamePage::GamePage(int playerId,const QString& playerName, int gameId, int opponentId, QWidget* parent) : GamePage(parent)
@@ -174,6 +179,10 @@ void GamePage::ShowCards(const std::vector<int>& cardsValues)
 		ui.layout->addWidget(button, 0, index++);
 	}
 
+
+	
+
+
 }
 
 void GamePage::shuffleDeck()
@@ -239,6 +248,10 @@ void GamePage::DistributeCards()
 		});
 }
 
+
+
+
+
 void GamePage::initializeGame(int playerId,const QString& playerName, int gameId, int opponentId)
 {
 	m_playerId = playerId;
@@ -247,6 +260,11 @@ void GamePage::initializeGame(int playerId,const QString& playerName, int gameId
 	m_opponentId = opponentId;
 	
 	this->setWindowTitle(QString("Game %1 — You: %2 vs %3").arg(m_gameId).arg(m_playerId).arg(m_opponentId));
+
+
+	
+
+
 }
 
 void GamePage::onSendClicked()
@@ -264,6 +282,8 @@ void GamePage::onSendClicked()
 	net->post(req, QJsonDocument(obj).toJson());
 	ui.chatInput->clear();
 }
+
+
 
 void GamePage::fetchMessages()
 {
