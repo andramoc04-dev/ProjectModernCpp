@@ -27,6 +27,10 @@ GamePage::GamePage(QWidget *parent)
 	connect(chatTimer, &QTimer::timeout, this, &GamePage::fetchMessages);
 	chatTimer->start(800);
 
+	QTimer* timer = new QTimer(this);
+	connect(timer, &QTimer::timeout, this, &GamePage::fetchGameState);
+	timer->start(2000); // la fiecare 2 secunde
+
 
 	ui.chatInput->setStyleSheet(
 		"   background: transparent;"
@@ -46,28 +50,10 @@ GamePage::GamePage(QWidget *parent)
 		"   font-size: 14pt;"
 	);
 
-
-	ui.AscendingDeck1Number->setStyleSheet(
-		"background-image: url(:/Client/resources/1.png);"
-		"background-repeat: no-repeat;"
-		"background-position: center;"
-	);
-	ui.AscendingDeck2Number->setStyleSheet(
-		"background-image: url(:/Client/resources/1.png);"
-		"background-repeat: no-repeat;"
-		"background-position: center;"
-	);
-	ui.DescendingDeck1Number->setStyleSheet(
-		"background-image: url(:/Client/resources/100.png);"
-		"background-repeat: no-repeat;"
-		"background-position: center;"
-	);
-	ui.DescendingDeck2Number->setStyleSheet(
-		"background-image: url(:/Client/resources/100.png);"
-		"background-repeat: no-repeat;"
-		"background-position: center;"
-	);
-	
+	updatePileVisual(ui.AscendingDeck1Number, 1);
+	updatePileVisual(ui.AscendingDeck2Number, 1);
+	updatePileVisual(ui.DescendingDeck1Number, 100);
+	updatePileVisual(ui.DescendingDeck2Number, 100);
 
 }
 
@@ -109,7 +95,7 @@ void GamePage::FetchHand()
 				qDebug() << "  Card value:" << card["value"].toInt();
 				cardsValues.push_back(card["value"].toInt());
 			}
-			 
+
 			ShowCards(cardsValues);
 		}
 		else {
@@ -117,73 +103,148 @@ void GamePage::FetchHand()
 		}
 		reply->deleteLater();
 		});
+
 }
 
 void GamePage::ShowCards(const std::vector<int>& cardsValues)
 {
+	
+	QLayoutItem* item;
+	while ((item = ui.layout->takeAt(0)) != nullptr) {
+		if (item->widget()) {
+			delete item->widget();
+		}
+		delete item;
+	}
+
+
 	QString style =
 		"QPushButton {"
 		"    border: none;"
 		"    background-image: url(:/Client/resources/CardButton.png);"
 		"}";
+
 	ui.layout->setSpacing(0);
 	ui.layout->setContentsMargins(0, 0, 0, 0);
+
 	int index = 0;
-	for (const auto& cardValue: cardsValues) {
+	for (const auto& cardValue : cardsValues) {
 		QPushButton* button = new QPushButton(this);
 		button->setStyleSheet(style);
 		button->setFixedSize(100, 315);
 
-		if(cardValue >=10)
-		{
+		// --- partea grafică pentru număr ---
+		if (cardValue >= 10) {
 			QLabel* nr1 = new QLabel("", button);
 			nr1->setFixedSize(32, 41);
 			nr1->move(22, 45);
-			QString imgPath1 = QString(":/Client/resources/%1.png").arg(cardValue /10);
-			qDebug() << "Image path 1:" << imgPath1;
-			nr1->setStyleSheet(
-				QString("QLabel {"
-					"    background-image: url(%1);"
-					"    background-repeat: no-repeat;"
-					"    background-position: center;"
-					"}").arg(imgPath1)
-			);
+			QString imgPath1 = QString(":/Client/resources/%1.png").arg(cardValue / 10);
+			nr1->setStyleSheet(QString("QLabel { background-image: url(%1); }").arg(imgPath1));
+
 			QLabel* nr2 = new QLabel("", button);
 			nr2->setFixedSize(32, 41);
 			nr2->move(50, 45);
 			QString imgPath2 = QString(":/Client/resources/%1.png").arg(cardValue % 10);
-			qDebug() << "Image path 2:" << imgPath2;
-			nr2->setStyleSheet(
-				QString("QLabel {"
-					"    background-image: url(%1);"
-					"    background-repeat: no-repeat;"
-					"    background-position: center;"
-					"}").arg(imgPath2)
-			);
+			nr2->setStyleSheet(QString("QLabel { background-image: url(%1); }").arg(imgPath2));
 		}
-		else
-		{
+		else {
 			QLabel* nr = new QLabel("", button);
 			nr->setFixedSize(32, 41);
 			nr->move(32, 45);
 			QString imgPath1 = QString(":/Client/resources/%1.png").arg(cardValue);
-			qDebug() << "Image path 1:" << imgPath1;
-			nr->setStyleSheet(
-				QString("QLabel {"
-					"    background-image: url(%1);"
-					"    background-repeat: no-repeat;"
-					"    background-position: center;"
-					"}").arg(imgPath1)
-			);
+			nr->setStyleSheet(QString("QLabel { background-image: url(%1); }").arg(imgPath1));
 		}
+
+		// --- nou: click pe carte setează valoarea selectată ---
+		connect(button, &QPushButton::clicked, this, [=]() {
+			m_selectedCardValue = cardValue;
+			qDebug() << "Selected card:" << m_selectedCardValue;
+			});
+
 		ui.layout->addWidget(button, 0, index++);
 	}
 
 
-	
+
+}
+
+void GamePage::updatePileVisual(QLabel* pileLabel, int cardValue)
+{
+	qDebug() << "updatePileVisual called with value:" << cardValue;
+
+	QPixmap pix;
+
+	if (cardValue == 100) {
+		pix.load(":/Client/resources/100.png");
+	}
+	else if (cardValue >= 10) {
+		// compunem imaginea din două cifre
+		QPixmap left(QString(":/Client/resources/%1.png").arg(cardValue / 10));
+		QPixmap right(QString(":/Client/resources/%1.png").arg(cardValue % 10));
+
+		// lipim cele două imagini într-un pixmap nou
+		pix = QPixmap(left.width() + right.width(), left.height());
+		pix.fill(Qt::transparent);
+
+		QPainter painter(&pix);
+		painter.drawPixmap(0, 0, left);
+		painter.drawPixmap(left.width(), 0, right);
+	}
+	else {
+		pix.load(QString(":/Client/resources/%1.png").arg(cardValue));
+	}
+
+	if (!pix.isNull()) {
+		pileLabel->setPixmap(pix.scaled(pileLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+	}
+	else {
+		qDebug() << "Eroare: nu găsesc resursa pentru valoarea" << cardValue;
+	}
 
 
 }
+
+void GamePage::fetchGameState()
+{
+	QNetworkRequest req(QUrl(QString("http://127.0.0.1:18080/game/%1/state").arg(m_gameId)));
+	QNetworkReply* reply = net->get(req);
+
+	connect(reply, &QNetworkReply::finished, this, [=]() {
+		auto data = reply->readAll();
+		QJsonDocument doc = QJsonDocument::fromJson(data);
+
+		if (!doc.isObject()) {
+			qDebug() << "Invalid JSON received";
+			reply->deleteLater();
+			return;
+		}
+
+		QJsonObject obj = doc.object();
+		QJsonArray piles = obj["piles"].toArray();
+
+		// actualizează vizual toate teancurile
+		updatePileVisual(ui.DescendingDeck1Number, piles[0].toInt());
+		updatePileVisual(ui.DescendingDeck2Number, piles[1].toInt());
+		updatePileVisual(ui.AscendingDeck1Number, piles[2].toInt());
+		updatePileVisual(ui.AscendingDeck2Number, piles[3].toInt());
+
+		// actualizează mâinile jucătorilor
+		QJsonArray players = obj["players"].toArray();
+		for (auto playerVal : players) {
+			QJsonObject playerObj = playerVal.toObject();
+			int id = playerObj["id"].toInt();
+			QString username = playerObj["username"].toString();
+			QJsonArray hand = playerObj["hand"].toArray();
+
+			qDebug() << "Player" << id << "(" << username << ") hand:" << hand;
+
+		}
+
+		reply->deleteLater();
+		});
+
+}
+
 
 void GamePage::shuffleDeck()
 {
@@ -262,7 +323,26 @@ void GamePage::initializeGame(int playerId,const QString& playerName, int gameId
 	this->setWindowTitle(QString("Game %1 — You: %2 vs %3").arg(m_gameId).arg(m_playerId).arg(m_opponentId));
 
 
-	
+	net = new QNetworkAccessManager(this);
+
+	connect(ui.DescendingCardPlacer1, &QPushButton::clicked, this, [=]() {
+		onPileClicked(0, ui.DescendingDeck1Number);
+		});
+	connect(ui.DescendingCardPlacer2, &QPushButton::clicked, this, [=]() {
+		onPileClicked(1, ui.DescendingDeck2Number);
+		});
+	connect(ui.AscendingCardPlacer1, &QPushButton::clicked, this, [=]() {
+		onPileClicked(2, ui.AscendingDeck1Number);
+		});
+	connect(ui.AscendingCardPlacer2, &QPushButton::clicked, this, [=]() {
+		onPileClicked(3, ui.AscendingDeck2Number);
+		});
+
+	updatePileVisual(ui.AscendingDeck1Number, 1);
+	updatePileVisual(ui.AscendingDeck2Number, 1);
+	updatePileVisual(ui.DescendingDeck1Number, 100);
+	updatePileVisual(ui.DescendingDeck2Number, 100);
+
 
 
 }
@@ -281,6 +361,44 @@ void GamePage::onSendClicked()
 
 	net->post(req, QJsonDocument(obj).toJson());
 	ui.chatInput->clear();
+}
+
+
+void GamePage::onPileClicked(int pileId, QLabel* pileLabel)
+{
+	if (m_selectedCardValue == -1) {
+		QMessageBox::warning(this, "No card selected", "Selectează o carte înainte de a alege un teanc.");
+		return;
+	}
+
+	QJsonObject obj;
+	obj["cardValue"] = m_selectedCardValue;
+	obj["pileId"] = pileId;
+
+	QNetworkRequest req(QUrl(QString("http://localhost:18080/game/%1/player/%2/place")
+		.arg(m_gameId).arg(m_playerId)));
+	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+	QNetworkReply* reply = net->post(req, QJsonDocument(obj).toJson());
+	connect(reply, &QNetworkReply::finished, this, [=]() {
+		auto data = reply->readAll();
+		QJsonDocument doc = QJsonDocument::fromJson(data);
+
+		qDebug() << "Server response:" << doc;
+
+		if (doc["success"].toBool()) {
+			int newPileValue = doc["newPileValue"].toInt();
+			updatePileVisual(pileLabel, newPileValue);
+			m_selectedCardValue = -1;
+			FetchHand(); // reîncarcă mâna
+		}
+		else {
+			QMessageBox::warning(this, "Invalid move", "Nu poți plasa această carte pe teancul ales.");
+		}
+		reply->deleteLater();
+		});
+
+
 }
 
 

@@ -22,16 +22,21 @@ public:
 	void ShowCards(const std::vector<int>& cardsValues);
 	void shuffleDeck();
 	void DistributeCards();
+	void updatePileVisual(QLabel* pileLabel, int cardValue);
+	void fetchGameState();
 	
 private slots:
 	void onSendClicked();
 	void fetchMessages();
+	void onPileClicked(int pileId, QLabel* pileLabel);
+
 
 private:
 	Ui::GameClass ui;
 	int m_playerId = -1;
 	int m_gameId = -1;
 	int m_opponentId = -1;
+	int m_selectedCardValue = -1;
 
 	QNetworkAccessManager* net;
 	QTimer* chatTimer;
