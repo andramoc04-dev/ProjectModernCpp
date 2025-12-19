@@ -320,7 +320,7 @@ void GamePage::initializeGame(int playerId,const QString& playerName, int gameId
 	m_gameId = gameId;
 	m_opponentId = opponentId;
 	
-	this->setWindowTitle(QString("Game %1 — You: %2 vs %3").arg(m_gameId).arg(m_playerId).arg(m_opponentId));
+	this->setWindowTitle(QString("Game %1 — You: %2 and %3").arg(m_gameId).arg(m_playerId).arg(m_opponentId));
 
 
 	net = new QNetworkAccessManager(this);

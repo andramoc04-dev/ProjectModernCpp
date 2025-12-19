@@ -2,18 +2,6 @@
 #include <mutex>
 #include <vector>
 
-struct LobbyInfo {
-	int gameId = -1;
-	bool started = false;
-	int matchedPlayerId = -1;
-};
-
-static std::mutex lobbyMutex;
-static std::vector<int> waitingPlayers;
-static std::unordered_map<int, LobbyInfo> playerLobbyMap;
-static int nextGameId = 1;
-
-
 void http::Routing::Run(UserProfiles& storage)
 {
 	CROW_ROUTE(m_app, "/player/<int>")([&storage](int id) {
@@ -115,36 +103,36 @@ void http::Routing::Run(UserProfiles& storage)
 		const auto& user = userOpt.value();
 		std::string playerName = user.GetUsername();
 		{
-			std::lock_guard<std::mutex> lk(lobbyMutex);
+			std::lock_guard<std::mutex> lk(m_lobbyMutex);
 
 			// dacă nu e deja în map, îl adăugăm în coadă
-			if (playerLobbyMap.find(playerId) == playerLobbyMap.end()) {
-				waitingPlayers.push_back(playerId);
-				playerLobbyMap[playerId] = LobbyInfo{};
+			if (m_playerLobbyMap.find(playerId) == m_playerLobbyMap.end()) {
+				m_waitingPlayers.push_back(playerId);
+				m_playerLobbyMap[playerId] = LobbyInfo{};
 			}
 
 			// dacă sunt cel puțin 2, formăm o pereche simplă
-			if (waitingPlayers.size() >= 2) {
-				int a = waitingPlayers[0];
-				int b = waitingPlayers[1];
+			if (m_waitingPlayers.size() >= 2) {
+				int a = m_waitingPlayers[0];
+				int b = m_waitingPlayers[1];
 				auto userB = storage.GetUserById(b).value();
 
 				LobbyInfo infoA, infoB;
-				infoA.started = true;
-				infoB.started = true;
-				infoA.matchedPlayerId = b;
-				infoB.matchedPlayerId = a;
-				int gid = nextGameId++;
-				infoA.gameId = gid;
-				infoB.gameId = gid;
+				infoA.m_started = true;
+				infoB.m_started = true;
+				infoA.m_matchedPlayerId = b;
+				infoB.m_matchedPlayerId = a;
+				int gid = m_nextGameId++;
+				infoA.m_gameId = gid;
+				infoB.m_gameId = gid;
 
 
 				Game& gameInst = m_activeGames[gid];
 				gameInst.AddPlayer(Player(a, user.GetUsername()));
 				gameInst.AddPlayer(Player(b, userB.GetUsername()));
 
-				playerLobbyMap[a] = infoA;
-				playerLobbyMap[b] = infoB;
+				m_playerLobbyMap[a] = infoA;
+				m_playerLobbyMap[b] = infoB;
 
 				Player player1 = Player().ConvertUserToPlayer(storage.GetUserById(a).value());
 				Player player2 = Player().ConvertUserToPlayer(storage.GetUserById(b).value());
@@ -152,8 +140,8 @@ void http::Routing::Run(UserProfiles& storage)
 				gameInst = Game({ player1, player2 }, std::stack<Card>{}, Chat());
 
 
-				waitingPlayers.erase(waitingPlayers.begin());
-				waitingPlayers.erase(waitingPlayers.begin());
+				m_waitingPlayers.erase(m_waitingPlayers.begin());
+				m_waitingPlayers.erase(m_waitingPlayers.begin());
 
 			}
 		}
@@ -164,19 +152,19 @@ void http::Routing::Run(UserProfiles& storage)
 			});
 
 	CROW_ROUTE(m_app, "/status/<int>").methods(crow::HTTPMethod::GET)
-		([&storage](const crow::request& /*req*/, int playerId) {
-		std::lock_guard<std::mutex> lk(lobbyMutex);
+		([this, &storage](const crow::request& /*req*/, int playerId) {
+		std::lock_guard<std::mutex> lk(m_lobbyMutex);
 		crow::json::wvalue resp;
-		auto it = playerLobbyMap.find(playerId);
-		if (it == playerLobbyMap.end()) {
+		auto it = m_playerLobbyMap.find(playerId);
+		if (it == m_playerLobbyMap.end()) {
 			resp["started"] = false;
 			resp["message"] = "Not in lobby";
 			return crow::response{ resp.dump() };
 		}
 		const LobbyInfo& info = it->second;
-		resp["started"] = info.started;
-		resp["gameId"] = info.gameId;
-		resp["opponentId"] = info.matchedPlayerId;
+		resp["started"] = info.m_started;
+		resp["gameId"] = info.m_gameId;
+		resp["opponentId"] = info.m_matchedPlayerId;
 		return crow::response{ resp.dump() };
 			});
 
@@ -245,7 +233,7 @@ void http::Routing::Run(UserProfiles& storage)
 
 	CROW_ROUTE(m_app, "/game/<int>/shuffle").methods(crow::HTTPMethod::POST)
 		([this, &storage](int gameId) {
-		std::lock_guard<std::mutex> lk(lobbyMutex);
+		std::lock_guard<std::mutex> lk(m_lobbyMutex);
 
 		auto it = m_activeGames.find(gameId);
 		if (it == m_activeGames.end()) {
@@ -269,7 +257,7 @@ void http::Routing::Run(UserProfiles& storage)
 
 	    CROW_ROUTE(m_app, "/game/<int>/distribution").methods(crow::HTTPMethod::POST)
 			([this, &storage](int gameId) {
-			std::lock_guard<std::mutex> lk(lobbyMutex);
+			std::lock_guard<std::mutex> lk(m_lobbyMutex);
 
 			auto it = m_activeGames.find(gameId);
 			if (it == m_activeGames.end()) {
@@ -297,7 +285,7 @@ void http::Routing::Run(UserProfiles& storage)
 			
 		CROW_ROUTE(m_app, "/game/<int>/player/<int>/hand").methods(crow::HTTPMethod::GET)
 			([this, &storage](int gameId, int playerId) {
-			std::lock_guard<std::mutex> lk(lobbyMutex);
+			std::lock_guard<std::mutex> lk(m_lobbyMutex);
     
 			auto it = m_activeGames.find(gameId);
 			if (it == m_activeGames.end()) {
@@ -333,7 +321,7 @@ void http::Routing::Run(UserProfiles& storage)
 			int cardValue = (int)body["cardValue"].i();
 			int pileId = (int)body["pileId"].i();
 
-			std::lock_guard<std::mutex> lk(lobbyMutex);
+			std::lock_guard<std::mutex> lk(m_lobbyMutex);
 			auto it = m_activeGames.find(gameId);
 			if (it == m_activeGames.end()) {
 				return crow::response(404, R"({"error":"Game not found"})");
@@ -390,7 +378,7 @@ void http::Routing::Run(UserProfiles& storage)
 
 		CROW_ROUTE(m_app, "/game/<int>/state").methods(crow::HTTPMethod::GET)
 			([this, &storage](int gameId) {
-			std::lock_guard<std::mutex> lk(lobbyMutex);
+			std::lock_guard<std::mutex> lk(m_lobbyMutex);
 			auto it = m_activeGames.find(gameId);
 			if (it == m_activeGames.end()) {
 				return crow::response(404, R"({"error":"Game not found"})");

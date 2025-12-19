@@ -22,5 +22,15 @@ namespace http
 		Chat m_chat; 
 		std::mutex m_chatMutex;
 		std::unordered_map<int, Game> m_activeGames;
+		struct LobbyInfo {
+			int m_gameId = -1;
+			bool m_started = false;
+			int m_matchedPlayerId = -1;
+		};
+
+		std::mutex m_lobbyMutex;
+		std::vector<int> m_waitingPlayers;
+		std::unordered_map<int, LobbyInfo> m_playerLobbyMap;
+		int m_nextGameId = 1;
 	};
 }
