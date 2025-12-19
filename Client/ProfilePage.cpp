@@ -7,26 +7,6 @@ ProfilePage::ProfilePage(int playerId, const QString& serverUrl, QWidget* parent
 {
     ui.setupUi(this);
 
-    ui.usernameLabel->setStyleSheet(
-        "QLabel { font-size: 16pt; color: #573C27; font-family: 'Showcard Gothic'; font-weight: bold; }"
-    );
-
-    ui.scoreLabel->setStyleSheet(
-        "QLabel { font-size: 16pt; color: #573C27; font-family: 'Showcard Gothic'; font-weight: bold; }"
-    );
-
-    ui.winsLabel->setStyleSheet(
-        "QLabel { font-size: 16pt; color: #573C27; font-family: 'Showcard Gothic'; font-weight: bold; }"
-    );
-
-    ui.hoursLabel->setStyleSheet(
-        "QLabel { font-size: 16pt; color: #573C27; font-family: 'Showcard Gothic'; font-weight: bold; }"
-    );
-
-    ui.unusedLabel->setStyleSheet(
-        "QLabel { font-size: 16pt; color: #573C27; font-family: 'Showcard Gothic'; font-weight: bold; }"
-    );
-
     QUrl url(QString("%1/player/%2").arg(m_serverUrl).arg(m_playerId));
     QNetworkRequest req(url);
     QNetworkReply* reply = network->get(req);
@@ -51,7 +31,7 @@ void ProfilePage::onProfileReplyFinished()
         }
     }
     else {
-        QMessageBox::warning(this, "Eroare", reply->errorString());
+        QMessageBox::warning(this, "Error", reply->errorString());
     }
     reply->deleteLater();
 }

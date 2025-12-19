@@ -206,6 +206,9 @@ border: none;
      <height>41</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel { font-size: 16pt; color: #573C27; font-family: 'Showcard Gothic'; font-weight: bold; }</string>
+   </property>
    <property name="text">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
@@ -218,6 +221,9 @@ border: none;
      <width>251</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel { font-size: 16pt; color: #573C27; font-family: 'Showcard Gothic'; font-weight: bold; }</string>
    </property>
    <property name="text">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -232,6 +238,9 @@ border: none;
      <height>31</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel { font-size: 16pt; color: #573C27; font-family: 'Showcard Gothic'; font-weight: bold; }</string>
+   </property>
    <property name="text">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
@@ -245,6 +254,9 @@ border: none;
      <height>31</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel { font-size: 16pt; color: #573C27; font-family: 'Showcard Gothic'; font-weight: bold; }</string>
+   </property>
    <property name="text">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
@@ -257,6 +269,9 @@ border: none;
      <width>231</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel { font-size: 16pt; color: #573C27; font-family: 'Showcard Gothic'; font-weight: bold; }</string>
    </property>
    <property name="text">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>

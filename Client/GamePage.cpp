@@ -367,7 +367,7 @@ void GamePage::onSendClicked()
 void GamePage::onPileClicked(int pileId, QLabel* pileLabel)
 {
 	if (m_selectedCardValue == -1) {
-		QMessageBox::warning(this, "No card selected", "Selectează o carte înainte de a alege un teanc.");
+		QMessageBox::warning(this, "No card selected", "Select a card before choosing a card placer.");
 		return;
 	}
 
@@ -393,7 +393,7 @@ void GamePage::onPileClicked(int pileId, QLabel* pileLabel)
 			FetchHand(); // reîncarcă mâna
 		}
 		else {
-			QMessageBox::warning(this, "Invalid move", "Nu poți plasa această carte pe teancul ales.");
+			QMessageBox::warning(this, "Invalid move", "You can't place this card on the chosen card placer.");
 		}
 		reply->deleteLater();
 		});
