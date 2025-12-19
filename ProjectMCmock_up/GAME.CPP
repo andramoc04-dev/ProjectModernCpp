@@ -5,7 +5,7 @@
 
 Game::Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck, const Chat& chat):
 	m_players(players), m_cardsDeck(cardsDeck), m_chat(chat), m_descendingDeck1(100), m_descendingDeck2(100),
-	m_ascendingDeck1(1), m_ascendingDeck2(1), m_areCardsDealt(false)
+	m_ascendingDeck1(1), m_ascendingDeck2(1), m_areCardsDealt(false), m_areCardsShuffled(false)
 {
 	m_descendingDeck1 = Card(100);
 	m_descendingDeck2 = Card(100);
@@ -28,6 +28,7 @@ void Game::ShuffleCards()
 		m_cardsDeck.push(card);
 		sortedCards.erase(sortedCards.begin() + position);
 	}
+	m_areCardsShuffled = true;
 }
 
 bool Game::EndGame(int numberOfPlacedCards)
@@ -168,6 +169,11 @@ void Game::SetCardsDeck(std::stack<Card> cardsDeck)
 	m_cardsDeck = cardsDeck;
 }
 
+void Game::AddPlayer(const Player& player)
+{
+	m_players.push_back(player);
+}
+
 const Player& Game::GetPlayer(int id) const
 {
 	auto it = std::find_if(m_players.begin(), m_players.end(),
@@ -196,5 +202,10 @@ Player& Game::GetPlayer(int id)
 bool Game::GetAreCardsDealt() const
 {
 	return m_areCardsDealt;
+}
+
+bool Game::GetAreCardsShuffled() const
+{
+	return m_areCardsShuffled;
 }
 

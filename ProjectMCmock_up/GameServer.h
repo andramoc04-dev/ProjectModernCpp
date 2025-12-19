@@ -2,8 +2,9 @@
 #include "Database.h"
 #include <mutex>
 #include <vector>
-#include "Chat.h"
-#include "Message.h"
+#include <unordered_map>
+#include "Game.h"
+
 
 namespace http
 {
@@ -20,5 +21,6 @@ namespace http
 
 		Chat m_chat; 
 		std::mutex m_chatMutex;
+		std::unordered_map<int, Game> m_activeGames;
 	};
 }

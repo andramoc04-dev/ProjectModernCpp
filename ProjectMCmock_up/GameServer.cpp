@@ -1,23 +1,11 @@
 ﻿#include "GameServer.h"
 #include <mutex>
 #include <vector>
-#include <unordered_map>
-#include "Game.h"
-
-
-struct GameInstance {
-	std::stack<Card> cardsDeck;
-	std::vector<int> playerIds;  
-	bool shuffled = false;
-	Game game;
-};
-
-static std::unordered_map<int, GameInstance> activeGames;
 
 struct LobbyInfo {
 	int gameId = -1;
 	bool started = false;
-	int opponentId = -1;
+	int matchedPlayerId = -1;
 };
 
 static std::mutex lobbyMutex;
@@ -113,13 +101,19 @@ void http::Routing::Run(UserProfiles& storage)
 
 
 	CROW_ROUTE(m_app, "/join").methods(crow::HTTPMethod::POST)
-		([&storage](const crow::request& req) {
+		([this, &storage](const crow::request& req) {
 		auto body = crow::json::load(req.body);
 		if (!body) return crow::response(400, R"({"error":"Invalid JSON"})");
 		if (!body.has("id")) return crow::response(400, R"({"error":"Missing id"})");
 
 		int playerId = (int)body["id"].i();
+		auto userOpt = storage.GetUserById(playerId);
+		if (!userOpt.has_value()) {
+			return crow::response(404, R"({"error":"Player not found"})");
+		}
 
+		const auto& user = userOpt.value();
+		std::string playerName = user.GetUsername();
 		{
 			std::lock_guard<std::mutex> lk(lobbyMutex);
 
@@ -133,19 +127,21 @@ void http::Routing::Run(UserProfiles& storage)
 			if (waitingPlayers.size() >= 2) {
 				int a = waitingPlayers[0];
 				int b = waitingPlayers[1];
+				auto userB = storage.GetUserById(b).value();
 
 				LobbyInfo infoA, infoB;
 				infoA.started = true;
 				infoB.started = true;
-				infoA.opponentId = b;
-				infoB.opponentId = a;
+				infoA.matchedPlayerId = b;
+				infoB.matchedPlayerId = a;
 				int gid = nextGameId++;
 				infoA.gameId = gid;
 				infoB.gameId = gid;
 
-				GameInstance& gameInst = activeGames[gid];
-				gameInst.playerIds.push_back(a);
-				gameInst.playerIds.push_back(b);
+
+				Game& gameInst = m_activeGames[gid];
+				gameInst.AddPlayer(Player(a, user.GetUsername()));
+				gameInst.AddPlayer(Player(b, userB.GetUsername()));
 
 				playerLobbyMap[a] = infoA;
 				playerLobbyMap[b] = infoB;
@@ -153,12 +149,12 @@ void http::Routing::Run(UserProfiles& storage)
 				Player player1 = Player().ConvertUserToPlayer(storage.GetUserById(a).value());
 				Player player2 = Player().ConvertUserToPlayer(storage.GetUserById(b).value());
 
-				gameInst.game = Game({ player1, player2 }, std::stack<Card>{}, Chat());
-				
-				
+				gameInst = Game({ player1, player2 }, std::stack<Card>{}, Chat());
+
+
 				waitingPlayers.erase(waitingPlayers.begin());
 				waitingPlayers.erase(waitingPlayers.begin());
-				
+
 			}
 		}
 
@@ -180,7 +176,7 @@ void http::Routing::Run(UserProfiles& storage)
 		const LobbyInfo& info = it->second;
 		resp["started"] = info.started;
 		resp["gameId"] = info.gameId;
-		resp["opponentId"] = info.opponentId;
+		resp["opponentId"] = info.matchedPlayerId;
 		return crow::response{ resp.dump() };
 			});
 
@@ -248,63 +244,49 @@ void http::Routing::Run(UserProfiles& storage)
 
 
 	CROW_ROUTE(m_app, "/game/<int>/shuffle").methods(crow::HTTPMethod::POST)
-		([&storage](int gameId) {
+		([this, &storage](int gameId) {
 		std::lock_guard<std::mutex> lk(lobbyMutex);
 
-		auto it = activeGames.find(gameId);
-		if (it == activeGames.end()) {
+		auto it = m_activeGames.find(gameId);
+		if (it == m_activeGames.end()) {
 			return crow::response(404, R"({"error":"Game not found"})");
 		}
 
-		GameInstance& gameInst = it->second;
+		Game& gameInst = it->second;
 
-		
-		if (!gameInst.shuffled) {
-			std::srand(std::time(0));
-			std::deque<int> sortedCards;
-			for (int i = 2; i <= 99; i++)
-				sortedCards.push_back(i);
 
-			int position;
-			while (!sortedCards.empty()) {
-				position = std::rand() % sortedCards.size();
-				Card card(sortedCards[position]);
-				gameInst.cardsDeck.push(card);
-				sortedCards.erase(sortedCards.begin() + position);
-			}
-
-			gameInst.shuffled = true;
+		if (!gameInst.GetAreCardsShuffled()) {
+			gameInst.ShuffleCards();
 		}
-		gameInst.game.SetCardsDeck(gameInst.cardsDeck);
 		crow::json::wvalue resp;
 		resp["gameId"] = gameId;
 		resp["status"] = "shuffled";
-		resp["cardsInDeck"] = gameInst.cardsDeck.size();
+		resp["cardsInDeck"] = gameInst.GetCardsDeck().size();
 
 		return crow::response{ resp.dump() };
 			});
 
 
 	    CROW_ROUTE(m_app, "/game/<int>/distribution").methods(crow::HTTPMethod::POST)
-			([&storage](int gameId) {
+			([this, &storage](int gameId) {
 			std::lock_guard<std::mutex> lk(lobbyMutex);
 
-			auto it = activeGames.find(gameId);
-			if (it == activeGames.end()) {
+			auto it = m_activeGames.find(gameId);
+			if (it == m_activeGames.end()) {
 				return crow::response(404, R"({"error":"Game not found"})");
 			}
 
-			GameInstance& gameInst = it->second;
+			Game& gameInst = it->second;
 
-			if (!gameInst.shuffled) {
+			if (!gameInst.GetAreCardsShuffled()) {
 				return crow::response(400, R"({"error":"Deck not shuffled yet"})");
 			}
 
-			if (gameInst.game.GetAreCardsDealt()==true) {
+			if (gameInst.GetAreCardsDealt()==true) {
 				return crow::response(400, R"({"error":"Cards already dealt"})");
 			}
 
-			gameInst.game.CardsDistribution(); 
+			gameInst.CardsDistribution(); 
 
 			crow::json::wvalue resp;
 			resp["gameId"] = gameId;
@@ -314,21 +296,21 @@ void http::Routing::Run(UserProfiles& storage)
 			});
 			
 		CROW_ROUTE(m_app, "/game/<int>/player/<int>/hand").methods(crow::HTTPMethod::GET)
-			([&storage](int gameId, int playerId) {
+			([this, &storage](int gameId, int playerId) {
 			std::lock_guard<std::mutex> lk(lobbyMutex);
     
-			auto it = activeGames.find(gameId);
-			if (it == activeGames.end()) {
+			auto it = m_activeGames.find(gameId);
+			if (it == m_activeGames.end()) {
 				return crow::response(404, R"({"error":"Game not found"})");
 			}
     
-			GameInstance& gameInst = it->second;
+			Game& gameInst = it->second;
 			
 			crow::json::wvalue resp;
 			resp["playerId"] = playerId;
 			resp["gameId"] = gameId;
 			
-			const auto& hand = gameInst.game.GetPlayer(playerId).GetHand(); 
+			const auto& hand = gameInst.GetPlayer(playerId).GetHand(); 
 			
 			int index = 0;
 			for (const auto& card : hand)
@@ -342,7 +324,7 @@ void http::Routing::Run(UserProfiles& storage)
 		});
 
 		CROW_ROUTE(m_app, "/game/<int>/player/<int>/place").methods(crow::HTTPMethod::POST)
-			([&storage](const crow::request& req, int gameId, int playerId) {
+			([this, &storage](const crow::request& req, int gameId, int playerId) {
 			auto body = crow::json::load(req.body);
 			if (!body) return crow::response(400, R"({"error":"Invalid JSON"})");
 			if (!body.has("cardValue") || !body.has("pileId"))
@@ -352,23 +334,23 @@ void http::Routing::Run(UserProfiles& storage)
 			int pileId = (int)body["pileId"].i();
 
 			std::lock_guard<std::mutex> lk(lobbyMutex);
-			auto it = activeGames.find(gameId);
-			if (it == activeGames.end()) {
+			auto it = m_activeGames.find(gameId);
+			if (it == m_activeGames.end()) {
 				return crow::response(404, R"({"error":"Game not found"})");
 			}
 
-			GameInstance& gameInst = it->second;
+			Game& gameInst = it->second;
 
 			try {
-				Player& player = gameInst.game.GetPlayer(playerId);
+				Player& player = gameInst.GetPlayer(playerId);
 				Card chosen(cardValue);
 
 				bool placed = player.PlaceCard(
 					chosen,
-					gameInst.game.GetDescendingDeck1(),
-					gameInst.game.GetDescendingDeck2(),
-					gameInst.game.GetAscendingDeck1(),
-					gameInst.game.GetAscendingDeck2(),
+					gameInst.GetDescendingDeck1(),
+					gameInst.GetDescendingDeck2(),
+					gameInst.GetAscendingDeck1(),
+					gameInst.GetAscendingDeck2(),
 					pileId
 				);
 
@@ -380,20 +362,20 @@ void http::Routing::Run(UserProfiles& storage)
 
 				switch (pileId) {
 				case 0:
-					resp["newPileValue"] = gameInst.game.GetDescendingDeck1().GetNumber();
-					std::cout << "Pile 0 updated to " << gameInst.game.GetDescendingDeck1().GetNumber() << std::endl;
+					resp["newPileValue"] = gameInst.GetDescendingDeck1().GetNumber();
+					std::cout << "Pile 0 updated to " << gameInst.GetDescendingDeck1().GetNumber() << std::endl;
 					break;
 				case 1:
-					resp["newPileValue"] = gameInst.game.GetDescendingDeck2().GetNumber();
-					std::cout << "Pile 1 updated to " << gameInst.game.GetDescendingDeck2().GetNumber() << std::endl;
+					resp["newPileValue"] = gameInst.GetDescendingDeck2().GetNumber();
+					std::cout << "Pile 1 updated to " << gameInst.GetDescendingDeck2().GetNumber() << std::endl;
 					break;
 				case 2:
-					resp["newPileValue"] = gameInst.game.GetAscendingDeck1().GetNumber();
-					std::cout << "Pile 2 updated to " << gameInst.game.GetAscendingDeck1().GetNumber() << std::endl;
+					resp["newPileValue"] = gameInst.GetAscendingDeck1().GetNumber();
+					std::cout << "Pile 2 updated to " << gameInst.GetAscendingDeck1().GetNumber() << std::endl;
 					break;
 				case 3:
-					resp["newPileValue"] = gameInst.game.GetAscendingDeck2().GetNumber();
-					std::cout << "Pile 3 updated to " << gameInst.game.GetAscendingDeck2().GetNumber() << std::endl;
+					resp["newPileValue"] = gameInst.GetAscendingDeck2().GetNumber();
+					std::cout << "Pile 3 updated to " << gameInst.GetAscendingDeck2().GetNumber() << std::endl;
 					break;
 				}
 
@@ -407,29 +389,29 @@ void http::Routing::Run(UserProfiles& storage)
 
 
 		CROW_ROUTE(m_app, "/game/<int>/state").methods(crow::HTTPMethod::GET)
-			([&storage](int gameId) {
+			([this, &storage](int gameId) {
 			std::lock_guard<std::mutex> lk(lobbyMutex);
-			auto it = activeGames.find(gameId);
-			if (it == activeGames.end()) {
+			auto it = m_activeGames.find(gameId);
+			if (it == m_activeGames.end()) {
 				return crow::response(404, R"({"error":"Game not found"})");
 			}
 
-			GameInstance& gameInst = it->second;
+			Game& gameInst = it->second;
 
 			crow::json::wvalue resp;
 			resp["gameId"] = gameId;
 
 			// piles
 			resp["piles"] = std::vector<crow::json::wvalue>{
-				gameInst.game.GetDescendingDeck1().GetNumber(),
-				gameInst.game.GetDescendingDeck2().GetNumber(),
-				gameInst.game.GetAscendingDeck1().GetNumber(),
-				gameInst.game.GetAscendingDeck2().GetNumber()
+				gameInst.GetDescendingDeck1().GetNumber(),
+				gameInst.GetDescendingDeck2().GetNumber(),
+				gameInst.GetAscendingDeck1().GetNumber(),
+				gameInst.GetAscendingDeck2().GetNumber()
 			};
 
 			// players
 			std::vector<crow::json::wvalue> playersArray;
-			for (const auto& player : gameInst.game.GetPlayers()) {
+			for (const auto& player : gameInst.GetPlayers()) {
 				crow::json::wvalue playerJson;
 				playerJson["id"] = player.GetId();                // moștenit din User
 				playerJson["username"] = player.GetUsername();    // moștenit din User
