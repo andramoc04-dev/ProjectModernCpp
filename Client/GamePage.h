@@ -38,6 +38,7 @@ private:
 	int m_gameId = -1;
 	int m_opponentId = -1;
 	int m_selectedCardValue = -1;
+	int m_cardsPlacedThisTurn = 0;
 
 	QNetworkAccessManager* net;
 	QTimer* chatTimer;

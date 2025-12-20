@@ -319,6 +319,7 @@ void GamePage::initializeGame(int playerId,const QString& playerName, int gameId
 	m_playerName = playerName;
 	m_gameId = gameId;
 	m_opponentId = opponentId;
+	m_cardsPlacedThisTurn = 0;
 	
 	this->setWindowTitle(QString("Game %1 — You: %2 and %3").arg(m_gameId).arg(m_playerId).arg(m_opponentId));
 
@@ -385,13 +386,17 @@ void GamePage::onPileClicked(int pileId, QLabel* pileLabel)
 	connect(reply, &QNetworkReply::finished, this, [=]() {
 		auto data = reply->readAll();
 		QJsonDocument doc = QJsonDocument::fromJson(data);
+		QJsonObject respObj = doc.object();
 
 		qDebug() << "Server response:" << doc;
 
 		if (doc["success"].toBool()) {
 			int newPileValue = doc["newPileValue"].toInt();
+			int cardsPlaced = respObj["cardsPlacedThisTurn"].toInt();
+
 			updatePileVisual(pileLabel, newPileValue);
 			m_selectedCardValue = -1;
+			m_cardsPlacedThisTurn = cardsPlaced;
 			FetchHand(); // reîncarcă mâna
 		}
 		else {
@@ -405,53 +410,39 @@ void GamePage::onPileClicked(int pileId, QLabel* pileLabel)
 
 void GamePage::onDrawCardClicked()
 {
-	QJsonObject obj;
-	obj["gameId"] = m_gameId;
-	obj["playerId"] = m_playerId;
+	QNetworkRequest endTurnReq(QUrl(QString("http://127.0.0.1:18080/game/%1/player/%2/endturn")
+		.arg(m_gameId).arg(m_playerId)));
+	endTurnReq.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-	QString urlString = QString("http://127.0.0.1:18080/game/%1/player/%2/draw")
-		.arg(m_gameId)
-		.arg(m_playerId);
-
-	QNetworkRequest request;
-	request.setUrl(QUrl(urlString));
-	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-	QByteArray jsonData = QJsonDocument(obj).toJson();
-	QNetworkReply* reply = net->post(request, jsonData);
+	QNetworkReply* reply = net->post(endTurnReq, QByteArray());
 
 	connect(reply, &QNetworkReply::finished, [this, reply]() {
-		if (reply->error() == QNetworkReply::NoError) {
-			QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
-			QJsonObject obj = doc.object();
+		auto data = reply->readAll();
+		QJsonDocument doc = QJsonDocument::fromJson(data);
+		QJsonObject obj = doc.object();
 
-			if (obj["success"].toBool()) {
-				int cardValue = obj["cardValue"].toInt();
-				int cardsLeft = obj["cardsLeftInDeck"].toInt();
+		if (reply->error() == QNetworkReply::NoError && obj["success"].toBool()) {
+			int cardsPlaced = obj["cardsPlaced"].toInt();
+			int cardsDrawn = obj["cardsDrawn"].toInt();
+			int cardsLeftInDeck = obj["cardsLeftInDeck"].toInt();
+			QString message = obj["message"].toString();
 
-				qDebug() << "Drew card:" << cardValue;
-				qDebug() << "Cards left in deck:" << cardsLeft;
+			qDebug() << "Turn ended. Cards placed:" << cardsPlaced
+				<< "Cards drawn:" << cardsDrawn;
 
-				// Reîncarcă mâna pentru a afișa noua carte
-				FetchHand();
-
-				// Opțional: afișează un mesaj de succes
-				// QMessageBox::information(this, "Card Drawn", 
-				//     QString("You drew card: %1").arg(cardValue));
-			}
-			else {
-				qDebug() << "Failed to draw card";
-			}
+			QMessageBox::information(this, "Turn Ended", message);
+			m_cardsPlacedThisTurn = 0;
+			FetchHand();
 		}
 		else {
-			qDebug() << "Error drawing card:" << reply->errorString();
-
-			// Verifică dacă nu mai sunt cărți
-			QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
-			QJsonObject obj = doc.object();
-			if (obj["error"].toString().contains("No cards left")) {
-				QMessageBox::warning(this, "No Cards", "The deck is empty!");
+			// Eroare - probabil nu a plasat destule cărți
+			QString errorMsg = "Unknown error";
+			if (obj.contains("error")) {
+				errorMsg = obj["error"].toString();
 			}
+
+			qDebug() << "Error ending turn:" << errorMsg;
+			QMessageBox::warning(this, "Cannot End Turn", errorMsg);
 		}
 		reply->deleteLater();
 		});
