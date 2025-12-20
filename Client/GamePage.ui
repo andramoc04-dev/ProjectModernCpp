@@ -141,7 +141,7 @@ background-size: contain;
     <string/>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="deckButton">
    <property name="geometry">
     <rect>
      <x>700</x>
@@ -383,7 +383,7 @@ QPushButton:hover {
   <zorder>AscendingCardPlacer2</zorder>
   <zorder>DescendingCardPlacer1</zorder>
   <zorder>DescendingCardPlacer2</zorder>
-  <zorder>pushButton</zorder>
+  <zorder>deckButton</zorder>
   <zorder>BackButton</zorder>
   <zorder>AscendingDeck1Number</zorder>
   <zorder>AscendingDeck1Number_2</zorder>

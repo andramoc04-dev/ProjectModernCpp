@@ -29,6 +29,7 @@ private slots:
 	void onSendClicked();
 	void fetchMessages();
 	void onPileClicked(int pileId, QLabel* pileLabel);
+	void onDrawCardClicked();
 
 
 private:

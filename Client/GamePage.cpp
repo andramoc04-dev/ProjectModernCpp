@@ -338,6 +338,8 @@ void GamePage::initializeGame(int playerId,const QString& playerName, int gameId
 		onPileClicked(3, ui.AscendingDeck2Number);
 		});
 
+	connect(ui.deckButton, &QPushButton::clicked, this, &GamePage::onDrawCardClicked);
+
 	updatePileVisual(ui.AscendingDeck1Number, 1);
 	updatePileVisual(ui.AscendingDeck2Number, 1);
 	updatePileVisual(ui.DescendingDeck1Number, 100);
@@ -399,6 +401,60 @@ void GamePage::onPileClicked(int pileId, QLabel* pileLabel)
 		});
 
 
+}
+
+void GamePage::onDrawCardClicked()
+{
+	QJsonObject obj;
+	obj["gameId"] = m_gameId;
+	obj["playerId"] = m_playerId;
+
+	QString urlString = QString("http://127.0.0.1:18080/game/%1/player/%2/draw")
+		.arg(m_gameId)
+		.arg(m_playerId);
+
+	QNetworkRequest request;
+	request.setUrl(QUrl(urlString));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+	QByteArray jsonData = QJsonDocument(obj).toJson();
+	QNetworkReply* reply = net->post(request, jsonData);
+
+	connect(reply, &QNetworkReply::finished, [this, reply]() {
+		if (reply->error() == QNetworkReply::NoError) {
+			QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+			QJsonObject obj = doc.object();
+
+			if (obj["success"].toBool()) {
+				int cardValue = obj["cardValue"].toInt();
+				int cardsLeft = obj["cardsLeftInDeck"].toInt();
+
+				qDebug() << "Drew card:" << cardValue;
+				qDebug() << "Cards left in deck:" << cardsLeft;
+
+				// Reîncarcă mâna pentru a afișa noua carte
+				FetchHand();
+
+				// Opțional: afișează un mesaj de succes
+				// QMessageBox::information(this, "Card Drawn", 
+				//     QString("You drew card: %1").arg(cardValue));
+			}
+			else {
+				qDebug() << "Failed to draw card";
+			}
+		}
+		else {
+			qDebug() << "Error drawing card:" << reply->errorString();
+
+			// Verifică dacă nu mai sunt cărți
+			QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+			QJsonObject obj = doc.object();
+			if (obj["error"].toString().contains("No cards left")) {
+				QMessageBox::warning(this, "No Cards", "The deck is empty!");
+			}
+		}
+		reply->deleteLater();
+		});
 }
 
 

@@ -418,6 +418,46 @@ void http::Routing::Run(UserProfiles& storage)
 			return crow::response{ resp.dump() };
 				});
 
+		CROW_ROUTE(m_app, "/game/<int>/player/<int>/draw").methods(crow::HTTPMethod::POST)
+			([this, &storage](int gameId, int playerId) {
+			std::lock_guard<std::mutex> lk(m_lobbyMutex);
+
+			auto it = m_activeGames.find(gameId);
+			if (it == m_activeGames.end()) {
+				return crow::response(404, R"({"error":"Game not found"})");
+			}
+
+			Game& gameInst = it->second;
+
+			// Verifică dacă mai sunt cărți în teanc
+			if (gameInst.GetCardsDeck().empty()) {
+				return crow::response(400, R"({"error":"No cards left in deck"})");
+			}
+
+			try {
+				Player& player = gameInst.GetPlayer(playerId);
+
+				// Extrage cartea din vârful stivei
+				Card drawnCard = gameInst.GetCardsDeck().top();
+				gameInst.GetCardsDeck().pop();
+
+				// Adaugă cartea în mâna jucătorului
+				player.GetHand().insert(drawnCard);
+
+				crow::json::wvalue resp;
+				resp["success"] = true;
+				resp["cardValue"] = drawnCard.GetNumber();
+				resp["cardsLeftInDeck"] = gameInst.GetCardsDeck().size();
+
+				return crow::response{ resp.dump() };
+			}
+			catch (const std::exception& e) {
+				return crow::response(400, R"({"error":")" + std::string(e.what()) + "\"}");
+			}
+				});
+
+
+
 	m_app.port(18080).multithreaded().run();
 }
 
