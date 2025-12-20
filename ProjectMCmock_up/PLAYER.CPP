@@ -165,6 +165,21 @@ const std::unordered_set<Card>& Player::GetHand() const
 	return m_hand;
 }
 
+void Player::IncrementCardsPlacedThisTurn()
+{
+	m_numberOfPlacedCards++;
+}
+
+int Player::GetCardsPlacedThisTurn() const
+{
+	return m_numberOfPlacedCards;
+}
+
+void Player::ResetCardsPlacedThisTurn()
+{
+	m_numberOfPlacedCards = 0;
+}
+
 Player Player::ConvertUserToPlayer(const User& user)
 {
 	return Player(user.GetId(), user.GetUsername());

@@ -32,13 +32,16 @@ public:
 	const std::unordered_set<Card>& GetHand() const;
 
 	
-
+	void IncrementCardsPlacedThisTurn();
+	int GetCardsPlacedThisTurn() const;
+	void ResetCardsPlacedThisTurn();
 	
 	static Player ConvertUserToPlayer(const User& user);
 
 private:
 	
 	std::unordered_set<Card> m_hand;
+	int m_numberOfPlacedCards = 0;
 	
 };
 
