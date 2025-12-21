@@ -102,7 +102,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GameClient.cpp" />
     <ClCompile Include="GamePage.cpp" />
     <ClCompile Include="LobbyPage.cpp" />
     <ClCompile Include="MinigamePage.cpp" />
@@ -156,7 +155,6 @@
     <QtMoc Include="GamePage.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameClient.h" />
     <QtMoc Include="MinigamePage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
