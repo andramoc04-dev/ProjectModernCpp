@@ -154,6 +154,9 @@
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="timer.cppm" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TimerDLL.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
