@@ -41,6 +41,11 @@
     <ClCompile Include="User.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TimerDLL\TimerDLL.vcxproj">
+      <Project>{c4c7b028-829c-481e-b1d0-4f01b17620d3}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
