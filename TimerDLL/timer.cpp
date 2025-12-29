@@ -1,4 +1,4 @@
-module timer;
+#include "TimerDLL.h"
 
 GameTimer::GameTimer()
     : m_duration(0), m_running(false)
@@ -26,3 +26,5 @@ int GameTimer::elapsedSeconds() const
     auto now = std::chrono::steady_clock::now();
     return (int)std::chrono::duration_cast<std::chrono::seconds>(now - m_start).count();
 }
+
+
