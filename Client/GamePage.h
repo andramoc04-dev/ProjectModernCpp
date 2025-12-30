@@ -3,8 +3,11 @@
 #include <QDialog>
 #include <QGridLayout>
 #include <QNetworkAccessManager>
-#include <QTimer>
+#include "../TimerDLL/GameTimer.h"
 #include "ui_GamePage.h"
+#include <thread>
+#include <atomic>
+
 
 
 
@@ -41,8 +44,15 @@ private:
 	int m_cardsPlacedThisTurn = 0;
 	QStringList m_allPlayerNames;
 
+	std::atomic_bool m_pollRunning{ false };
+	std::thread m_pollThread;
+
+	GameTimer m_chatTimer;
+	GameTimer m_stateTimer;
+
+
 	QNetworkAccessManager* net;
-	QTimer* chatTimer;
+	
 
 	QString m_playerName; // setat după login
 

@@ -21,8 +21,7 @@ void Chat::PrintMessages() const
     
     for (const auto& message : m_messages)
     {
-      std::cout << std::format("[{:%d.%m.%Y %H:%M:%S}] {}: {}", 
-                                message.GetTimeStamp(), 
+      std::cout << std::format(" {}: {}",  
                                 message.GetPlayerName(), 
                                 message.GetTextFromPlayer()) << std::endl;
     }

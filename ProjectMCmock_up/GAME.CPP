@@ -7,6 +7,8 @@ Game::Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck
 	m_players(players), m_cardsDeck(cardsDeck), m_chat(chat), m_descendingDeck1(100), m_descendingDeck2(100),
 	m_ascendingDeck1(1), m_ascendingDeck2(1), m_areCardsDealt(false), m_areCardsShuffled(false)
 {
+	m_chatTimer.start(999999); 
+
 	m_descendingDeck1 = Card(100);
 	m_descendingDeck2 = Card(100);
 	m_ascendingDeck1 = Card(1);

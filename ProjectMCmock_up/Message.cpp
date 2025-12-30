@@ -1,54 +1,25 @@
-#include "Message.h"
+﻿#include "Message.h"
+#include <regex>
 
-Message::Message()
+Message::Message(const std::string& text, const std::string& playerName)
+    : m_playerName(playerName)
 {
-	m_playerName ="";
-	m_text ="";
+    m_text = FilterNumbers(text);
 }
 
-Message::Message(const std::string& text, const std::string& playerName, std::chrono::system_clock::time_point time):
-    m_text(text), m_playerName(playerName), m_time(time)
-{
-}
-
-std::string Message::GetPlayerName() const
-{
+std::string Message::GetPlayerName() const {
     return m_playerName;
 }
 
-std::string Message::GetTextFromPlayer() const
-{
-	return m_text;
+std::string Message::GetTextFromPlayer() const {
+    return m_text;
 }
 
-std::chrono::system_clock::time_point Message::GetTimeStamp() const
+std::string Message::FilterNumbers(const std::string& text) const
 {
-    return m_time;
-}
+    
+    static const std::regex digitRegex(R"(\d)");
 
-
-void Message::SetPlayerName(const Player& player)
-{
-    m_playerName = player.GetUsername();
-}
-
-void Message::SetTextFromPlayer(const std::string& text)
-{
-    bool contains_numbers = false;
-    for (const char& c : text)
-    {
-        if (std::isdigit(c)) {
-            contains_numbers = true;
-            break;
-        }
-    }
-    if (contains_numbers)
-        m_text = "###";
-    else
-        m_text = text;
-}
-
-void Message::SetTimeStamp(std::chrono::system_clock::time_point time)
-{
-    m_time = time;
+    
+    return std::regex_replace(text, digitRegex, "#");
 }

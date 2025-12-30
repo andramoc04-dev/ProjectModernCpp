@@ -21,15 +21,33 @@ GamePage::GamePage(QWidget *parent)
 	ui.setupUi(this);
 	net = new QNetworkAccessManager(this);
 
-	connect(ui.sendButton, &QPushButton::clicked, this, &GamePage::onSendClicked);
+	connect(ui.sendButton, &QPushButton::clicked,
+		this, &GamePage::onSendClicked);
 
-	chatTimer = new QTimer(this);
-	connect(chatTimer, &QTimer::timeout, this, &GamePage::fetchMessages);
-	chatTimer->start(800);
+	// pornește timerele DLL
+	m_chatTimer.start(1);   // 1 sec
+	m_stateTimer.start(2);  // 2 sec
 
-	QTimer* timer = new QTimer(this);
-	connect(timer, &QTimer::timeout, this, &GamePage::fetchGameState);
-	timer->start(2000); // la fiecare 2 secunde
+	m_pollRunning = true;
+
+	m_pollThread = std::thread([this]() {
+		while (m_pollRunning.load()) {
+
+			if (m_chatTimer.expired()) {
+				QMetaObject::invokeMethod(
+					this, "fetchMessages", Qt::QueuedConnection);
+				m_chatTimer.start(1);
+			}
+
+			if (m_stateTimer.expired()) {
+				QMetaObject::invokeMethod(
+					this, "fetchGameState", Qt::QueuedConnection);
+				m_stateTimer.start(2);
+			}
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		}
+		});
 
 
 	ui.chatInput->setStyleSheet(
@@ -64,7 +82,11 @@ GamePage::GamePage(int playerId,const QString& playerName, int gameId, int oppon
 }
 
 GamePage::~GamePage()
-{}
+{
+	m_pollRunning = false;
+	if (m_pollThread.joinable())
+		m_pollThread.join();
+}
 
 
 void GamePage::FetchHand()
@@ -327,13 +349,8 @@ void GamePage::initializeGame(int playerId,const QString& playerName, int gameId
 	m_opponentId = opponentId;
 	m_cardsPlacedThisTurn = 0;
 	
-	/*QString title = QString("You play as: %1 | Team: Player %2 & Player %3")
-		.arg(m_playerName)
-		.arg(m_playerId)
-		.arg(m_opponentId);
 
-	this->setWindowTitle(title);*/
-
+	
 
 	net = new QNetworkAccessManager(this);
 
@@ -357,7 +374,7 @@ void GamePage::initializeGame(int playerId,const QString& playerName, int gameId
 	updatePileVisual(ui.DescendingDeck1Number, 100);
 	updatePileVisual(ui.DescendingDeck2Number, 100);
 
-
+	fetchGameState();
 
 }
 
@@ -370,7 +387,11 @@ void GamePage::onSendClicked()
 	obj["playerName"] = m_playerName;
 	obj["text"] = ui.chatInput->text();
 
-	QNetworkRequest req(QUrl("http://127.0.0.1:18080/chat/send"));
+	
+	QNetworkRequest req(QUrl(
+		QString("http://127.0.0.1:18080/game/%1/chat/send").arg(m_gameId)
+	));
+
 	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
 	net->post(req, QJsonDocument(obj).toJson());
@@ -463,7 +484,11 @@ void GamePage::onDrawCardClicked()
 
 void GamePage::fetchMessages()
 {
-	QNetworkRequest req(QUrl("http://127.0.0.1:18080/chat/messages"));
+	
+	QNetworkRequest req(QUrl(
+		QString("http://127.0.0.1:18080/game/%1/chat/messages").arg(m_gameId)
+	));
+
 	QNetworkReply* reply = net->get(req);
 
 	connect(reply, &QNetworkReply::finished, [this, reply]()

@@ -219,59 +219,55 @@ void http::Routing::Run(UserProfiles& storage)
 	using namespace std::chrono;
 
 	
-	CROW_ROUTE(m_app, "/chat/send").methods(crow::HTTPMethod::POST)
-		([&](const crow::request& req) {
+	
+	CROW_ROUTE(m_app, "/game/<int>/chat/send").methods(crow::HTTPMethod::POST)
+		([this](const crow::request& req, int gameId) {
+
 		auto body = crow::json::load(req.body);
-		if (!body) return crow::response(400, R"({"error":"Invalid JSON"})");
+		if (!body) return crow::response(400);
 
 		std::string text = body["text"].s();
-		std::string playerName = body["playerName"].s(); 
-		auto now = system_clock::now();
-		Message msg{ text, playerName, now };
+		std::string playerName = body["playerName"].s();
 
-		{
-			std::lock_guard<std::mutex> lk(m_chatMutex);
-			m_chat.AddMessage(msg);
-		}
-		crow::json::wvalue resp;
-		resp["status"] = "ok";
-		return crow::response{ resp.dump() };
+		std::lock_guard<std::mutex> lk(m_lobbyMutex);
+
+		auto it = m_activeGames.find(gameId);
+		if (it == m_activeGames.end())
+			return crow::response(404);
+
+		Message msg(text, playerName);
+		it->second.GetChat().AddMessage(msg);
+
+		return crow::response(200);
 			});
+
 
 	
 
+	CROW_ROUTE(m_app, "/game/<int>/chat/messages").methods(crow::HTTPMethod::GET)
+		([this](int gameId) {
 
-	CROW_ROUTE(m_app, "/chat/messages").methods(crow::HTTPMethod::GET)
-		([&](const crow::request&) {
+		std::lock_guard<std::mutex> lk(m_lobbyMutex);
+
+		auto it = m_activeGames.find(gameId);
+		if (it == m_activeGames.end())
+			return crow::response(404);
 
 		crow::json::wvalue response;
+		int idx = 0;
 
-		{
-			std::lock_guard<std::mutex> lk(m_chatMutex);
-			const auto& msgs = m_chat.GetMessages();
-
-			int index = 0;
-			for (const auto& m : msgs)
-			{
-				crow::json::wvalue item;
-
-				item["playerName"] = m.GetPlayerName();
-				item["text"] = m.GetTextFromPlayer();
-
-				auto ts = std::chrono::duration_cast<std::chrono::milliseconds>(
-					m.GetTimeStamp().time_since_epoch()
-				).count();
-
-				item["ts"] = ts;
-
-				response[index] = std::move(item); 
-				index++;
-			}
+		for (const auto& m : it->second.GetChat().GetMessages()) {
+			response[idx]["playerName"] = m.GetPlayerName();
+			response[idx]["text"] = m.GetTextFromPlayer();
+			idx++;
 		}
 
 		return crow::response(response.dump());
 			});
-	
+
+	 
+
+
 
 	CROW_ROUTE(m_app, "/game/<int>/shuffle").methods(crow::HTTPMethod::POST)
 		([this, &storage](int gameId) {

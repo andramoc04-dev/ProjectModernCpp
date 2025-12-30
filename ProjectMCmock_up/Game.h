@@ -1,7 +1,7 @@
 #pragma once
 #include "Player.h"
 #include "Chat.h"
-
+#include "../TimerDLL/GameTimer.h"
 #include <vector>
 #include <stack>
 
@@ -32,7 +32,7 @@ public:
 
 	const std::vector<Player>& GetPlayers() const { return m_players; }
 	std::vector<Player>& GetPlayers() { return m_players; }
-
+	Chat& GetChat() { return m_chat; }
 private:
 	std::vector<Player> m_players;
 	std::stack<Card> m_cardsDeck;
@@ -40,5 +40,6 @@ private:
 	Card m_descendingDeck1, m_descendingDeck2, m_ascendingDeck1, m_ascendingDeck2;
 	bool m_areCardsDealt;
 	bool m_areCardsShuffled;
+	GameTimer m_chatTimer;
 };
 

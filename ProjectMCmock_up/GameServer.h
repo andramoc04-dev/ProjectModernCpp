@@ -20,8 +20,7 @@ namespace http
 	private:
 		crow::SimpleApp m_app;
 
-		Chat m_chat; 
-		std::mutex m_chatMutex;
+		
 		std::unordered_map<int, Game> m_activeGames;
 
 		struct LobbyInfo {
