@@ -26,6 +26,7 @@
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PowerUp.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
@@ -37,6 +38,7 @@
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="Message.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PowerUp.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="User.cpp" />
     <ClCompile Include="Utils.cpp" />
