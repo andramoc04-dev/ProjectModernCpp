@@ -228,17 +228,23 @@ void GamePage::fetchGameState()
 		updatePileVisual(ui.AscendingDeck1Number, piles[2].toInt());
 		updatePileVisual(ui.AscendingDeck2Number, piles[3].toInt());
 
-		// actualizează mâinile jucătorilor
 		QJsonArray players = obj["players"].toArray();
-		for (auto playerVal : players) {
+
+		m_allPlayerNames.clear();
+
+		for (const auto& playerVal : players) {
 			QJsonObject playerObj = playerVal.toObject();
-			int id = playerObj["id"].toInt();
 			QString username = playerObj["username"].toString();
-			QJsonArray hand = playerObj["hand"].toArray();
-
-			qDebug() << "Player" << id << "(" << username << ") hand:" << hand;
-
+			m_allPlayerNames << username;
 		}
+
+		// construim titlul
+		QString title = QString("You play as: %1 | Team: %2")
+			.arg(m_playerName)
+			.arg(m_allPlayerNames.join(", "));
+
+		this->setWindowTitle(title);
+
 
 		reply->deleteLater();
 		});
@@ -321,7 +327,12 @@ void GamePage::initializeGame(int playerId,const QString& playerName, int gameId
 	m_opponentId = opponentId;
 	m_cardsPlacedThisTurn = 0;
 	
-	this->setWindowTitle(QString("Game %1 — You: %2 and %3").arg(m_gameId).arg(m_playerId).arg(m_opponentId));
+	/*QString title = QString("You play as: %1 | Team: Player %2 & Player %3")
+		.arg(m_playerName)
+		.arg(m_playerId)
+		.arg(m_opponentId);
+
+	this->setWindowTitle(title);*/
 
 
 	net = new QNetworkAccessManager(this);
