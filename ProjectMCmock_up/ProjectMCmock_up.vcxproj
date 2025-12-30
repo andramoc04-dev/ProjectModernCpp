@@ -25,6 +25,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="Message.h" />
+    <ClInclude Include="MinigameTimerState.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="Utils.h" />
@@ -43,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TimerDLL\TimerDLL.vcxproj">
-      <Project>{c4c7b028-829c-481e-b1d0-4f01b17620d3}</Project>
+      <Project>{4c9fd3ed-548c-4d04-915d-92b2ba23b65b}</Project>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">

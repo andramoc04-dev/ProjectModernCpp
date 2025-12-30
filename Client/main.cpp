@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
     /*GamePage game;
     game.show();*/
 
-    /*MinigamePage minigame;
-    minigame.show();*/
+    MinigamePage minigame;
+    minigame.show();
 
     LoginPage login;
     login.show();

@@ -157,6 +157,11 @@
   <ItemGroup>
     <QtMoc Include="MinigamePage.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TimerDLL\TimerDLL.vcxproj">
+      <Project>{4c9fd3ed-548c-4d04-915d-92b2ba23b65b}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />
