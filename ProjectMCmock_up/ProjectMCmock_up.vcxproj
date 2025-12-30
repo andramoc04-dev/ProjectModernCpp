@@ -25,7 +25,6 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="Message.h" />
-    <ClInclude Include="MinigameTimerState.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="Utils.h" />

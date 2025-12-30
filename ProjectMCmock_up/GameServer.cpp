@@ -1,6 +1,78 @@
 ﻿#include "GameServer.h"
 #include <mutex>
 #include <vector>
+#include <algorithm>
+
+
+void http::Routing::StartGameForGroupLocked(UserProfiles& storage, const std::vector<int>& playerIds)
+{
+	if ((int)playerIds.size() < kMinPlayersPerGame)
+		return;
+
+	const int gid = m_nextGameId++;
+
+	std::vector<Player> players;
+	players.reserve(playerIds.size());
+	for (int pid : playerIds) {
+		auto u = storage.GetUserById(pid).value();
+		players.push_back(Player::ConvertUserToPlayer(u));
+	}
+
+	m_activeGames[gid] = Game(players, std::stack<Card>{}, Chat());
+
+	for (int pid : playerIds) {
+		LobbyInfo info;
+		info.m_started = true;
+		info.m_gameId = gid;
+		info.m_matchedPlayerId = -1;
+		for (int other : playerIds) {
+			if (other != pid) { info.m_matchedPlayerId = other; break; }
+		}
+		m_playerLobbyMap[pid] = info;
+	}
+}
+
+bool http::Routing::TryStartMatchLocked(UserProfiles& storage)
+{
+	if ((int)m_waitingPlayers.size() < kMinPlayersPerGame)
+		return false;
+
+	if ((int)m_waitingPlayers.size() >= kMaxPlayersPerGame) {
+		std::vector<int> playerIds;
+		playerIds.reserve(kMaxPlayersPerGame);
+		for (int i =0; i < kMaxPlayersPerGame; i++) {
+			playerIds.push_back(m_waitingPlayers[i].playerId);
+		}
+
+		StartGameForGroupLocked(storage, playerIds);
+		m_waitingPlayers.erase(m_waitingPlayers.begin(), m_waitingPlayers.begin() + kMaxPlayersPerGame);
+		return true;
+	}
+
+	int oldestIdx =0;
+	int oldestElapsed = -1;
+	for (int i =0; i < (int)m_waitingPlayers.size(); i++) {
+		int e = m_waitingPlayers[i].timer.elapsedSeconds();
+		if (e > oldestElapsed) {
+			oldestElapsed = e;
+			oldestIdx = i;
+		}
+	}
+
+	const bool oldestExpired = m_waitingPlayers[oldestIdx].timerStarted && m_waitingPlayers[oldestIdx].timer.expired();
+	if (!oldestExpired)
+		return false;
+
+	std::vector<int> playerIds;
+	playerIds.reserve(m_waitingPlayers.size());
+	for (const auto& wp : m_waitingPlayers) {
+		playerIds.push_back(wp.playerId);
+	}
+
+	StartGameForGroupLocked(storage, playerIds);
+	m_waitingPlayers.clear();
+	return true;
+}
 
 void http::Routing::Run(UserProfiles& storage)
 {
@@ -27,7 +99,7 @@ void http::Routing::Run(UserProfiles& storage)
 		return crow::response{ json.dump() };
 
 		});
-
+	
 
 	CROW_ROUTE(m_app, "/addplayer").methods(crow::HTTPMethod::POST)
 		([&storage](const crow::request& req) {
@@ -51,7 +123,7 @@ void http::Routing::Run(UserProfiles& storage)
 
 		return crow::response(201, R"({"status":"Player created"})");
 			});
-
+	
 
 	CROW_ROUTE(m_app, "/login").methods(crow::HTTPMethod::POST)
 		([&storage](const crow::request& req) {
@@ -67,7 +139,6 @@ void http::Routing::Run(UserProfiles& storage)
 			return crow::response(400, R"({"error":"Missing name or password"})");
 		}
 
-		// verificăm dacă există jucătorul
 		auto players = storage.GetUsers();
 		for (const auto& p : players) {
 			if (p.GetUsername() == name && p.GetPassword() == password) {
@@ -84,8 +155,7 @@ void http::Routing::Run(UserProfiles& storage)
 
 		return crow::response(401, R"({"error":"Invalid credentials"})");
 			});
-
-
+	
 
 
 	CROW_ROUTE(m_app, "/join").methods(crow::HTTPMethod::POST)
@@ -101,48 +171,21 @@ void http::Routing::Run(UserProfiles& storage)
 		}
 
 		const auto& user = userOpt.value();
-		std::string playerName = user.GetUsername();
 		{
 			std::lock_guard<std::mutex> lk(m_lobbyMutex);
-
-			// dacă nu e deja în map, îl adăugăm în coadă
 			if (m_playerLobbyMap.find(playerId) == m_playerLobbyMap.end()) {
-				m_waitingPlayers.push_back(playerId);
+				WaitingPlayer wp;
+				wp.playerId = playerId;
+				wp.score = (int)user.GetScore();
+				wp.timer.start(kLobbyTimeoutSeconds);
+				wp.timerStarted = true;
+
+				m_waitingPlayers.push_back(std::move(wp));
 				m_playerLobbyMap[playerId] = LobbyInfo{};
 			}
 
-			// dacă sunt cel puțin 2, formăm o pereche simplă
-			if (m_waitingPlayers.size() >= 2) {
-				int a = m_waitingPlayers[0];
-				int b = m_waitingPlayers[1];
-				auto userB = storage.GetUserById(b).value();
-
-				LobbyInfo infoA, infoB;
-				infoA.m_started = true;
-				infoB.m_started = true;
-				infoA.m_matchedPlayerId = b;
-				infoB.m_matchedPlayerId = a;
-				int gid = m_nextGameId++;
-				infoA.m_gameId = gid;
-				infoB.m_gameId = gid;
-
-
-				Game& gameInst = m_activeGames[gid];
-				gameInst.AddPlayer(Player(a, user.GetUsername()));
-				gameInst.AddPlayer(Player(b, userB.GetUsername()));
-
-				m_playerLobbyMap[a] = infoA;
-				m_playerLobbyMap[b] = infoB;
-
-				Player player1 = Player().ConvertUserToPlayer(storage.GetUserById(a).value());
-				Player player2 = Player().ConvertUserToPlayer(storage.GetUserById(b).value());
-
-				gameInst = Game({ player1, player2 }, std::stack<Card>{}, Chat());
-
-
-				m_waitingPlayers.erase(m_waitingPlayers.begin());
-				m_waitingPlayers.erase(m_waitingPlayers.begin());
-
+			while (TryStartMatchLocked(storage)) {
+				// keep matching
 			}
 		}
 
@@ -154,6 +197,9 @@ void http::Routing::Run(UserProfiles& storage)
 	CROW_ROUTE(m_app, "/status/<int>").methods(crow::HTTPMethod::GET)
 		([this, &storage](const crow::request& /*req*/, int playerId) {
 		std::lock_guard<std::mutex> lk(m_lobbyMutex);
+		while (TryStartMatchLocked(storage)) {
+		}
+
 		crow::json::wvalue resp;
 		auto it = m_playerLobbyMap.find(playerId);
 		if (it == m_playerLobbyMap.end()) {
@@ -167,11 +213,9 @@ void http::Routing::Run(UserProfiles& storage)
 		resp["opponentId"] = info.m_matchedPlayerId;
 		return crow::response{ resp.dump() };
 			});
-
-
-
-
 	
+
+
 	using namespace std::chrono;
 
 	
@@ -181,9 +225,7 @@ void http::Routing::Run(UserProfiles& storage)
 		if (!body) return crow::response(400, R"({"error":"Invalid JSON"})");
 
 		std::string text = body["text"].s();
-		std::string playerName = body["playerName"].s(); // sau află din id: body["playerId"]
-
-		// creează Message (folosesc timestamp acum)
+		std::string playerName = body["playerName"].s(); 
 		auto now = system_clock::now();
 		Message msg{ text, playerName, now };
 
@@ -229,7 +271,7 @@ void http::Routing::Run(UserProfiles& storage)
 
 		return crow::response(response.dump());
 			});
-
+	
 
 	CROW_ROUTE(m_app, "/game/<int>/shuffle").methods(crow::HTTPMethod::POST)
 		([this, &storage](int gameId) {
@@ -253,34 +295,34 @@ void http::Routing::Run(UserProfiles& storage)
 
 		return crow::response{ resp.dump() };
 			});
+	
 
+	CROW_ROUTE(m_app, "/game/<int>/distribution").methods(crow::HTTPMethod::POST)
+		([this, &storage](int gameId) {
+		std::lock_guard<std::mutex> lk(m_lobbyMutex);
 
-	    CROW_ROUTE(m_app, "/game/<int>/distribution").methods(crow::HTTPMethod::POST)
-			([this, &storage](int gameId) {
-			std::lock_guard<std::mutex> lk(m_lobbyMutex);
+		auto it = m_activeGames.find(gameId);
+		if (it == m_activeGames.end()) {
+			return crow::response(404, R"({"error":"Game not found"})");
+		}
 
-			auto it = m_activeGames.find(gameId);
-			if (it == m_activeGames.end()) {
-				return crow::response(404, R"({"error":"Game not found"})");
-			}
+		Game& gameInst = it->second;
 
-			Game& gameInst = it->second;
+		if (!gameInst.GetAreCardsShuffled()) {
+			return crow::response(400, R"({"error":"Deck not shuffled yet"})");
+		}
 
-			if (!gameInst.GetAreCardsShuffled()) {
-				return crow::response(400, R"({"error":"Deck not shuffled yet"})");
-			}
+		if (gameInst.GetAreCardsDealt()==true) {
+			return crow::response(400, R"({"error":"Cards already dealt"})");
+		}
 
-			if (gameInst.GetAreCardsDealt()==true) {
-				return crow::response(400, R"({"error":"Cards already dealt"})");
-			}
+		gameInst.CardsDistribution(); 
 
-			gameInst.CardsDistribution(); 
+		crow::json::wvalue resp;
+		resp["gameId"] = gameId;
+		resp["status"] = "cards dealt";
 
-			crow::json::wvalue resp;
-			resp["gameId"] = gameId;
-			resp["status"] = "cards dealt";
-
-			return crow::response{ resp.dump() };
+		return crow::response{ resp.dump() };
 			});
 			
 		CROW_ROUTE(m_app, "/game/<int>/player/<int>/hand").methods(crow::HTTPMethod::GET)
@@ -350,7 +392,7 @@ void http::Routing::Run(UserProfiles& storage)
 				resp["success"] = placed;
 				resp["cardValue"] = cardValue;
 				resp["pileId"] = pileId;
-				resp["cardsPlacedThisTurn"] = player.GetCardsPlacedThisTurn(); // ADAUGĂ
+				resp["cardsPlacedThisTurn"] = player.GetCardsPlacedThisTurn();
 
 
 				switch (pileId) {
@@ -378,8 +420,8 @@ void http::Routing::Run(UserProfiles& storage)
 			catch (const std::exception& e) {
 				return crow::response(400, R"({"error":")" + std::string(e.what()) + "\"}");
 			}
-				});
-
+			});
+	
 
 		CROW_ROUTE(m_app, "/game/<int>/state").methods(crow::HTTPMethod::GET)
 			([this, &storage](int gameId) {

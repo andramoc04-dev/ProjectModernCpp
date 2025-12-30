@@ -2,7 +2,9 @@
 
 #include <QDialog>
 #include <QNetworkAccessManager>
-#include <QTimer>
+
+#include <atomic>
+#include <thread>
 
 namespace Ui { class LobbyPageClass; }
 
@@ -21,7 +23,10 @@ private slots:
 private:
     Ui::LobbyPageClass* ui;
     QNetworkAccessManager* network;
-    QTimer* pollTimer;
+
+    std::atomic_bool m_pollRunning{false};
+    std::thread m_pollThread;
+
     int m_playerId;
     QString m_serverBase;
     QString m_playerName;
