@@ -1,6 +1,7 @@
 #pragma once
 #include "Card.h"
 #include "User.h"
+#include "PowerUp.h"
 #include <cstdint>
 #include <unordered_set>
 #include <string>
@@ -39,10 +40,15 @@ public:
 	
 	static Player ConvertUserToPlayer(const User& user);
 
+	void AddPowerUp(const PowerUp& powerUp);
+	const std::vector<PowerUp>& GetInventory() const;
+
+
 private:
 	
 	std::unordered_set<Card> m_hand;
 	int m_numberOfPlacedCards = 0;
+	std::vector<PowerUp> m_inventory;
 	
 };
 

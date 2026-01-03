@@ -2,8 +2,8 @@
 #include <string>
 #include <cstdint>
 
-#include "Game.h";
-
+class Player;
+class Game;
 
 
 enum class PowerUpType : uint8_t
@@ -28,16 +28,16 @@ public:
     std::string GetDescription() const;
     std::string GetIconPath() const;
 
-   
+
+    void SetName(const std::string& name);
+    void SetDescription(const std::string& desc);
+
     void SetDatabaseId(uint32_t id);
 
-    
     bool Use(Player& user, Game& game, int targetPlayerId = -1, int targetCardValue = -1, int targetPileId = -1);
 
-   
     bool CanBeUsed(const Player& user, const Game& game) const;
 
-    
     static PowerUp CreateSkipTurn(uint32_t dbId = 0);
     static PowerUp CreatePlaceAnyCard(uint32_t dbId = 0);
     static PowerUp CreateDiscardCard(uint32_t dbId = 0);
@@ -48,7 +48,11 @@ public:
     static std::string TypeToString(PowerUpType type);
     static PowerUpType StringToType(const std::string& typeStr);
 
-private:
+    std::string GetTypeString() const;
+    void SetTypeString(const std::string& typeStr);
+
+
+public:
     uint32_t m_databaseId;  
     PowerUpType m_type;
     std::string m_name;

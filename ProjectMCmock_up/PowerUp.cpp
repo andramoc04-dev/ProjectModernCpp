@@ -1,4 +1,4 @@
-#include "Powerup.h"
+//#include "Powerup.h"
 #include "Player.h"
 #include "Game.h"
 #include <algorithm>
@@ -66,6 +66,8 @@ std::string PowerUp::GetName() const
     return m_name;
 }
 
+
+
 std::string PowerUp::GetDescription() const
 {
     return m_description;
@@ -79,6 +81,16 @@ uint32_t PowerUp::GetDatabaseId() const
 std::string PowerUp::GetIconPath() const
 {
     return m_iconPath;
+}
+
+void PowerUp::SetName(const std::string& name)
+{
+    m_name = name;
+}
+
+void PowerUp::SetDescription(const std::string& desc)
+{
+    m_description = desc;
 }
 
 void PowerUp::SetDatabaseId(uint32_t id)
@@ -190,6 +202,16 @@ PowerUpType PowerUp::StringToType(const std::string& typeStr)
     if (typeStr == "NO_SCORE_LOSS") return PowerUpType::NO_SCORE_LOSS;
     if (typeStr == "STEAL_CARD") return PowerUpType::STEAL_CARD;
     return PowerUpType::SKIP_TURN;
+}
+
+std::string PowerUp::GetTypeString() const
+{
+   return TypeToString(m_type);
+}
+
+void PowerUp::SetTypeString(const std::string& typeStr)
+{
+    m_type = StringToType(typeStr);
 }
 
 bool PowerUp::ExecuteSkipTurn(Player& user, Game& game)

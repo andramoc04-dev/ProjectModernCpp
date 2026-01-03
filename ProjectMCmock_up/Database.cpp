@@ -51,6 +51,29 @@ bool http::UserProfiles::HasUserWithName(const std::string& name)
     return false;
 }
 
+void http::UserProfiles::AddPowerUpToUser(uint32_t userId, uint32_t powerUpId)
+{
+
+    InventoryEntry entry;
+    entry.SetUserId(userId);
+    entry.SetPowerUpId(powerUpId);
+    m_db.insert(entry);
+
+}
+
+std::vector<PowerUp> http::UserProfiles::GetUserInventory(uint32_t userId)
+{
+
+    auto entries = m_db.get_all<InventoryEntry>(sql::where(sql::c(&InventoryEntry::GetUserId) == userId));
+    std::vector<PowerUp> inventory;
+    for (auto& e : entries) 
+    {
+        auto powerUp = m_db.get<PowerUp>(e.GetPowerUpId());
+        inventory.push_back(powerUp);
+    }
+    return inventory;
+
+}
 
 
 
