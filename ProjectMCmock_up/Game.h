@@ -23,16 +23,16 @@ public:
 	Player& GetPlayer(int id);
 	bool GetAreCardsDealt() const;
 	bool GetAreCardsShuffled() const;
-	std::stack<Card>& GetCardsDeck() { return m_cardsDeck; }
+	std::stack<Card>& GetCardsDeck();
 
-	Card& GetDescendingDeck1() { return m_descendingDeck1; }
-	Card& GetDescendingDeck2() { return m_descendingDeck2; }
-	Card& GetAscendingDeck1() { return m_ascendingDeck1; }
-	Card& GetAscendingDeck2() { return m_ascendingDeck2; }
+	Card& GetDescendingDeck1();
+	Card& GetDescendingDeck2();
+	Card& GetAscendingDeck1();
+	Card& GetAscendingDeck2();
 
-	const std::vector<Player>& GetPlayers() const { return m_players; }
-	std::vector<Player>& GetPlayers() { return m_players; }
-	Chat& GetChat() { return m_chat; }
+	const std::vector<Player>& GetPlayers() const;
+	std::vector<Player>& GetPlayers();
+	Chat& GetChat();
 private:
 	std::vector<Player> m_players;
 	std::stack<Card> m_cardsDeck;

@@ -211,3 +211,43 @@ bool Game::GetAreCardsShuffled() const
 	return m_areCardsShuffled;
 }
 
+std::stack<Card>& Game::GetCardsDeck()
+{
+	return m_cardsDeck;
+}
+
+Card& Game::GetDescendingDeck1()
+{
+	return m_descendingDeck1;
+}
+
+Card& Game::GetDescendingDeck2()
+{
+	return m_descendingDeck2;
+}
+
+Card& Game::GetAscendingDeck1()
+{
+	return m_ascendingDeck1;
+}
+
+Card& Game::GetAscendingDeck2()
+{
+	return m_ascendingDeck2;
+}
+
+std::vector<Player>& Game::GetPlayers()
+{
+	return m_players;
+}
+
+Chat& Game::GetChat()
+{
+	return m_chat;
+}
+
+const std::vector<Player>& Game::GetPlayers() const
+{
+	return m_players;
+
+}

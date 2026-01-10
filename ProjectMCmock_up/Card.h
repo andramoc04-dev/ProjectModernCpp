@@ -18,7 +18,7 @@ public:
 	std::uint16_t GetNumber() const;
 	OrderDirection GetDirection() const;
 
-	void SetNumber(std::uint16_t number) { m_number = number; }
+	void SetNumber(std::uint16_t number);
 
 	void SetDirection(OrderDirection direction);
 
@@ -26,13 +26,8 @@ public:
 
 	bool operator ==(const Card& other) const;
 
-	Card& operator=(const Card& other) {
-		if (this != &other) {
-			m_number = other.m_number;
-			m_direction = other.m_direction;
-		}
-		return *this;
-	}
+	Card& operator=(const Card& other);
+	
 
 	
 private:
