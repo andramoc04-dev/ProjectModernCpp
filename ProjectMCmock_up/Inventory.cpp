@@ -2,12 +2,11 @@
 
 
 Inventory::Inventory()
+	: m_id(0)
+	, userId(0)
+	, powerUpId(0)
+	, m_isEquipped(false)
 {
-	m_id = 0;
-	userId = 0;	
-	powerUpId = 0;
-	m_isEquipped = false;
-	
 }
 
 void Inventory::SetId(uint32_t id)

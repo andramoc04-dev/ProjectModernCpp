@@ -66,6 +66,13 @@ namespace http
 		std::optional<User> GetUserById(int id);
 		void AddUserToGame(const std::string& name, const std::string& password = "");
 		bool HasUserWithName(const std::string& name);
+		void UpdateUser(const User& user);
+
+		void InitializePowerUps();
+		std::vector<PowerUp> GetAllPowerUps();
+		std::optional<PowerUp> GetPowerUpById(uint32_t id);
+		std::optional<PowerUp> GetPowerUpByType(PowerUpType type);
+		uint32_t AddPowerUpToDataBase(const PowerUp& powerUp);
 
 		void AddPowerUpToUser(uint32_t userId, uint32_t powerUpId);
 		std::vector<PowerUp> GetUserInventory(uint32_t userId);

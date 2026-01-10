@@ -51,6 +51,64 @@ bool http::UserProfiles::HasUserWithName(const std::string& name)
     return false;
 }
 
+void http::UserProfiles::UpdateUser(const User& user)
+{
+	m_db.update(user);
+}
+
+void http::UserProfiles::InitializePowerUps()
+{
+    auto existingPowerUps = m_db.get_all<PowerUp>();
+    if (!existingPowerUps.empty()) {
+        return; 
+    }
+
+    
+    std::vector<PowerUp> defaultPowerUps = {
+        PowerUp::CreateSkipTurn(),
+        PowerUp::CreatePlaceAnyCard(),
+        PowerUp::CreateDiscardCard(),
+        PowerUp::CreateNoScoreLoss(),
+        PowerUp::CreateStealCard()
+    };
+
+    for (auto& powerUp : defaultPowerUps) {
+        m_db.insert(powerUp);
+    }
+}
+
+std::vector<PowerUp> http::UserProfiles::GetAllPowerUps()
+{
+    return m_db.get_all<PowerUp>();
+}
+
+std::optional<PowerUp> http::UserProfiles::GetPowerUpById(uint32_t id)
+{
+    try {
+        auto powerUp = m_db.get<PowerUp>(id);
+        return powerUp;
+    }
+    catch (const std::system_error&) {
+        return std::nullopt;
+    }
+}
+
+std::optional<PowerUp> http::UserProfiles::GetPowerUpByType(PowerUpType type)
+{
+    auto allPowerUps = m_db.get_all<PowerUp>();
+    for (const auto& powerUp : allPowerUps) {
+        if (powerUp.GetType() == type) {
+            return powerUp;
+        }
+    }
+    return std::nullopt;
+}
+
+uint32_t http::UserProfiles::AddPowerUpToDataBase(const PowerUp& powerUp)
+{
+    return static_cast<uint32_t>(m_db.insert(powerUp));
+}
+
 void http::UserProfiles::AddPowerUpToUser(uint32_t userId, uint32_t powerUpId)
 {
 
