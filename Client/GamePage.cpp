@@ -28,27 +28,9 @@ GamePage::GamePage(QWidget *parent)
 	m_chatTimer.start(1);   // 1 sec
 	m_stateTimer.start(2);  // 2 sec
 
-	m_pollRunning = true;
-
-	m_pollThread = std::thread([this]() {
-		while (m_pollRunning.load()) {
-
-			if (m_chatTimer.expired()) {
-				QMetaObject::invokeMethod(
-					this, "fetchMessages", Qt::QueuedConnection);
-				m_chatTimer.start(1);
-			}
-
-			if (m_stateTimer.expired()) {
-				QMetaObject::invokeMethod(
-					this, "fetchGameState", Qt::QueuedConnection);
-				m_stateTimer.start(2);
-			}
-
-			std::this_thread::sleep_for(std::chrono::milliseconds(50));
-		}
-		});
-
+	m_pollTimer = new QTimer(this);
+	connect(m_pollTimer, &QTimer::timeout, this, &GamePage::checkTimers);
+	m_pollTimer->start(50);
 
 	ui.chatInput->setStyleSheet(
 		"   background: transparent;"
@@ -83,9 +65,14 @@ GamePage::GamePage(int playerId,const QString& playerName, int gameId, int oppon
 
 GamePage::~GamePage()
 {
-	m_pollRunning = false;
-	if (m_pollThread.joinable())
-		m_pollThread.join();
+	// Oprește QTimer
+	if (m_pollTimer) {
+		m_pollTimer->stop();
+	}
+
+	// Oprește GameTimer DLL
+	m_chatTimer.stop();
+	m_stateTimer.stop();
 }
 
 
@@ -218,6 +205,7 @@ void GamePage::updatePileVisual(QLabel* pileLabel, int cardValue)
 
 	if (!pix.isNull()) {
 		pileLabel->setPixmap(pix.scaled(pileLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+		pileLabel->update();
 	}
 	else {
 		qDebug() << "Eroare: nu găsesc resursa pentru valoarea" << cardValue;
@@ -249,6 +237,8 @@ void GamePage::fetchGameState()
 		updatePileVisual(ui.DescendingDeck2Number, piles[1].toInt());
 		updatePileVisual(ui.AscendingDeck1Number, piles[2].toInt());
 		updatePileVisual(ui.AscendingDeck2Number, piles[3].toInt());
+
+		
 
 		QJsonArray players = obj["players"].toArray();
 
@@ -478,6 +468,20 @@ void GamePage::onDrawCardClicked()
 		}
 		reply->deleteLater();
 		});
+}
+
+void GamePage::checkTimers()
+{	// Verifică dacă timer-ul de chat a expirat
+	if (m_chatTimer.expired()) {
+		fetchMessages();
+		m_chatTimer.start(1);  // Restart pentru următorul ciclu
+	}
+
+	// Verifică dacă timer-ul de game state a expirat
+	if (m_stateTimer.expired()) {
+		fetchGameState();
+		m_stateTimer.start(2);  // Restart pentru următorul ciclu
+	}
 }
 
 

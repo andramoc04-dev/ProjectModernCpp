@@ -3,6 +3,7 @@
 #include <QDialog>
 #include <QGridLayout>
 #include <QNetworkAccessManager>
+#include <QTimer> 
 #include "../TimerDLL/GameTimer.h"
 #include "ui_GamePage.h"
 #include <thread>
@@ -33,6 +34,7 @@ private slots:
 	void fetchMessages();
 	void onPileClicked(int pileId, QLabel* pileLabel);
 	void onDrawCardClicked();
+	void checkTimers();
 
 
 private:
@@ -44,12 +46,11 @@ private:
 	int m_cardsPlacedThisTurn = 0;
 	QStringList m_allPlayerNames;
 
-	std::atomic_bool m_pollRunning{ false };
-	std::thread m_pollThread;
 
 	GameTimer m_chatTimer;
 	GameTimer m_stateTimer;
 
+	QTimer* m_pollTimer;
 
 	QNetworkAccessManager* net;
 	
