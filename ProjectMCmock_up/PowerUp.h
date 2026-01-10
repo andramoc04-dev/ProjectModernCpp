@@ -27,11 +27,12 @@ public:
     std::string GetName() const;
     std::string GetDescription() const;
     std::string GetIconPath() const;
+	
 
 
     void SetName(const std::string& name);
     void SetDescription(const std::string& desc);
-
+	
     void SetDatabaseId(uint32_t id);
 
     bool Use(Player& user, Game& game, int targetPlayerId = -1, int targetCardValue = -1, int targetPileId = -1);
@@ -58,6 +59,7 @@ public:
     std::string m_name;
     std::string m_description;
     std::string m_iconPath;
+    
 
     
     bool ExecuteSkipTurn(Player& user, Game& game);

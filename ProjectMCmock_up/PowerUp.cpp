@@ -83,6 +83,8 @@ std::string PowerUp::GetIconPath() const
     return m_iconPath;
 }
 
+
+
 void PowerUp::SetName(const std::string& name)
 {
     m_name = name;
@@ -92,6 +94,7 @@ void PowerUp::SetDescription(const std::string& desc)
 {
     m_description = desc;
 }
+
 
 void PowerUp::SetDatabaseId(uint32_t id)
 {

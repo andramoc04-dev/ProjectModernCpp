@@ -46,7 +46,8 @@ namespace http
 				"UserPowerUps",
 				sql::make_column("id", &Inventory::SetId, &Inventory::GetId,sql::primary_key().autoincrement()),
 				sql::make_column("userId", &Inventory::SetUserId, &Inventory::GetUserId),
-				sql::make_column("powerUpId", &Inventory::SetPowerUpId, &Inventory::GetPowerUpId)
+				sql::make_column("powerUpId", &Inventory::SetPowerUpId, &Inventory::GetPowerUpId),
+				sql::make_column("isEquipped", &Inventory::SetIsEquipped, &Inventory::GetIsEquipped)
 			)
 
 
