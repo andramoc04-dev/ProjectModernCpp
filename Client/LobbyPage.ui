@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>LobbyPage</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"> background-color: #FDEED9;</string>
+  </property>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
@@ -24,7 +27,7 @@
    </property>
    <property name="font">
     <font>
-     <family>Times New Roman</family>
+     <family>Segoe UI</family>
      <pointsize>20</pointsize>
     </font>
    </property>

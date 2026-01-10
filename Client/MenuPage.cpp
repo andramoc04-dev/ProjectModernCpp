@@ -17,10 +17,10 @@ MenuPage::~MenuPage()
 void MenuPage::openProfilePage()
 {
     if (!profilePage)
-        profilePage = new ProfilePage(m_playerId, "http://127.0.0.1:18080", this);
+        profilePage = new ProfilePage(m_playerId, "http://127.0.0.1:18080", nullptr);
 
     profilePage->show();
-    this->hide();
+    this->close();
 
 }
 
@@ -35,7 +35,7 @@ void MenuPage::OpenLobbyPage()
     }
 
     const QString serverUrl = "http://127.0.0.1:18080";
-    lobbyPage = new LobbyPage(m_playerId,playerName, serverUrl, this);
+    lobbyPage = new LobbyPage(m_playerId,playerName, serverUrl, nullptr);
     lobbyPage->show();
-    this->hide();
+    this->close();
 }

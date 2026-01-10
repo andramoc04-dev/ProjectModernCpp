@@ -179,7 +179,7 @@ void LoginPage::onLoginReply(QNetworkReply* reply)
         loggedIn = true;
 
         // cream MenuPage, setam playerId si o aratam
-        menu = new MenuPage(this);
+        menu = new MenuPage(nullptr);
         if (id >= 0) {
             menu->setPlayerId(id);
           
@@ -190,7 +190,7 @@ void LoginPage::onLoginReply(QNetworkReply* reply)
         }
         menu->setPlayerName(name);
         menu->show();
-        this->hide();
+        this->close();
     }
     else if (statusCode == 401) {
         QMessageBox::warning(this, "Eroare", "Invalid credentials!");

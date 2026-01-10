@@ -1,4 +1,6 @@
 #include "MinigamePage.h"
+#include "GamePage.h"
+#include <QCloseEvent>
 
 MinigamePage::MinigamePage(QWidget *parent)
 	: QDialog(parent)
@@ -31,9 +33,19 @@ void MinigamePage::updateTimerUi()
     const int remaining = std::max(0, m_totalSeconds - elapsed);
     ui.m_timerLabel->setText(QString("Time: %1").arg(remaining));
 
-    if (m_gameTimer.expired()) {
+    if (m_gameTimer.expired() && !m_finishedEmitted) {
+        m_finishedEmitted = true;
+
+        emit minigameFinished(
+            property("playerId").toInt(),
+            property("playerName").toString(),
+            property("gameId").toInt(),
+            property("opponentId").toInt()
+        );
+
         close();
     }
+
 }
 
 void MinigamePage::RunMinigame()
@@ -76,3 +88,10 @@ void MinigamePage::RunMinigame()
     m_gameTimer.start(m_totalSeconds);
     QCoreApplication::postEvent(this, new QEvent(QEvent::User));
 }
+
+void MinigamePage::closeEvent(QCloseEvent* event)
+{
+
+    event->accept();
+}
+

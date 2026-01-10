@@ -2,7 +2,7 @@
 
 #include <QDialog>
 #include <QNetworkAccessManager>
-
+#include "GamePage.h"
 #include <atomic>
 #include <thread>
 
@@ -19,8 +19,10 @@ private slots:
     void onJoinReplyFinished();
     void pollStatus();
     void onStatusReplyFinished();
-
+    void onMinigameFinished(int playerId, QString playerName, int gameId, int opponentId);
 private:
+    GamePage* m_gamePage = nullptr;
+
     Ui::LobbyPageClass* ui;
     QNetworkAccessManager* network;
 

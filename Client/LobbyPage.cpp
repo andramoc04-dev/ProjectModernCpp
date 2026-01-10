@@ -1,6 +1,6 @@
 ﻿#include "LobbyPage.h"
 #include "ui_LobbyPage.h"
-#include "GamePage.h" // folosește GamePage existent
+#include "GamePage.h" 
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QJsonDocument>
@@ -8,6 +8,7 @@
 #include <QUrl>
 #include <QDebug>
 #include <QMetaObject>
+#include "MinigamePage.h"   
 
 #include <chrono>
 
@@ -29,7 +30,7 @@ LobbyPage::LobbyPage(int playerId,const QString& playerName, const QString& serv
  QNetworkReply* reply = network->post(req, QJsonDocument(obj).toJson());
  connect(reply, &QNetworkReply::finished, this, &LobbyPage::onJoinReplyFinished);
 
- ui->statusLabel->setText("Aștept jucători...");
+ 
 
  m_pollRunning = true;
  m_pollThread = std::thread([this]() {
@@ -56,13 +57,10 @@ void LobbyPage::onJoinReplyFinished()
 {
  QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
  if (!reply) return;
- if (reply->error() != QNetworkReply::NoError) {
+
+ if (reply->error() != QNetworkReply::NoError) 
  qWarning() << "Join failed:" << reply->errorString();
- if (ui->statusLabel) ui->statusLabel->setText("Eroare la join: " + reply->errorString());
- }
- else {
- if (ui->statusLabel) ui->statusLabel->setText("Te-ai alăturat lobby-ului. Așteaptă opponent...");
- }
+
  reply->deleteLater();
 }
 
@@ -93,14 +91,24 @@ void LobbyPage::onStatusReplyFinished()
 
  m_pollRunning = false;
 
- GamePage* gp = new GamePage(m_playerId, m_playerName, gameId, opponentId, nullptr);
- gp->show();
+ 
+ MinigamePage* mini = new MinigamePage(nullptr);
+ mini->setProperty("playerId", m_playerId);
+ mini->setProperty("playerName", m_playerName);
+ mini->setProperty("gameId", gameId);
+ mini->setProperty("opponentId", opponentId);
 
+ // conexiune către member function din LobbyPage
+ connect(mini, &MinigamePage::minigameFinished,
+     this, &LobbyPage::onMinigameFinished);
+
+ mini->show();
  this->close();
+
+
+
  }
- else {
- ui->statusLabel->setText("Aștept jucător...");
- }
+ 
  }
  else {
  qWarning() << "JSON parse error in status:" << err.errorString();
@@ -111,3 +119,13 @@ void LobbyPage::onStatusReplyFinished()
  }
  reply->deleteLater();
 }
+
+void LobbyPage::onMinigameFinished(int playerId, QString playerName, int gameId, int opponentId)
+{
+    // verificăm dacă GamePage există deja
+    if (!m_gamePage) {
+        m_gamePage = new GamePage(playerId, playerName, gameId, opponentId, nullptr);
+        m_gamePage->show();
+    }
+}
+
