@@ -54,7 +54,7 @@ private:
 	QNetworkAccessManager* net;
 	
 
-	QString m_playerName; // setat după login
+	QString m_playerName; 
 
 	void initializeGame(int playerId,const QString& playerName, int gameId, int opponentId);
 };

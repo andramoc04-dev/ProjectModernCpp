@@ -14,6 +14,26 @@ MenuPage::~MenuPage()
 {
 }
 
+void MenuPage::setPlayerId(int id)
+{
+     m_playerId = id; 
+}
+
+int MenuPage::playerId() const
+{
+    return m_playerId;
+}
+
+void MenuPage::setPlayerName(const QString& name)
+{
+    playerName = name;
+}
+
+QString MenuPage::getPlayerName() const
+{
+    return playerName;
+}
+
 void MenuPage::openProfilePage()
 {
     if (!profilePage)
@@ -23,10 +43,6 @@ void MenuPage::openProfilePage()
     this->close();
 
 }
-
-
-
-
 void MenuPage::OpenLobbyPage()
 {
     if (m_playerId < 0) {

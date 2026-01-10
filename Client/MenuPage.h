@@ -15,10 +15,10 @@ public:
     MenuPage(QWidget* parent = nullptr);
     ~MenuPage();
 
-    void setPlayerId(int id) { m_playerId = id; }
-    int playerId() const { return m_playerId; }
-    void setPlayerName(const QString& name) { playerName = name; }
-    QString getPlayerName() const { return playerName; }
+    void setPlayerId(int id);
+    int playerId() const;
+    void setPlayerName(const QString& name);
+    QString getPlayerName() const;
 private slots:
     void openProfilePage();
     void OpenLobbyPage();
@@ -27,6 +27,6 @@ private:
     Ui::StartupPageClass* ui;
     ProfilePage* profilePage;
     LobbyPage* lobbyPage;
-    int m_playerId = -1; // id-ul jucătorului - setat după login
+    int m_playerId = -1; 
     QString playerName;
 };
