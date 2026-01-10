@@ -111,26 +111,87 @@ uint32_t http::UserProfiles::AddPowerUpToDataBase(const PowerUp& powerUp)
 
 void http::UserProfiles::AddPowerUpToUser(uint32_t userId, uint32_t powerUpId)
 {
-
     Inventory entry;
     entry.SetUserId(userId);
     entry.SetPowerUpId(powerUpId);
+    entry.SetIsEquipped(false);
     m_db.insert(entry);
+}
 
+void http::UserProfiles::RemovePowerUpFromUser(uint32_t userId, uint32_t powerUpId)
+{
+    using namespace sql;
+
+    auto entries = m_db.get_all<Inventory>(
+        where(c(&Inventory::GetUserId) == userId &&
+            c(&Inventory::GetPowerUpId) == powerUpId),
+        limit(1)
+    );
+
+    if (!entries.empty()) {
+        m_db.remove<Inventory>(entries[0].GetId());
+    }
 }
 
 std::vector<PowerUp> http::UserProfiles::GetUserInventory(uint32_t userId)
 {
+    using namespace sql;
 
-    auto entries = m_db.get_all<Inventory>(sql::where(sql::c(&Inventory::GetUserId) == userId));
+    auto entries = m_db.get_all<Inventory>(
+        where(c(&Inventory::GetUserId) == userId)
+    );
+
     std::vector<PowerUp> inventory;
-    for (auto& e : entries) 
-    {
-        auto powerUp = m_db.get<PowerUp>(e.GetPowerUpId());
-        inventory.push_back(powerUp);
+    for (const auto& entry : entries) {
+        try {
+            auto powerUp = m_db.get<PowerUp>(entry.GetPowerUpId());
+            inventory.push_back(powerUp);
+        }
+        catch (const std::system_error&) {
+            continue;
+        }
     }
-    return inventory;
 
+    return inventory;
+}
+
+std::vector<Inventory> http::UserProfiles::GetUserInventoryEntries(uint32_t userId)
+{
+    using namespace sql;
+    return m_db.get_all<Inventory>(
+        where(c(&Inventory::GetUserId) == userId)
+    );
+}
+
+bool http::UserProfiles::UserHasPowerUp(uint32_t userId, uint32_t powerUpId)
+{
+    using namespace sql;
+
+    auto entries = m_db.get_all<Inventory>(
+        where(c(&Inventory::GetUserId) == userId &&
+            c(&Inventory::GetPowerUpId) == powerUpId),
+        limit(1)
+    );
+
+    return !entries.empty();
+}
+
+int http::UserProfiles::GetPowerUpCount(uint32_t userId, PowerUpType type)
+{
+    auto powerUpOpt = GetPowerUpByType(type);
+    if (!powerUpOpt) {
+        return 0;
+    }
+
+    uint32_t powerUpId = powerUpOpt->GetDatabaseId();
+
+    using namespace sql;
+    auto entries = m_db.get_all<Inventory>(
+        where(c(&Inventory::GetUserId) == userId &&
+            c(&Inventory::GetPowerUpId) == powerUpId)
+    );
+
+    return static_cast<int>(entries.size());
 }
 
 
