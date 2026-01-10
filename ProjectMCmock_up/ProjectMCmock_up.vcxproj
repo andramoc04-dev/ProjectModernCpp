@@ -26,6 +26,7 @@
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Message.h" />
+    <ClInclude Include="MiniGameServer.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PowerUp.h" />
     <ClInclude Include="User.h" />
@@ -39,6 +40,7 @@
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Message.cpp" />
+    <ClCompile Include="MiniGameServer.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PowerUp.cpp" />
     <ClCompile Include="Source.cpp" />

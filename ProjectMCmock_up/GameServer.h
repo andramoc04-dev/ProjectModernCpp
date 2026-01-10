@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include "Game.h"
+#include "MiniGameServer.h"
 
 #include "../TimerDLL/GameTimer.h"
 
