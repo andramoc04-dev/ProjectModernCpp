@@ -10,25 +10,12 @@ namespace sql = sqlite_orm;
 #include "User.h"
 #include "Game.h"
 #include "PowerUp.h"
+#include "Inventory.h"
 
 namespace http
 {
 
-	struct InventoryEntry {
-		uint32_t m_id;
-		uint32_t userId;
-		uint32_t powerUpId;
-
-
-		void SetId(uint32_t id) { m_id = id; }
-		uint32_t GetId() const { return m_id; }
-
-		void SetUserId(uint32_t id) { userId = id; }
-		uint32_t GetUserId() const { return userId; }
-
-		void SetPowerUpId(uint32_t id) { powerUpId = id; }
-		uint32_t GetPowerUpId() const { return powerUpId; }
-	};
+	
 
 	inline auto CreateDataBase(const std::string& filename)
 	{
@@ -57,9 +44,9 @@ namespace http
 
 			sql::make_table(
 				"UserPowerUps",
-				sql::make_column("id", &InventoryEntry::SetId, &InventoryEntry::GetId,sql::primary_key().autoincrement()),
-				sql::make_column("userId", &InventoryEntry::SetUserId, &InventoryEntry::GetUserId),
-				sql::make_column("powerUpId", &InventoryEntry::SetPowerUpId, &InventoryEntry::GetPowerUpId)
+				sql::make_column("id", &Inventory::SetId, &Inventory::GetId,sql::primary_key().autoincrement()),
+				sql::make_column("userId", &Inventory::SetUserId, &Inventory::GetUserId),
+				sql::make_column("powerUpId", &Inventory::SetPowerUpId, &Inventory::GetPowerUpId)
 			)
 
 

@@ -24,6 +24,7 @@
     <ClInclude Include="Database.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameServer.h" />
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PowerUp.h" />
@@ -36,6 +37,7 @@
     <ClCompile Include="Database.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameServer.cpp" />
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Message.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PowerUp.cpp" />

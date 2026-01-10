@@ -54,7 +54,7 @@ bool http::UserProfiles::HasUserWithName(const std::string& name)
 void http::UserProfiles::AddPowerUpToUser(uint32_t userId, uint32_t powerUpId)
 {
 
-    InventoryEntry entry;
+    Inventory entry;
     entry.SetUserId(userId);
     entry.SetPowerUpId(powerUpId);
     m_db.insert(entry);
@@ -64,7 +64,7 @@ void http::UserProfiles::AddPowerUpToUser(uint32_t userId, uint32_t powerUpId)
 std::vector<PowerUp> http::UserProfiles::GetUserInventory(uint32_t userId)
 {
 
-    auto entries = m_db.get_all<InventoryEntry>(sql::where(sql::c(&InventoryEntry::GetUserId) == userId));
+    auto entries = m_db.get_all<Inventory>(sql::where(sql::c(&Inventory::GetUserId) == userId));
     std::vector<PowerUp> inventory;
     for (auto& e : entries) 
     {
