@@ -419,7 +419,7 @@ void http::Routing::Run(UserProfiles& storage)
 			});
 	
 
-			CROW_ROUTE(m_app, "/game/<int>/state").methods(crow::HTTPMethod::GET)
+		CROW_ROUTE(m_app, "/game/<int>/state").methods(crow::HTTPMethod::GET)
 			([this, &storage](int gameId) {
 			std::lock_guard<std::mutex> lk(m_lobbyMutex);
 			auto it = m_activeGames.find(gameId);
@@ -431,8 +431,6 @@ void http::Routing::Run(UserProfiles& storage)
 
 			crow::json::wvalue resp;
 			resp["gameId"] = gameId;
-
-			// **ADD TURN INFO HERE**
 			try {
 				const Player& currentPlayer = gameInst.GetCurrentPlayer();
 				resp["currentPlayerIndex"] = gameInst.GetCurrentPlayerIndex();
@@ -444,8 +442,22 @@ void http::Routing::Run(UserProfiles& storage)
 				resp["currentPlayerId"] = -1;
 				resp["currentPlayerName"] = "Unknown";
 			}
+			auto status = gameInst.GetGameStatus();
+			switch (status) {
+			case Game::GameStatus::Won:
+				resp["gameStatus"] = "won";
+				resp["gameMessage"] = "You won!";
+				break;
+			case Game::GameStatus::Lost:
+				resp["gameStatus"] = "lost";
+				resp["gameMessage"] = "Game over - you lost";
+				break;
+			default:
+				resp["gameStatus"] = "playing";
+				resp["gameMessage"] = "Game in progress";
+			}
 
-			// piles (existing)
+			// piles
 			resp["piles"] = std::vector<crow::json::wvalue>{
 				gameInst.GetDescendingDeck1().GetNumber(),
 				gameInst.GetDescendingDeck2().GetNumber(),
@@ -453,14 +465,15 @@ void http::Routing::Run(UserProfiles& storage)
 				gameInst.GetAscendingDeck2().GetNumber()
 			};
 
-			// players (existing)
+			// players
 			std::vector<crow::json::wvalue> playersArray;
 			for (const auto& player : gameInst.GetPlayers()) {
 				crow::json::wvalue playerJson;
 				playerJson["id"] = player.GetId();
 				playerJson["username"] = player.GetUsername();
-				playerJson["cardsPlacedThisTurn"] = player.GetCardsPlacedThisTurn();
+				playerJson["cardsPlacedThisTurn"] = player.GetCardsPlacedThisTurn(); // ADAUGĂ
 
+				// hand
 				std::vector<crow::json::wvalue> handArray;
 				for (const auto& card : player.GetHand()) {
 					handArray.push_back(card.GetNumber());
@@ -524,20 +537,15 @@ void http::Routing::Run(UserProfiles& storage)
 			Game& gameInst = it->second;
 
 			try {
-				// **VALIDATE IT'S THIS PLAYER'S TURN**
-				if (gameInst.GetCurrentPlayer().GetId() != playerId) {
-					crow::json::wvalue errorResp;
-					errorResp["success"] = false;
-					errorResp["error"] = "Not your turn";
-					return crow::response(403, errorResp.dump());
-				}
-
 				Player& player = gameInst.GetPlayer(playerId);
 
 				int cardsPlaced = player.GetCardsPlacedThisTurn();
 				int cardsInDeck = gameInst.GetCardsDeck().size();
+
+				// Determină numărul minim de cărți necesare
 				int minCardsRequired = (cardsInDeck > 0) ? 2 : 1;
 
+				// Verifică dacă jucătorul a plasat numărul minim de cărți
 				if (cardsPlaced < minCardsRequired) {
 					crow::json::wvalue errorResp;
 					errorResp["success"] = false;
@@ -548,9 +556,10 @@ void http::Routing::Run(UserProfiles& storage)
 					return crow::response(400, errorResp.dump());
 				}
 
+				// Trage cărțile din teanc (număr egal cu cărțile plasate, dar max cât există)
 				int cardsToDraw = std::min(cardsPlaced, cardsInDeck);
-				std::vector<int> drawnCards;
 
+				std::vector<int> drawnCards;
 				for (int i = 0; i < cardsToDraw; i++) {
 					if (!gameInst.GetCardsDeck().empty()) {
 						Card drawnCard = gameInst.GetCardsDeck().top();
@@ -560,11 +569,9 @@ void http::Routing::Run(UserProfiles& storage)
 					}
 				}
 
+				// Reset contorul pentru următoarea tură
 				player.ResetCardsPlacedThisTurn();
-
-				// **ADVANCE TO NEXT TURN**
-				gameInst.AdvanceTurn(1);
-				const Player& nextPlayer = gameInst.GetCurrentPlayer();
+				gameInst.AdvanceTurn();
 
 				crow::json::wvalue resp;
 				resp["success"] = true;
@@ -573,32 +580,27 @@ void http::Routing::Run(UserProfiles& storage)
 				resp["cardsDrawn"] = drawnCards.size();
 				resp["cardsLeftInDeck"] = gameInst.GetCardsDeck().size();
 
-				// Include next player info
-				resp["nextPlayerId"] = nextPlayer.GetId();
-				resp["nextPlayerName"] = nextPlayer.GetUsername();
-
+				// Adaugă lista de cărți trase
 				int idx = 0;
 				for (int cardVal : drawnCards) {
 					resp["drawnCardValues"][idx++] = cardVal;
 				}
 
+				// Mesaj pentru utilizator
 				if (cardsPlaced > 0 && cardsToDraw < cardsPlaced) {
 					resp["message"] = "You placed " + std::to_string(cardsPlaced) +
 						" cards and received " + std::to_string(cardsToDraw) +
-						" cards. Next: " + nextPlayer.GetUsername();
+						" cards because that's all that remained in the deck";
 				}
 				else if (cardsToDraw > 0) {
 					resp["message"] = "You placed " + std::to_string(cardsPlaced) +
-						" cards and drew " + std::to_string(cardsToDraw) +
-						" cards. Next: " + nextPlayer.GetUsername();
+						" cards and drew " + std::to_string(cardsToDraw) + " new cards";
 				}
 
 				return crow::response{ resp.dump() };
 			}
 			catch (const std::exception& e) {
-				crow::json::wvalue errorResp;
-				errorResp["error"] = std::string("Error: ") + e.what();
-				return crow::response(500, errorResp.dump());
+				return crow::response(400, R"({"error":")" + std::string(e.what()) + "\"}");
 			}
 				});
 

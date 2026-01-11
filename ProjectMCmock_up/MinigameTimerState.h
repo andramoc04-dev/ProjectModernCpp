@@ -1,0 +1,7 @@
+-lexerul sparge codul in tokeni (unit lexicala, o categorie de siruri de  caract cu aceeasi semnificatie)
+-parserul verifica structura programului -> construieste un arbore de parsare
+-SyntaxAnalyzer de la noi face analiza semantica pe arborele creat de parser
+-VisitDeclaration analizează declarațiile locale, verifică erori semantice (dubluri, conflicte, tipuri, const) și înregistrează variabilele în scope-ul funcției curente.
+-VisitMethodDeclaration analizează o funcție: înregistrează parametrii, verifică corpul, return-ul, recursivitatea și gestionează scope-ul variabilelor.
+-VisitMethodDeclaration analizează o funcție: adaugă parametrii în scope, verifică corpul, return-ul și recursivitatea, apoi curăță scope-ul.
+-Analizatorul semantic parcurge arborele sintactic folosind Visitor Pattern și verifică regulile semantice ale programului.

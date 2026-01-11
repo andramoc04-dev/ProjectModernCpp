@@ -169,9 +169,6 @@
     <Image Include="resources\fishnet_button.jpg">
       <Filter>Resource Files\images</Filter>
     </Image>
-    <Image Include="resources\lose_background.jpeg">
-      <Filter>Resource Files\images</Filter>
-    </Image>
     <Image Include="resources\pickpocket_button.jpg">
       <Filter>Resource Files\images</Filter>
     </Image>
@@ -181,7 +178,10 @@
     <Image Include="resources\wildcard_button.jpg">
       <Filter>Resource Files\images</Filter>
     </Image>
-    <Image Include="resources\win_background.jpg">
+    <Image Include="resources\lose_background.jpeg">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="resources\win_background.jpeg">
       <Filter>Resource Files\images</Filter>
     </Image>
   </ItemGroup>

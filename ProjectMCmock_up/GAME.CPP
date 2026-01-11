@@ -271,6 +271,23 @@ const Player& Game::GetCurrentPlayer() const
 	return m_players[m_currentPlayerIndex % m_players.size()];
 }
 
+Game::GameStatus Game::GetGameStatus() const
+{
+	if (m_cardsDeck.empty()) {
+		bool allHandsEmpty = true;
+		for (const auto& player : m_players) {
+			if (!player.GetHand().empty()) {
+				allHandsEmpty = false;
+				break;
+			}
+		}
+		if (allHandsEmpty) {
+			return GameStatus::Won;
+		}
+	}
+	return GameStatus::Playing;
+}
+
 void Game::SetCurrentPlayerIndex(size_t index)
 {
 	if (m_players.empty())
@@ -286,4 +303,9 @@ void Game::AdvanceTurn(int steps)
 	int idx = static_cast<int>(m_currentPlayerIndex);
 	idx = (idx + (steps % n) + n) % n;
 	m_currentPlayerIndex = static_cast<size_t>(idx);
+}
+
+bool Game::IsGameOver() const
+{
+	return GetGameStatus() != GameStatus::Playing;
 }

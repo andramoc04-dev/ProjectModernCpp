@@ -8,6 +8,11 @@
 class Game
 {
 public:
+	enum class GameStatus {
+		Playing,
+		Won,
+		Lost
+	};
 	Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck, const Chat& chat);
 	Game() = default;
 	void ShuffleCards();
@@ -36,9 +41,11 @@ public:
 	size_t GetCurrentPlayerIndex() const;
 	Player& GetCurrentPlayer();
 	const Player& GetCurrentPlayer() const;
+	GameStatus GetGameStatus() const;
 
 	void SetCurrentPlayerIndex(size_t index);
 	void AdvanceTurn(int steps = 1);
+	bool IsGameOver() const;
 private:
 	std::vector<Player> m_players;
 	std::stack<Card> m_cardsDeck;
@@ -48,5 +55,6 @@ private:
 	bool m_areCardsShuffled;
 	GameTimer m_chatTimer;
 	size_t m_currentPlayerIndex;
+	
 };
 

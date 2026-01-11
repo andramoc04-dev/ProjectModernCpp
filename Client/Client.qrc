@@ -27,6 +27,6 @@
         <file>resources/pickpocket_button.jpg</file>
         <file>resources/skip_button.jpg</file>
         <file>resources/wildcard_button.jpg</file>
-        <file>resources/win_background.jpg</file>
+        <file>resources/win_background.jpeg</file>
     </qresource>
 </RCC>

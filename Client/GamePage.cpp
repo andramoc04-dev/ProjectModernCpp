@@ -106,6 +106,7 @@ void GamePage::FetchHand()
 			}
 
 			ShowCards(cardsValues);
+			fetchGameState();
 		}
 		else {
 			qDebug() << "Error fetching hand:" << reply->errorString();
@@ -231,6 +232,16 @@ void GamePage::fetchGameState()
 
 		QJsonObject obj = doc.object();
 
+		QString gameStatus = obj["gameStatus"].toString();
+		if (gameStatus == "won" || gameStatus == "lost") {
+			m_pollTimer->stop();
+			m_chatTimer.stop();
+			m_stateTimer.stop();
+			openEndgamePage(gameStatus);
+			reply->deleteLater();
+			return;
+		}
+
 		int currentPlayerId = obj["currentPlayerId"].toInt();
 		QString currentPlayerName = obj["currentPlayerName"].toString();
 		bool isMyTurn = (currentPlayerId == m_playerId);
@@ -242,7 +253,7 @@ void GamePage::fetchGameState()
 		ui.deckButton->setEnabled(isMyTurn);
 
 		if (isMyTurn) {
-			this->setWindowTitle(QString("YOUR TURN | Team: %1").arg(m_allPlayerNames.join(", ")));
+			this->setWindowTitle(QString("Your turn | Team: %1").arg(m_allPlayerNames.join(", ")));
 		}
 		else {
 			this->setWindowTitle(QString("%1's turn | Team: %2")
@@ -265,9 +276,9 @@ void GamePage::fetchGameState()
 		}
 
 		reply->deleteLater();
+		
 		});
 }
-
 
 void GamePage::shuffleDeck()
 {
@@ -369,7 +380,7 @@ void GamePage::initializeGame(int playerId,const QString& playerName, int gameId
 	updatePileVisual(ui.DescendingDeck1Number, 100);
 	updatePileVisual(ui.DescendingDeck2Number, 100);
 
-	fetchGameState();
+	//fetchGameState();
 
 }
 
@@ -487,6 +498,14 @@ void GamePage::checkTimers()
 		fetchGameState();
 		m_stateTimer.start(2);  // Restart pentru următorul ciclu
 	}
+}
+
+void GamePage::openEndgamePage(QString gameStatus)
+{
+
+	endgamePage = new EndgamePage(m_playerId, gameStatus,"http://127.0.0.1:18080", nullptr);
+	endgamePage->show();
+	this->close();
 }
 
 

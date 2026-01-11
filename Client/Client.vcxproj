@@ -156,7 +156,7 @@
     <Image Include="resources\pickpocket_button.jpg" />
     <Image Include="resources\skip_button.jpg" />
     <Image Include="resources\wildcard_button.jpg" />
-    <Image Include="resources\win_background.jpg" />
+    <Image Include="resources\win_background.jpeg" />
     <Image Include="WelcomeToTheGame.png" />
     <Image Include="Your-profile-26-11-2025.png" />
   </ItemGroup>

@@ -8,7 +8,7 @@
 #include "ui_GamePage.h"
 #include <thread>
 #include <atomic>
-
+#include "EndgamePage.h"
 
 
 
@@ -28,14 +28,13 @@ public:
 	void DistributeCards();
 	void updatePileVisual(QLabel* pileLabel, int cardValue);
 	void fetchGameState();
-	
 private slots:
 	void onSendClicked();
 	void fetchMessages();
 	void onPileClicked(int pileId, QLabel* pileLabel);
 	void onDrawCardClicked();
 	void checkTimers();
-
+	void openEndgamePage(QString gameStatus);
 
 private:
 	Ui::GameClass ui;
@@ -58,5 +57,6 @@ private:
 	QString m_playerName; 
 
 	void initializeGame(int playerId,const QString& playerName, int gameId, int opponentId);
+	EndgamePage* endgamePage;
 };
 
