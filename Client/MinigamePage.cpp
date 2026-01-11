@@ -1,16 +1,17 @@
 #include "MinigamePage.h"
-#include "GamePage.h"
+#include "InventoryPage.h"
 #include <QCloseEvent>
 
-MinigamePage::MinigamePage(QWidget *parent)
-	: QDialog(parent)
+MinigamePage::MinigamePage(QWidget* parent)
+    : QDialog(parent)
 {
-	ui.setupUi(this);
+    ui.setupUi(this);
     RunMinigame();
 }
 
 MinigamePage::~MinigamePage()
-{}
+{
+}
 
 bool MinigamePage::event(QEvent* e)
 {
@@ -36,14 +37,19 @@ void MinigamePage::updateTimerUi()
     if (m_gameTimer.expired() && !m_finishedEmitted) {
         m_finishedEmitted = true;
 
-        emit minigameFinished(
-            property("playerId").toInt(),
-            property("playerName").toString(),
-            property("gameId").toInt(),
-            property("opponentId").toInt()
-        );
+        int playerId = property("playerId").toInt();
+        QString playerName = property("playerName").toString();
+        int gameId = property("gameId").toInt();
+        int opponentId = property("opponentId").toInt();
 
-        close();
+        InventoryPage* inventoryPage = new InventoryPage();
+        inventoryPage->setAttribute(Qt::WA_DeleteOnClose);
+        inventoryPage->setPlayerData(playerId, playerName, gameId, opponentId);
+        inventoryPage->fetchAvailablePowerUps();
+        inventoryPage->show();
+
+        this->close();
+        this->deleteLater();
     }
 
 }

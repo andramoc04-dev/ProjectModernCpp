@@ -164,8 +164,6 @@ void GamePage::ShowCards(const std::vector<int>& cardsValues)
 			QString imgPath1 = QString(":/Client/resources/%1.png").arg(cardValue);
 			nr->setStyleSheet(QString("QLabel { background-image: url(%1); }").arg(imgPath1));
 		}
-
-		// --- nou: click pe carte setează valoarea selectată ---
 		connect(button, &QPushButton::clicked, this, [=]() {
 			m_selectedCardValue = cardValue;
 			qDebug() << "Selected card:" << m_selectedCardValue;

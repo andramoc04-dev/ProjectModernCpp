@@ -10,6 +10,7 @@ ProfilePage::ProfilePage(int playerId, const QString& serverUrl, QWidget* parent
     QUrl url(QString("%1/player/%2").arg(m_serverUrl).arg(m_playerId));
     QNetworkRequest req(url);
     QNetworkReply* reply = network->get(req);
+    connect(ui.BackButton, &QPushButton::clicked, this, &ProfilePage::onBackButtonClicked);
     connect(reply, &QNetworkReply::finished, this, &ProfilePage::onProfileReplyFinished);
 }
 
@@ -40,6 +41,13 @@ void ProfilePage::onProfileReplyFinished()
 ProfilePage::~ProfilePage()
 {}
 
+void ProfilePage::onBackButtonClicked()
+{
+    MenuPage* menuPage = new MenuPage();
+    menuPage->show();
 
+    this->close();
+    this->deleteLater();
+}
 
 

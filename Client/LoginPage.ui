@@ -143,36 +143,6 @@ QPushButton:hover {
     <string>Password:</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="BackButton">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>10</y>
-     <width>31</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>20</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton {
-  background-color: #FFADC6;
-  color: #573C27;
- 
-}
-
-QPushButton:hover {
-   background-color: #E34989;
-}
-</string>
-   </property>
-   <property name="text">
-    <string>←</string>
-   </property>
-  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

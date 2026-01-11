@@ -55,6 +55,9 @@
     <ClCompile Include="EndgamePage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="InventoryPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LoginPage.ui">
@@ -78,6 +81,9 @@
     <QtUic Include="EndgamePage.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="InventoryPage.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="LoginPage.h">
@@ -99,6 +105,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="EndgamePage.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="InventoryPage.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -163,25 +172,25 @@
     <Image Include="resources\CardButton.png">
       <Filter>Resource Files\images</Filter>
     </Image>
-    <Image Include="resources\delete_card_button.jpg">
-      <Filter>Resource Files\images</Filter>
-    </Image>
-    <Image Include="resources\fishnet_button.jpg">
-      <Filter>Resource Files\images</Filter>
-    </Image>
-    <Image Include="resources\pickpocket_button.jpg">
-      <Filter>Resource Files\images</Filter>
-    </Image>
-    <Image Include="resources\skip_button.jpg">
-      <Filter>Resource Files\images</Filter>
-    </Image>
-    <Image Include="resources\wildcard_button.jpg">
-      <Filter>Resource Files\images</Filter>
-    </Image>
     <Image Include="resources\lose_background.jpeg">
       <Filter>Resource Files\images</Filter>
     </Image>
     <Image Include="resources\win_background.jpeg">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="resources\powerup1.jpg">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="resources\powerup2.jpg">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="resources\powerup3.jpg">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="resources\powerup4.jpg">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="resources\powerup5.jpg">
       <Filter>Resource Files\images</Filter>
     </Image>
   </ItemGroup>

@@ -165,36 +165,6 @@ background-size: contain;
     <string/>
    </property>
   </widget>
-  <widget class="QPushButton" name="BackButton">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>31</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>20</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton {
-  background-color: #FFADC6;
-  color: #573C27;
- 
-}
-
-QPushButton:hover {
-   background-color: #E34989;
-}
-</string>
-   </property>
-   <property name="text">
-    <string>←</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="AscendingDeck1Number">
    <property name="geometry">
     <rect>
@@ -384,7 +354,6 @@ QPushButton:hover {
   <zorder>DescendingCardPlacer1</zorder>
   <zorder>DescendingCardPlacer2</zorder>
   <zorder>deckButton</zorder>
-  <zorder>BackButton</zorder>
   <zorder>AscendingDeck1Number</zorder>
   <zorder>AscendingDeck1Number_2</zorder>
   <zorder>AscendingDeck1Number_3</zorder>

@@ -104,6 +104,7 @@
   <ItemGroup>
     <ClCompile Include="EndgamePage.cpp" />
     <ClCompile Include="GamePage.cpp" />
+    <ClCompile Include="InventoryPage.cpp" />
     <ClCompile Include="LobbyPage.cpp" />
     <ClCompile Include="MinigamePage.cpp" />
     <ClCompile Include="ProfilePage.cpp" />
@@ -113,6 +114,7 @@
     <ClCompile Include="main.cpp" />
     <QtUic Include="EndgamePage.ui" />
     <QtUic Include="GamePage.ui" />
+    <QtUic Include="InventoryPage.ui" />
     <QtUic Include="LobbyPage.ui" />
     <QtUic Include="LoginPage.ui" />
     <QtUic Include="MinigamePage.ui" />
@@ -150,12 +152,12 @@
     <Image Include="resources\8.png" />
     <Image Include="resources\9.png" />
     <Image Include="resources\CardButton.png" />
-    <Image Include="resources\delete_card_button.jpg" />
-    <Image Include="resources\fishnet_button.jpg" />
     <Image Include="resources\lose_background.jpeg" />
-    <Image Include="resources\pickpocket_button.jpg" />
-    <Image Include="resources\skip_button.jpg" />
-    <Image Include="resources\wildcard_button.jpg" />
+    <Image Include="resources\powerup1.jpg" />
+    <Image Include="resources\powerup2.jpg" />
+    <Image Include="resources\powerup3.jpg" />
+    <Image Include="resources\powerup4.jpg" />
+    <Image Include="resources\powerup5.jpg" />
     <Image Include="resources\win_background.jpeg" />
     <Image Include="WelcomeToTheGame.png" />
     <Image Include="Your-profile-26-11-2025.png" />
@@ -173,6 +175,9 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="EndgamePage.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="InventoryPage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

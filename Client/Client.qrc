@@ -21,12 +21,12 @@
         <file>resources/1.png</file>
         <file>resources/100.png</file>
         <file>resources/CardButton.png</file>
-        <file>resources/delete_card_button.jpg</file>
-        <file>resources/fishnet_button.jpg</file>
         <file>resources/lose_background.jpeg</file>
-        <file>resources/pickpocket_button.jpg</file>
-        <file>resources/skip_button.jpg</file>
-        <file>resources/wildcard_button.jpg</file>
         <file>resources/win_background.jpeg</file>
+        <file>resources/powerup1.jpg</file>
+        <file>resources/powerup2.jpg</file>
+        <file>resources/powerup3.jpg</file>
+        <file>resources/powerup4.jpg</file>
+        <file>resources/powerup5.jpg</file>
     </qresource>
 </RCC>

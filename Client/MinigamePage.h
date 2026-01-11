@@ -15,10 +15,9 @@ class MinigamePage : public QDialog
 	Q_OBJECT
 
 public:
-	MinigamePage(QWidget *parent = nullptr);
+	MinigamePage(QWidget* parent = nullptr);
 	~MinigamePage();
 	void RunMinigame();
-
 protected:
 	bool event(QEvent* e) override;
 	void closeEvent(QCloseEvent* event) override;
@@ -29,9 +28,9 @@ private:
 	bool m_finishedEmitted = false;
 	Ui::MinigameClass ui;
 	int m_counter;
-	
+
 	GameTimer m_gameTimer;
-	int m_totalSeconds = 30;
+	int m_totalSeconds = 10;
 signals:
 	void minigameFinished(int playerId, QString playerName, int gameId, int opponentId);
 

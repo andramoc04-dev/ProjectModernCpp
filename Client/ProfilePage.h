@@ -23,6 +23,7 @@ public:
 
 private slots:
     void onProfileReplyFinished();
+    void onBackButtonClicked();
 
 private:
     Ui::ProfilePageClass ui;
