@@ -68,7 +68,7 @@ void MinigamePage::RunMinigame()
         "}";
 
     for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 4; j++) {
+        for (int j = 0; j < 5; j++) {
             QPushButton* button = new QPushButton(this);
             button->setStyleSheet(style);
             button->setFixedSize(80, 80);

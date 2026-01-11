@@ -230,37 +230,42 @@ void GamePage::fetchGameState()
 		}
 
 		QJsonObject obj = doc.object();
-		QJsonArray piles = obj["piles"].toArray();
 
-		// actualizează vizual toate teancurile
+		int currentPlayerId = obj["currentPlayerId"].toInt();
+		QString currentPlayerName = obj["currentPlayerName"].toString();
+		bool isMyTurn = (currentPlayerId == m_playerId);
+
+		ui.DescendingCardPlacer1->setEnabled(isMyTurn);
+		ui.DescendingCardPlacer2->setEnabled(isMyTurn);
+		ui.AscendingCardPlacer1->setEnabled(isMyTurn);
+		ui.AscendingCardPlacer2->setEnabled(isMyTurn);
+		ui.deckButton->setEnabled(isMyTurn);
+
+		if (isMyTurn) {
+			this->setWindowTitle(QString("YOUR TURN | Team: %1").arg(m_allPlayerNames.join(", ")));
+		}
+		else {
+			this->setWindowTitle(QString("%1's turn | Team: %2")
+				.arg(currentPlayerName)
+				.arg(m_allPlayerNames.join(", ")));
+		}
+
+		QJsonArray piles = obj["piles"].toArray();
 		updatePileVisual(ui.DescendingDeck1Number, piles[0].toInt());
 		updatePileVisual(ui.DescendingDeck2Number, piles[1].toInt());
 		updatePileVisual(ui.AscendingDeck1Number, piles[2].toInt());
 		updatePileVisual(ui.AscendingDeck2Number, piles[3].toInt());
 
-		
-
 		QJsonArray players = obj["players"].toArray();
-
 		m_allPlayerNames.clear();
-
 		for (const auto& playerVal : players) {
 			QJsonObject playerObj = playerVal.toObject();
 			QString username = playerObj["username"].toString();
 			m_allPlayerNames << username;
 		}
 
-		// construim titlul
-		QString title = QString("You play as: %1 | Team: %2")
-			.arg(m_playerName)
-			.arg(m_allPlayerNames.join(", "));
-
-		this->setWindowTitle(title);
-
-
 		reply->deleteLater();
 		});
-
 }
 
 

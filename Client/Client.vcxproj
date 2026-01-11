@@ -102,6 +102,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EndgamePage.cpp" />
     <ClCompile Include="GamePage.cpp" />
     <ClCompile Include="LobbyPage.cpp" />
     <ClCompile Include="MinigamePage.cpp" />
@@ -110,6 +111,7 @@
     <QtRcc Include="Client.qrc" />
     <ClCompile Include="LoginPage.cpp" />
     <ClCompile Include="main.cpp" />
+    <QtUic Include="EndgamePage.ui" />
     <QtUic Include="GamePage.ui" />
     <QtUic Include="LobbyPage.ui" />
     <QtUic Include="LoginPage.ui" />
@@ -148,6 +150,13 @@
     <Image Include="resources\8.png" />
     <Image Include="resources\9.png" />
     <Image Include="resources\CardButton.png" />
+    <Image Include="resources\delete_card_button.jpg" />
+    <Image Include="resources\fishnet_button.jpg" />
+    <Image Include="resources\lose_background.jpeg" />
+    <Image Include="resources\pickpocket_button.jpg" />
+    <Image Include="resources\skip_button.jpg" />
+    <Image Include="resources\wildcard_button.jpg" />
+    <Image Include="resources\win_background.jpg" />
     <Image Include="WelcomeToTheGame.png" />
     <Image Include="Your-profile-26-11-2025.png" />
   </ItemGroup>
@@ -161,6 +170,9 @@
     <ProjectReference Include="..\TimerDLL\TimerDLL.vcxproj">
       <Project>{4c9fd3ed-548c-4d04-915d-92b2ba23b65b}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="EndgamePage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

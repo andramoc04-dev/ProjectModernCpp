@@ -33,6 +33,12 @@ public:
 	const std::vector<Player>& GetPlayers() const;
 	std::vector<Player>& GetPlayers();
 	Chat& GetChat();
+	size_t GetCurrentPlayerIndex() const;
+	Player& GetCurrentPlayer();
+	const Player& GetCurrentPlayer() const;
+
+	void SetCurrentPlayerIndex(size_t index);
+	void AdvanceTurn(int steps = 1);
 private:
 	std::vector<Player> m_players;
 	std::stack<Card> m_cardsDeck;
@@ -41,5 +47,6 @@ private:
 	bool m_areCardsDealt;
 	bool m_areCardsShuffled;
 	GameTimer m_chatTimer;
+	size_t m_currentPlayerIndex;
 };
 

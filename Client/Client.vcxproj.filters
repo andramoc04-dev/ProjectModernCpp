@@ -52,6 +52,9 @@
     <ClCompile Include="MinigamePage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EndgamePage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LoginPage.ui">
@@ -72,6 +75,9 @@
     <QtUic Include="MinigamePage.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="EndgamePage.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="LoginPage.h">
@@ -90,6 +96,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="MinigamePage.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="EndgamePage.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -152,6 +161,27 @@
       <Filter>Resource Files\images</Filter>
     </Image>
     <Image Include="resources\CardButton.png">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="resources\delete_card_button.jpg">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="resources\fishnet_button.jpg">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="resources\lose_background.jpeg">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="resources\pickpocket_button.jpg">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="resources\skip_button.jpg">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="resources\wildcard_button.jpg">
+      <Filter>Resource Files\images</Filter>
+    </Image>
+    <Image Include="resources\win_background.jpg">
       <Filter>Resource Files\images</Filter>
     </Image>
   </ItemGroup>

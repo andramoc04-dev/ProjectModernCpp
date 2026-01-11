@@ -44,7 +44,7 @@ namespace http
 
 	private:
 		static constexpr int kMaxScoreDiff =1;
-		static constexpr int kLobbyTimeoutSeconds =30;
+		static constexpr int kLobbyTimeoutSeconds =10;
 		static constexpr int kMinPlayersPerGame =2;
 		static constexpr int kMaxPlayersPerGame =5;
 

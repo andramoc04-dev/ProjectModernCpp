@@ -5,7 +5,7 @@
 
 Game::Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck, const Chat& chat):
 	m_players(players), m_cardsDeck(cardsDeck), m_chat(chat), m_descendingDeck1(100), m_descendingDeck2(100),
-	m_ascendingDeck1(1), m_ascendingDeck2(1), m_areCardsDealt(false), m_areCardsShuffled(false)
+	m_ascendingDeck1(1), m_ascendingDeck2(1), m_areCardsDealt(false), m_areCardsShuffled(false), m_currentPlayerIndex(0)
 {
 	m_chatTimer.start(999999); 
 
@@ -250,4 +250,40 @@ const std::vector<Player>& Game::GetPlayers() const
 {
 	return m_players;
 
+}
+
+size_t Game::GetCurrentPlayerIndex() const
+{
+	return m_currentPlayerIndex;
+}
+
+Player& Game::GetCurrentPlayer()
+{
+	if (m_players.empty())
+		throw std::runtime_error("No players in game.");
+	return m_players[m_currentPlayerIndex % m_players.size()];
+}
+
+const Player& Game::GetCurrentPlayer() const
+{
+	if (m_players.empty())
+		throw std::runtime_error("No players in game.");
+	return m_players[m_currentPlayerIndex % m_players.size()];
+}
+
+void Game::SetCurrentPlayerIndex(size_t index)
+{
+	if (m_players.empty())
+		throw std::runtime_error("No players in game.");
+	m_currentPlayerIndex = index % m_players.size();
+}
+
+void Game::AdvanceTurn(int steps)
+{
+	if (m_players.empty())
+		return;
+	const int n = static_cast<int>(m_players.size());
+	int idx = static_cast<int>(m_currentPlayerIndex);
+	idx = (idx + (steps % n) + n) % n;
+	m_currentPlayerIndex = static_cast<size_t>(idx);
 }
