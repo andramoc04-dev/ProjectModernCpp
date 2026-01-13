@@ -698,19 +698,29 @@ void http::Routing::Run(UserProfiles& storage)
 			}
 
 			try {
-				auto inventory = storage.GetUserInventory(playerId);
+				// Get inventory entries (each row is a separate power-up instance)
+				auto inventoryEntries = storage.GetUserInventoryEntries(playerId);
 
 				crow::json::wvalue resp;
 				resp["playerId"] = playerId;
-				resp["totalPowerUps"] = inventory.size();
+				resp["totalPowerUps"] = inventoryEntries.size();
 
 				int idx = 0;
-				for (const auto& powerUp : inventory) {
-					resp["powerUps"][idx]["id"] = powerUp.GetDatabaseId();
-					resp["powerUps"][idx]["type"] = powerUp.GetTypeString();
-					resp["powerUps"][idx]["name"] = powerUp.GetName();
-					resp["powerUps"][idx]["description"] = powerUp.GetDescription();
-					idx++;
+				for (const auto& entry : inventoryEntries) {
+					// Get the power-up details for this entry
+					auto powerUpOpt = storage.GetPowerUpById(entry.GetPowerUpId());
+					if (powerUpOpt) {
+						const auto& powerUp = powerUpOpt.value();
+
+						// Use the INVENTORY ID (unique per instance), not PowerUp ID
+						resp["powerUps"][idx]["inventoryId"] = entry.GetId();  // Unique ID for this instance
+						resp["powerUps"][idx]["powerUpId"] = powerUp.GetDatabaseId();  // Type ID (1-5)
+						resp["powerUps"][idx]["type"] = powerUp.GetTypeString();
+						resp["powerUps"][idx]["name"] = powerUp.GetName();
+						resp["powerUps"][idx]["description"] = powerUp.GetDescription();
+						resp["powerUps"][idx]["isEquipped"] = entry.GetIsEquipped();
+						idx++;
+					}
 				}
 
 				return crow::response{ resp.dump() };

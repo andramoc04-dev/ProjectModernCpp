@@ -60,8 +60,11 @@ void http::UserProfiles::InitializePowerUps()
 {
     auto existingPowerUps = m_db.get_all<PowerUp>();
     if (!existingPowerUps.empty()) {
-        return; 
+        std::cout << "Power-ups already initialized. Count: " << existingPowerUps.size() << std::endl;
+        return;
     }
+
+    std::cout << "Initializing default power-ups..." << std::endl;
 
     
     std::vector<PowerUp> defaultPowerUps = {
@@ -75,6 +78,8 @@ void http::UserProfiles::InitializePowerUps()
     for (auto& powerUp : defaultPowerUps) {
         m_db.insert(powerUp);
     }
+    std::cout << "Power-ups initialization complete. Total: " << defaultPowerUps.size() << std::endl;
+
 }
 
 std::vector<PowerUp> http::UserProfiles::GetAllPowerUps()

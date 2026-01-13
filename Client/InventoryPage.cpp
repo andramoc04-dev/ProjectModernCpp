@@ -67,16 +67,20 @@ void InventoryPage::fetchAvailablePowerUps()
 			std::vector<QString> powerUpsValues;
 			for (const QJsonValue& powerUpValue : powerUpsArray) {
 				QJsonObject powerUp = powerUpValue.toObject();
-				QString id = QString::number(powerUp["id"].toInt());
+
+				// Get the type ID (1-5) for the image
+				QString powerUpId = QString::number(powerUp["powerUpId"].toInt());
+				int inventoryId = powerUp["inventoryId"].toInt();
 				QString type = powerUp["type"].toString();
 				QString name = powerUp["name"].toString();
 
-				qDebug() << "  Power-up ID:" << id
+				qDebug() << "  InventoryID:" << inventoryId
+					<< "PowerUpID:" << powerUpId
 					<< "Type:" << type
 					<< "Name:" << name;
 
-				// Use the ID for the image filename
-				powerUpsValues.push_back(id);
+				// Push the powerUpId (for image), but we have unique instances now
+				powerUpsValues.push_back(powerUpId);
 			}
 			showPowerUpOptions(powerUpsValues);
 		}
@@ -86,6 +90,7 @@ void InventoryPage::fetchAvailablePowerUps()
 		reply->deleteLater();
 		});
 }
+
 
 void InventoryPage::showPowerUpOptions(std::vector<QString> availablePowerups)
 {
@@ -97,22 +102,20 @@ void InventoryPage::showPowerUpOptions(std::vector<QString> availablePowerups)
 		delete item;
 	}
 
-	QString style =
-		"QPushButton {"
-		"    border: none;"
-		"    background-repeat: no-repeat;"
-		"    background-position: center;"
-		"}";
-
 	ui.grid->setSpacing(10);
 	ui.grid->setContentsMargins(10, 10, 10, 10);
-	
+
+	int buttonsPerRow = 5;
+	int index = 0;
+
 	for (const auto& powerUpValue : availablePowerups) {
 		QPushButton* button = new QPushButton(this);
 		button->setFixedSize(100, 100);
 
 		QString imgPath = QString(":/Client/resources/powerup%1.jpg").arg(powerUpValue);
-		QFile imageFile(imgPath);
+
+		qDebug() << "Loading image from:" << imgPath;  // Debug: check image path
+
 		button->setStyleSheet(QString(
 			"QPushButton {"
 			"    border: 2px solid #333;"
@@ -120,7 +123,7 @@ void InventoryPage::showPowerUpOptions(std::vector<QString> availablePowerups)
 			"    background-image: url(%1);"
 			"    background-repeat: no-repeat;"
 			"    background-position: center;"
-			"    background-color: yellow;"
+			"    background-color: #E34989;"
 			"}"
 			"QPushButton:hover {"
 			"    border: 2px solid #666;"
@@ -129,17 +132,22 @@ void InventoryPage::showPowerUpOptions(std::vector<QString> availablePowerups)
 			"    border: 2px solid #999;"
 			"}"
 		).arg(imgPath));
-		button->setText("PU " + powerUpValue);
+
+
 		connect(button, &QPushButton::clicked, [this, powerUpValue]() {
 			qDebug() << "Power-up selected:" << powerUpValue;
 			});
 
-		ui.grid->addWidget(button, 0, Qt::AlignHCenter);
+		int row = index / buttonsPerRow;
+		int col = index % buttonsPerRow;
+
+		ui.grid->addWidget(button, row, col, Qt::AlignCenter);
+
+		index++;
 	}
 
-	qDebug() << "Displayed" << availablePowerups.size() << "power-ups";
+	qDebug() << "Displayed" << availablePowerups.size() << "power-up instances in grid";
 }
-
 
 
 bool InventoryPage::event(QEvent* e)

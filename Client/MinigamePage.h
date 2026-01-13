@@ -18,6 +18,7 @@ public:
 	MinigamePage(QWidget* parent = nullptr);
 	~MinigamePage();
 	void RunMinigame();
+	void submitMinigameScore(int playerId, int score, const QString& playerName, int gameId, int opponentId);
 protected:
 	bool event(QEvent* e) override;
 	void closeEvent(QCloseEvent* event) override;
