@@ -348,6 +348,17 @@ QPushButton:hover {
     <string>Send</string>
    </property>
   </widget>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>10</y>
+     <width>121</width>
+     <height>371</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="powerupsGrid"/>
+  </widget>
   <zorder>label</zorder>
   <zorder>AscendingCardPlacer1</zorder>
   <zorder>AscendingCardPlacer2</zorder>
@@ -366,6 +377,7 @@ QPushButton:hover {
   <zorder>chatMessages</zorder>
   <zorder>chatInput</zorder>
   <zorder>sendButton</zorder>
+  <zorder>verticalLayoutWidget</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

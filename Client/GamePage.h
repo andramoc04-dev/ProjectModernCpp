@@ -28,6 +28,8 @@ public:
 	void DistributeCards();
 	void updatePileVisual(QLabel* pileLabel, int cardValue);
 	void fetchGameState();
+	void showPowerUps(const std::vector<int>& equippedPowerUpIds);
+	void fetchEquippedPowerUps();
 private slots:
 	void onSendClicked();
 	void fetchMessages();

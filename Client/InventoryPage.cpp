@@ -10,6 +10,7 @@
 #include <QJsonArray>
 #include <QPushButton>
 #include <QFile>
+#include <QMessageBox>
 
 InventoryPage::InventoryPage(QWidget* parent)
 	: QDialog(parent)
@@ -102,6 +103,8 @@ void InventoryPage::showPowerUpOptions(std::vector<QString> availablePowerups)
 		delete item;
 	}
 
+	m_powerUpButtons.clear();
+
 	ui.grid->setSpacing(10);
 	ui.grid->setContentsMargins(10, 10, 10, 10);
 
@@ -111,32 +114,49 @@ void InventoryPage::showPowerUpOptions(std::vector<QString> availablePowerups)
 	for (const auto& powerUpValue : availablePowerups) {
 		QPushButton* button = new QPushButton(this);
 		button->setFixedSize(100, 100);
-
+		button->setCheckable(true);
 		QString imgPath = QString(":/Client/resources/powerup%1.jpg").arg(powerUpValue);
-
-		qDebug() << "Loading image from:" << imgPath;  // Debug: check image path
 
 		button->setStyleSheet(QString(
 			"QPushButton {"
 			"    border: 2px solid #333;"
 			"    border-radius: 5px;"
-			"    background-image: url(%1);"
-			"    background-repeat: no-repeat;"
-			"    background-position: center;"
-			"    background-color: #E34989;"
+			"	 border: 4px solid #FFADC6;"	
+			"    background: url(%1) no-repeat center;"
 			"}"
 			"QPushButton:hover {"
-			"    border: 2px solid #666;"
+			"    border-color: #666;"
 			"}"
-			"QPushButton:pressed {"
-			"    border: 2px solid #999;"
+			"QPushButton:checked {"
+			"    border: 4px solid #E34989;"
+			"    background-color: #66BB6A;"
 			"}"
 		).arg(imgPath));
 
+		m_powerUpButtons.append(button);
 
-		connect(button, &QPushButton::clicked, [this, powerUpValue]() {
-			qDebug() << "Power-up selected:" << powerUpValue;
+		connect(button, &QPushButton::clicked, [this, powerUpValue, button]() {
+			int powerUpId = powerUpValue.toInt();
+			int selectedCount = getSelectedCount();
+
+			if (button->isChecked() && selectedCount > MAX_EQUIPPED) {
+				qDebug() << "⚠️ Cannot select more than" << MAX_EQUIPPED << "power-ups!";
+				button->setChecked(false);
+				QMessageBox::warning(this, "Selection Limit",
+					QString("You can only equip %1 power-ups at a time!").arg(MAX_EQUIPPED));
+				return;
+			}
+
+			if (button->isChecked()) {
+				qDebug() << "Equipping power-up:" << powerUpId;
+				equipPowerUp(powerUpId);
+			}
+			else {
+				qDebug() << "Unequipping power-up:" << powerUpId;
+				unequipPowerUp(powerUpId);
+			}
 			});
+
 
 		int row = index / buttonsPerRow;
 		int col = index % buttonsPerRow;
@@ -149,6 +169,63 @@ void InventoryPage::showPowerUpOptions(std::vector<QString> availablePowerups)
 	qDebug() << "Displayed" << availablePowerups.size() << "power-up instances in grid";
 }
 
+int InventoryPage::getSelectedCount() const
+{
+	int count = 0;
+	for (const QPushButton* btn : m_powerUpButtons) {
+		if (btn->isChecked()) {
+			count++;
+		}
+	}
+	return count;
+}
+
+void InventoryPage::equipPowerUp(int powerUpId)
+{
+	QString urlString = QString("http://127.0.0.1:18080/player/%1/powerups/%2/equip")
+		.arg(m_playerId)
+		.arg(powerUpId);
+
+	//QUrl url("http://127.0.0.1:18080/player/%1/powerups/%2/equip");
+
+	
+	QNetworkRequest request(urlString);
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+	QNetworkReply* reply = m_networkManager->post(request, QByteArray());
+
+	connect(reply, &QNetworkReply::finished, [this, reply, powerUpId]() {
+		if (reply->error() == QNetworkReply::NoError) {
+			qDebug() << "Power-up" << powerUpId << "equipped successfully!";
+		}
+		else {
+			qDebug() << "Error equipping power-up:" << reply->errorString();
+		}
+		reply->deleteLater();
+		});
+}
+
+void InventoryPage::unequipPowerUp(int powerUpId)
+{
+	QString urlString = QString("http://127.0.0.1:18080/player/%1/powerups/%2/unequip")
+		.arg(m_playerId)
+		.arg(powerUpId);
+
+	QNetworkRequest request(urlString);
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+	QNetworkReply* reply = m_networkManager->post(request, QByteArray());
+
+	connect(reply, &QNetworkReply::finished, [this, reply, powerUpId]() {
+		if (reply->error() == QNetworkReply::NoError) {
+			qDebug() << "Power-up" << powerUpId << "unequipped successfully!";
+		}
+		else {
+			qDebug() << "Error unequipping power-up:" << reply->errorString();
+		}
+		reply->deleteLater();
+		});
+}
 
 bool InventoryPage::event(QEvent* e)
 {

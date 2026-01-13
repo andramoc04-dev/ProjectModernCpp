@@ -54,7 +54,7 @@ GamePage::GamePage(QWidget *parent)
 	updatePileVisual(ui.AscendingDeck2Number, 1);
 	updatePileVisual(ui.DescendingDeck1Number, 100);
 	updatePileVisual(ui.DescendingDeck2Number, 100);
-
+	
 }
 
 GamePage::GamePage(int playerId,const QString& playerName, int gameId, int opponentId, QWidget* parent) : GamePage(parent)
@@ -74,7 +74,49 @@ GamePage::~GamePage()
 	m_chatTimer.stop();
 	m_stateTimer.stop();
 }
+void GamePage::fetchEquippedPowerUps()
+{
+	QString urlString = QString("http://127.0.0.1:18080/player/%1/powerups/equipped")
+		.arg(m_playerId);
+	QUrl url(urlString);
 
+	QNetworkRequest request;
+	request.setUrl(url);
+	QNetworkReply* reply = net->get(request);
+
+	connect(reply, &QNetworkReply::finished, [this, reply]() {
+		if (reply->error() == QNetworkReply::NoError) {
+			QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+			QJsonObject obj = doc.object();
+
+			qDebug() << "Equipped power-ups received for player" << obj["playerId"].toInt();
+			qDebug() << "Total equipped:" << obj["totalEquipped"].toInt();
+
+			QJsonArray powerUpsArray = obj["powerUps"].toArray();
+			qDebug() << "Equipped power-ups count:" << powerUpsArray.size();
+
+			std::vector<int> equippedPowerUpIds;
+			for (const QJsonValue& powerUpValue : powerUpsArray) {
+				QJsonObject powerUp = powerUpValue.toObject();
+				int powerUpId = powerUp["id"].toInt();
+				QString type = powerUp["type"].toString();
+				QString name = powerUp["name"].toString();
+
+				qDebug() << "  Equipped Power-up ID:" << powerUpId
+					<< "Type:" << type
+					<< "Name:" << name;
+
+				equippedPowerUpIds.push_back(powerUpId);
+			}
+
+			showPowerUps(equippedPowerUpIds);
+		}
+		else {
+			qDebug() << "Error fetching equipped power-ups:" << reply->errorString();
+		}
+		reply->deleteLater();
+		});
+}
 
 void GamePage::FetchHand()
 {
@@ -278,6 +320,59 @@ void GamePage::fetchGameState()
 		});
 }
 
+void GamePage::showPowerUps(const std::vector<int>& equippedPowerUpIds)
+{
+	QLayoutItem* item;
+	while ((item = ui.powerupsGrid->takeAt(0)) != nullptr) {
+		if (QWidget* w = item->widget()) {
+			w->deleteLater();
+		}
+		delete item;
+	}
+
+	ui.powerupsGrid->setSpacing(10);
+	ui.powerupsGrid->setContentsMargins(10, 10, 10, 10);
+
+	if (equippedPowerUpIds.empty()) {
+		qDebug() << "No equipped power-ups to display";
+		return;
+	}
+
+	int row = 0;  // Row counter for vertical stacking
+	for (const auto& powerUpId : equippedPowerUpIds) {
+		QPushButton* button = new QPushButton(this);
+		button->setFixedSize(100, 100);
+
+		QString imgPath = QString(":/Client/resources/powerup%1.jpg").arg(powerUpId);
+
+		qDebug() << "Creating power-up button for ID:" << powerUpId << "at row:" << row;
+
+		button->setStyleSheet(QString(
+			"QPushButton {"
+			"    border: 2px solid #333;"
+			"    border-radius: 5px;"
+			"    background: #4CAF50 url(%1) no-repeat center;"  // Green for equipped
+			"}"
+			"QPushButton:hover {"
+			"    border-color: #666;"
+			"}"
+		).arg(imgPath));
+
+		button->setProperty("powerUpId", powerUpId);
+
+		connect(button, &QPushButton::clicked, [this, powerUpId]() {
+			qDebug() << "Power-up clicked:" << powerUpId;
+			});
+
+		// VERTICAL: Place in column 0, incrementing rows
+		ui.powerupsGrid->addWidget(button, row,  Qt::AlignCenter);
+
+		row++;  // Move to next row
+	}
+
+	qDebug() << "Displayed" << equippedPowerUpIds.size() << "equipped power-ups vertically";
+}
+
 void GamePage::shuffleDeck()
 {
 	QJsonObject obj;
@@ -379,7 +474,7 @@ void GamePage::initializeGame(int playerId,const QString& playerName, int gameId
 	updatePileVisual(ui.DescendingDeck2Number, 100);
 
 	//fetchGameState();
-
+	fetchEquippedPowerUps();
 }
 
 void GamePage::onSendClicked()

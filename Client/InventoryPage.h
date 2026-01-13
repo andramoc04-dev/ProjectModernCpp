@@ -19,6 +19,9 @@ public:
 	void setPlayerData(int playerId, const QString& playerName, int gameId, int opponentId);
 	void fetchAvailablePowerUps();
 	void showPowerUpOptions(std::vector<QString> availablePowerups);
+	void equipPowerUp(int powerUpId);
+	void unequipPowerUp(int powerUpId);
+	int getSelectedCount() const;
 protected:
 	bool event(QEvent* e) override;
 
@@ -36,6 +39,9 @@ private:
 	GameTimer m_gameTimer;
 	int m_totalSeconds;
 	bool m_timerExpired = false;
+
+	QList<QPushButton*> m_powerUpButtons;
+	static const int MAX_EQUIPPED = 3;
 signals:
 	void inventoryFinished(int playerId, QString playerName, int gameId, int opponentId);
 };
