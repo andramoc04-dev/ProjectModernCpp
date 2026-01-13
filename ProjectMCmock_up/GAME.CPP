@@ -20,7 +20,7 @@ void Game::ShuffleCards()
 {
 	std::srand(std::time(0));
 	std::deque<int> sortedCards;
-	for (int i = 2; i <= 99; i++)
+	for (int i = 2; i <= 17; i++)
 		sortedCards.push_back(i);
 	int position;
 	while (!sortedCards.empty())

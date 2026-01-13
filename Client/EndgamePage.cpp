@@ -4,9 +4,12 @@
 EndgamePage::EndgamePage(int playerId, QString gameEnding, const QString& serverUrl, QWidget* parent)
 {
 	ui.setupUi(this);
-	gameEnding == "won" ?
-		this->setStyleSheet("background-image: url(:/images/win_background.jpg);"):
-		this->setStyleSheet("background-image: url(:/images/lose_background.jpg);");
+	if (gameEnding == "won") {
+		this->setStyleSheet("border-image: url(:/Client/resources/win_background.jpeg) 0 0 0 0 stretch stretch;");
+	}
+	else {
+		this->setStyleSheet("border-image: url(:/Client/resources/lose_background.jpeg) 0 0 0 0 stretch stretch;");
+	}
 	
 }
 
