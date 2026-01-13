@@ -13,6 +13,7 @@
 
 
 
+
 class GamePage : public QDialog
 {
 	Q_OBJECT
@@ -38,6 +39,12 @@ private slots:
 	void checkTimers();
 	void openEndgamePage(QString gameStatus);
 
+	void onPowerUpClicked(int powerUpId, int powerUpType);
+	void usePowerUp(int powerUpId, int targetPlayerId = -1, int targetCardValue = -1, int targetPileId = -1);
+	void showStealCardDialog();
+	void hideStealCardDialog();
+	void enablePowerUps(bool enabled);
+
 private:
 	Ui::GameClass ui;
 	int m_playerId = -1;
@@ -46,6 +53,22 @@ private:
 	int m_selectedCardValue = -1;
 	int m_cardsPlacedThisTurn = 0;
 	QStringList m_allPlayerNames;
+	
+
+	int m_activePowerUpId = -1;
+	int m_activePowerUpType = -1;
+	bool m_isPowerUpActive = false;
+
+	// Power-up type constants
+	static const int POWERUP_SKIP_TURN = 1;
+	static const int POWERUP_PLACE_ANY_CARD = 2;
+	static const int POWERUP_DISCARD_CARD = 3;
+	static const int POWERUP_NO_SCORE_LOSS = 4;
+	static const int POWERUP_STEAL_CARD = 5;
+
+	// UI for steal card
+	QWidget* m_stealCardWidget = nullptr;
+	QVBoxLayout* m_stealCardLayout = nullptr;
 
 
 	GameTimer m_chatTimer;

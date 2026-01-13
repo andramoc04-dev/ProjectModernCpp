@@ -65,14 +65,21 @@ GamePage::GamePage(int playerId,const QString& playerName, int gameId, int oppon
 
 GamePage::~GamePage()
 {
+
 	// Oprește QTimer
-	if (m_pollTimer) {
-		m_pollTimer->stop();
-	}
+		if (m_pollTimer) {
+			m_pollTimer->stop();
+		}
 
 	// Oprește GameTimer DLL
 	m_chatTimer.stop();
 	m_stateTimer.stop();
+
+	// Cleanup steal card widget
+	if (m_stealCardWidget) {
+		delete m_stealCardWidget;
+		m_stealCardWidget = nullptr;
+	}
 }
 void GamePage::fetchEquippedPowerUps()
 {
@@ -161,6 +168,60 @@ void GamePage::FetchHand()
 void GamePage::ShowCards(const std::vector<int>& cardsValues)
 {
 	
+	//QLayoutItem* item;
+	//while ((item = ui.layout->takeAt(0)) != nullptr) {
+	//	if (item->widget()) {
+	//		delete item->widget();
+	//	}
+	//	delete item;
+	//}
+
+
+	//QString style =
+	//	"QPushButton {"
+	//	"    border: none;"
+	//	"    background-image: url(:/Client/resources/CardButton.png);"
+	//	"}";
+
+	//ui.layout->setSpacing(0);
+	//ui.layout->setContentsMargins(0, 0, 0, 0);
+
+	//int index = 0;
+	//for (const auto& cardValue : cardsValues) {
+	//	QPushButton* button = new QPushButton(this);
+	//	button->setStyleSheet(style);
+	//	button->setFixedSize(100, 315);
+
+	//	// --- partea grafică pentru număr ---
+	//	if (cardValue >= 10) {
+	//		QLabel* nr1 = new QLabel("", button);
+	//		nr1->setFixedSize(32, 41);
+	//		nr1->move(22, 45);
+	//		QString imgPath1 = QString(":/Client/resources/%1.png").arg(cardValue / 10);
+	//		nr1->setStyleSheet(QString("QLabel { background-image: url(%1); }").arg(imgPath1));
+
+	//		QLabel* nr2 = new QLabel("", button);
+	//		nr2->setFixedSize(32, 41);
+	//		nr2->move(50, 45);
+	//		QString imgPath2 = QString(":/Client/resources/%1.png").arg(cardValue % 10);
+	//		nr2->setStyleSheet(QString("QLabel { background-image: url(%1); }").arg(imgPath2));
+	//	}
+	//	else {
+	//		QLabel* nr = new QLabel("", button);
+	//		nr->setFixedSize(32, 41);
+	//		nr->move(32, 45);
+	//		QString imgPath1 = QString(":/Client/resources/%1.png").arg(cardValue);
+	//		nr->setStyleSheet(QString("QLabel { background-image: url(%1); }").arg(imgPath1));
+	//	}
+	//	connect(button, &QPushButton::clicked, this, [=]() {
+	//		m_selectedCardValue = cardValue;
+	//		qDebug() << "Selected card:" << m_selectedCardValue;
+	//		});
+
+	//	ui.layout->addWidget(button, 0, index++);
+	//}
+
+
 	QLayoutItem* item;
 	while ((item = ui.layout->takeAt(0)) != nullptr) {
 		if (item->widget()) {
@@ -168,7 +229,6 @@ void GamePage::ShowCards(const std::vector<int>& cardsValues)
 		}
 		delete item;
 	}
-
 
 	QString style =
 		"QPushButton {"
@@ -185,7 +245,7 @@ void GamePage::ShowCards(const std::vector<int>& cardsValues)
 		button->setStyleSheet(style);
 		button->setFixedSize(100, 315);
 
-		// --- partea grafică pentru număr ---
+		// Numărul pe carte
 		if (cardValue >= 10) {
 			QLabel* nr1 = new QLabel("", button);
 			nr1->setFixedSize(32, 41);
@@ -206,9 +266,34 @@ void GamePage::ShowCards(const std::vector<int>& cardsValues)
 			QString imgPath1 = QString(":/Client/resources/%1.png").arg(cardValue);
 			nr->setStyleSheet(QString("QLabel { background-image: url(%1); }").arg(imgPath1));
 		}
+
 		connect(button, &QPushButton::clicked, this, [=]() {
-			m_selectedCardValue = cardValue;
-			qDebug() << "Selected card:" << m_selectedCardValue;
+			// Verifică dacă este activ un power-up
+			if (m_isPowerUpActive) {
+				if (m_activePowerUpType == POWERUP_DISCARD_CARD) {
+					// Discard Card - folosește power-up-ul imediat
+					usePowerUp(m_activePowerUpId, -1, cardValue, -1);
+					m_isPowerUpActive = false;
+					m_activePowerUpId = -1;
+					m_activePowerUpType = -1;
+				}
+				else if (m_activePowerUpType == POWERUP_PLACE_ANY_CARD) {
+					// Wild Card - doar selectează cartea
+					m_selectedCardValue = cardValue;
+					QMessageBox::information(this, "Wild Card",
+						QString("Card %1 selected. Now choose any pile.").arg(cardValue));
+				}
+				else {
+					// Alt power-up care nu necesită selecție de carte
+					m_selectedCardValue = cardValue;
+					qDebug() << "Selected card:" << m_selectedCardValue;
+				}
+			}
+			else {
+				// Comportament normal
+				m_selectedCardValue = cardValue;
+				qDebug() << "Selected card:" << m_selectedCardValue;
+			}
 			});
 
 		ui.layout->addWidget(button, 0, index++);
@@ -255,6 +340,30 @@ void GamePage::updatePileVisual(QLabel* pileLabel, int cardValue)
 
 }
 
+
+void GamePage::enablePowerUps(bool enabled)
+{
+	// Parcurge toate widget-urile din powerupsGrid și activează/dezactivează butoanele
+	for (int i = 0; i < ui.powerupsGrid->count(); ++i) {
+		QLayoutItem* item = ui.powerupsGrid->itemAt(i);
+		if (item && item->widget()) {
+			QPushButton* button = qobject_cast<QPushButton*>(item->widget());
+			if (button) {
+				button->setEnabled(enabled);
+
+				// Schimbă stilul vizual pentru a indica că sunt disabled
+				if (!enabled) {
+					button->setStyleSheet(button->styleSheet() +
+						"QPushButton:disabled {"
+						"    opacity: 0.5;"
+						"    background-color: #cccccc;"
+						"}");
+				}
+			}
+		}
+	}
+}
+
 void GamePage::fetchGameState()
 {
 	QNetworkRequest req(QUrl(QString("http://127.0.0.1:18080/game/%1/state").arg(m_gameId)));
@@ -286,11 +395,15 @@ void GamePage::fetchGameState()
 		QString currentPlayerName = obj["currentPlayerName"].toString();
 		bool isMyTurn = (currentPlayerId == m_playerId);
 
+		// Activează/Dezactivează butoanele de plasare cărți
 		ui.DescendingCardPlacer1->setEnabled(isMyTurn);
 		ui.DescendingCardPlacer2->setEnabled(isMyTurn);
 		ui.AscendingCardPlacer1->setEnabled(isMyTurn);
 		ui.AscendingCardPlacer2->setEnabled(isMyTurn);
 		ui.deckButton->setEnabled(isMyTurn);
+
+		// Activează/Dezactivează power-up-urile
+		enablePowerUps(isMyTurn);
 
 		if (isMyTurn) {
 			this->setWindowTitle(QString("Your turn | Team: %1").arg(m_allPlayerNames.join(", ")));
@@ -316,7 +429,6 @@ void GamePage::fetchGameState()
 		}
 
 		reply->deleteLater();
-		
 		});
 }
 
@@ -338,7 +450,7 @@ void GamePage::showPowerUps(const std::vector<int>& equippedPowerUpIds)
 		return;
 	}
 
-	int row = 0;  // Row counter for vertical stacking
+	int row = 0;
 	for (const auto& powerUpId : equippedPowerUpIds) {
 		QPushButton* button = new QPushButton(this);
 		button->setFixedSize(100, 100);
@@ -351,23 +463,36 @@ void GamePage::showPowerUps(const std::vector<int>& equippedPowerUpIds)
 			"QPushButton {"
 			"    border: 2px solid #333;"
 			"    border-radius: 5px;"
-			"    background: #4CAF50 url(%1) no-repeat center;"  // Green for equipped
+			"    background: #4CAF50 url(%1) no-repeat center;"
+			"    background-size: cover;"
 			"}"
 			"QPushButton:hover {"
-			"    border-color: #666;"
+			"    border-color: #FFD700;"
+			"    background-color: #45a049;"
+			"}"
+			"QPushButton:pressed {"
+			"    background-color: #3d8b40;"
+			"}"
+			"QPushButton:disabled {"
+			"    opacity: 0.5;"
+			"    background-color: #cccccc;"
+			"    border-color: #999;"
 			"}"
 		).arg(imgPath));
 
 		button->setProperty("powerUpId", powerUpId);
 
-		connect(button, &QPushButton::clicked, [this, powerUpId]() {
-			qDebug() << "Power-up clicked:" << powerUpId;
+		int powerUpType = powerUpId; // ID-ul este același cu type-ul (1-5)
+
+		connect(button, &QPushButton::clicked, [this, powerUpId, powerUpType]() {
+			onPowerUpClicked(powerUpId, powerUpType);
 			});
 
-		// VERTICAL: Place in column 0, incrementing rows
-		ui.powerupsGrid->addWidget(button, row,  Qt::AlignCenter);
+		// Inițial disabled până verificăm dacă este tura jucătorului
+		button->setEnabled(false);
 
-		row++;  // Move to next row
+		ui.powerupsGrid->addWidget(button, row, Qt::AlignCenter);
+		row++;
 	}
 
 	qDebug() << "Displayed" << equippedPowerUpIds.size() << "equipped power-ups vertically";
@@ -500,11 +625,58 @@ void GamePage::onSendClicked()
 
 void GamePage::onPileClicked(int pileId, QLabel* pileLabel)
 {
+	//if (m_selectedCardValue == -1) {
+	//	QMessageBox::warning(this, "No card selected", "Select a card before choosing a card placer.");
+	//	return;
+	//}
+
+	//QJsonObject obj;
+	//obj["cardValue"] = m_selectedCardValue;
+	//obj["pileId"] = pileId;
+
+	//QNetworkRequest req(QUrl(QString("http://localhost:18080/game/%1/player/%2/place")
+	//	.arg(m_gameId).arg(m_playerId)));
+	//req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+	//QNetworkReply* reply = net->post(req, QJsonDocument(obj).toJson());
+	//connect(reply, &QNetworkReply::finished, this, [=]() {
+	//	auto data = reply->readAll();
+	//	QJsonDocument doc = QJsonDocument::fromJson(data);
+	//	QJsonObject respObj = doc.object();
+
+	//	qDebug() << "Server response:" << doc;
+
+	//	if (doc["success"].toBool()) {
+	//		int newPileValue = doc["newPileValue"].toInt();
+	//		int cardsPlaced = respObj["cardsPlacedThisTurn"].toInt();
+
+	//		updatePileVisual(pileLabel, newPileValue);
+	//		m_selectedCardValue = -1;
+	//		m_cardsPlacedThisTurn = cardsPlaced;
+	//		FetchHand(); // reîncarcă mâna
+	//	}
+	//	else {
+	//		QMessageBox::warning(this, "Invalid move", "You can't place this card on the chosen card placer.");
+	//	}
+	//	reply->deleteLater();
+	//	});
+
 	if (m_selectedCardValue == -1) {
 		QMessageBox::warning(this, "No card selected", "Select a card before choosing a card placer.");
 		return;
 	}
 
+	// Verifică dacă Wild Card este activ
+	if (m_isPowerUpActive && m_activePowerUpType == POWERUP_PLACE_ANY_CARD) {
+		usePowerUp(m_activePowerUpId, -1, m_selectedCardValue, pileId);
+		m_isPowerUpActive = false;
+		m_activePowerUpId = -1;
+		m_activePowerUpType = -1;
+		m_selectedCardValue = -1;
+		return;
+	}
+
+	// Comportament normal
 	QJsonObject obj;
 	obj["cardValue"] = m_selectedCardValue;
 	obj["pileId"] = pileId;
@@ -528,7 +700,7 @@ void GamePage::onPileClicked(int pileId, QLabel* pileLabel)
 			updatePileVisual(pileLabel, newPileValue);
 			m_selectedCardValue = -1;
 			m_cardsPlacedThisTurn = cardsPlaced;
-			FetchHand(); // reîncarcă mâna
+			FetchHand();
 		}
 		else {
 			QMessageBox::warning(this, "Invalid move", "You can't place this card on the chosen card placer.");
@@ -599,6 +771,239 @@ void GamePage::openEndgamePage(QString gameStatus)
 	endgamePage = new EndgamePage(m_playerId, gameStatus,"http://127.0.0.1:18080", nullptr);
 	endgamePage->show();
 	this->close();
+}
+
+void GamePage::onPowerUpClicked(int powerUpId, int powerUpType)
+{
+	qDebug() << "Power-up clicked:" << powerUpId << "Type:" << powerUpType;
+
+	m_activePowerUpId = powerUpId;
+	m_activePowerUpType = powerUpType;
+	m_isPowerUpActive = true;
+
+	switch (powerUpType) {
+	case POWERUP_DISCARD_CARD:
+		QMessageBox::information(this, "Discard Card",
+			"Select a card from your hand to discard it.");
+		break;
+
+	case POWERUP_SKIP_TURN:
+		// Folosește imediat power-up-ul
+		usePowerUp(powerUpId);
+		m_isPowerUpActive = false;
+		m_activePowerUpId = -1;
+		m_activePowerUpType = -1;
+		break;
+
+	case POWERUP_STEAL_CARD:
+		showStealCardDialog();
+		break;
+
+	case POWERUP_PLACE_ANY_CARD:
+		QMessageBox::information(this, "Wild Card",
+			"Select a card from your hand, then select any pile to place it.");
+		break;
+
+	case POWERUP_NO_SCORE_LOSS:
+		// Acest power-up se activează automat la pierderea jocului
+		usePowerUp(powerUpId);
+		m_isPowerUpActive = false;
+		m_activePowerUpId = -1;
+		m_activePowerUpType = -1;
+		QMessageBox::information(this, "Safety Net",
+			"Safety Net activated! You won't lose points if you lose this game.");
+		break;
+
+	default:
+		qDebug() << "Unknown power-up type:" << powerUpType;
+		m_isPowerUpActive = false;
+		m_activePowerUpId = -1;
+		m_activePowerUpType = -1;
+		break;
+	}
+}
+
+void GamePage::usePowerUp(int powerUpId, int targetPlayerId, int targetCardValue, int targetPileId)
+{
+	QJsonObject obj;
+	obj["powerUpId"] = powerUpId;
+
+	if (targetPlayerId != -1) {
+		obj["targetPlayerId"] = targetPlayerId;
+	}
+	if (targetCardValue != -1) {
+		obj["targetCardValue"] = targetCardValue;
+	}
+	if (targetPileId != -1) {
+		obj["targetPileId"] = targetPileId;
+	}
+
+	QNetworkRequest req(QUrl(QString("http://localhost:18080/game/%1/player/%2/usepower")
+		.arg(m_gameId).arg(m_playerId)));
+	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+	QNetworkReply* reply = net->post(req, QJsonDocument(obj).toJson());
+
+	connect(reply, &QNetworkReply::finished, this, [=]() {
+		auto data = reply->readAll();
+		QJsonDocument doc = QJsonDocument::fromJson(data);
+		QJsonObject respObj = doc.object();
+
+		qDebug() << "Power-up response:" << doc;
+
+		if (respObj["success"].toBool()) {
+			QString message = respObj["message"].toString();
+			QString powerUpName = respObj["powerUpName"].toString();
+
+			QMessageBox::information(this, "Power-up Used",
+				QString("%1 used successfully!\n%2").arg(powerUpName).arg(message));
+
+			// Refresh hand and equipped power-ups
+			FetchHand();
+			fetchEquippedPowerUps();
+
+			// Dacă a fost Skip Turn, refresh game state
+			if (powerUpId == POWERUP_SKIP_TURN) {
+				fetchGameState();
+			}
+		}
+		else {
+			QString error = respObj["error"].toString();
+			QMessageBox::warning(this, "Power-up Failed",
+				QString("Failed to use power-up:\n%1").arg(error));
+		}
+
+		reply->deleteLater();
+		});
+}
+
+void GamePage::showStealCardDialog()
+{
+	// Creează widget-ul pentru steal card dacă nu există
+	if (!m_stealCardWidget) {
+		m_stealCardWidget = new QWidget(this);
+		m_stealCardWidget->setStyleSheet(
+			"QWidget {"
+			"    background-color: rgba(0, 0, 0, 180);"
+			"    border: 2px solid #FFD700;"
+			"    border-radius: 10px;"
+			"}"
+			"QPushButton {"
+			"    background-color: #4CAF50;"
+			"    color: white;"
+			"    border: none;"
+			"    padding: 10px;"
+			"    font-size: 14pt;"
+			"    font-weight: bold;"
+			"    border-radius: 5px;"
+			"}"
+			"QPushButton:hover {"
+			"    background-color: #45a049;"
+			"}"
+			"QLabel {"
+			"    color: white;"
+			"    font-size: 16pt;"
+			"    font-weight: bold;"
+			"}"
+		);
+
+		m_stealCardLayout = new QVBoxLayout(m_stealCardWidget);
+
+		QLabel* title = new QLabel("Select a player to steal from:", m_stealCardWidget);
+		title->setAlignment(Qt::AlignCenter);
+		m_stealCardLayout->addWidget(title);
+
+		m_stealCardWidget->setLayout(m_stealCardLayout);
+	}
+
+	// Șterge butoanele vechi
+	while (m_stealCardLayout->count() > 1) {
+		QLayoutItem* item = m_stealCardLayout->takeAt(1);
+		if (item->widget()) {
+			delete item->widget();
+		}
+		delete item;
+	}
+
+	// Fetch players from game state
+	QNetworkRequest req(QUrl(QString("http://127.0.0.1:18080/game/%1/state").arg(m_gameId)));
+	QNetworkReply* reply = net->get(req);
+
+	connect(reply, &QNetworkReply::finished, this, [=]() {
+		auto data = reply->readAll();
+		QJsonDocument doc = QJsonDocument::fromJson(data);
+
+		if (!doc.isObject()) {
+			qDebug() << "Invalid JSON received";
+			reply->deleteLater();
+			return;
+		}
+
+		QJsonObject obj = doc.object();
+		QJsonArray players = obj["players"].toArray();
+
+		for (const auto& playerVal : players) {
+			QJsonObject playerObj = playerVal.toObject();
+			int playerId = playerObj["id"].toInt();
+			QString username = playerObj["username"].toString();
+
+			// Skip current player
+			if (playerId == m_playerId) {
+				continue;
+			}
+
+			QPushButton* playerBtn = new QPushButton(username, m_stealCardWidget);
+			connect(playerBtn, &QPushButton::clicked, [this, playerId, username]() {
+				qDebug() << "Stealing from player:" << username << "ID:" << playerId;
+				usePowerUp(m_activePowerUpId, playerId, -1, -1);
+				hideStealCardDialog();
+				m_isPowerUpActive = false;
+				m_activePowerUpId = -1;
+				m_activePowerUpType = -1;
+				});
+
+			m_stealCardLayout->addWidget(playerBtn);
+		}
+
+		// Adaugă buton de anulare
+		QPushButton* cancelBtn = new QPushButton("Cancel", m_stealCardWidget);
+		cancelBtn->setStyleSheet(
+			"QPushButton {"
+			"    background-color: #f44336;"
+			"}"
+			"QPushButton:hover {"
+			"    background-color: #da190b;"
+			"}"
+		);
+		connect(cancelBtn, &QPushButton::clicked, this, [this]() {
+			hideStealCardDialog();
+			m_isPowerUpActive = false;
+			m_activePowerUpId = -1;
+			m_activePowerUpType = -1;
+			});
+		m_stealCardLayout->addWidget(cancelBtn);
+
+		// Poziționează widget-ul în centrul ecranului
+		int w = 300;
+		int h = 400;
+		m_stealCardWidget->setGeometry(
+			(this->width() - w) / 2,
+			(this->height() - h) / 2,
+			w, h
+		);
+
+		m_stealCardWidget->show();
+		m_stealCardWidget->raise();
+
+		reply->deleteLater();
+		});
+}
+
+void GamePage::hideStealCardDialog()
+{
+	if (m_stealCardWidget) {
+		m_stealCardWidget->hide();
+	}
 }
 
 

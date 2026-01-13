@@ -843,6 +843,19 @@ void http::Routing::Run(UserProfiles& storage)
 				return crow::response(404, R"({"error":"Game not found"})");
 			}
 
+			Game& gameInst = it->second;
+
+			// Verifică dacă este tura jucătorului
+			try {
+				const Player& currentPlayer = gameInst.GetCurrentPlayer();
+				if (currentPlayer.GetId() != playerId) {
+					return crow::response(400, R"({"error":"Not your turn"})");
+				}
+			}
+			catch (...) {
+				return crow::response(500, R"({"error":"Failed to get current player"})");
+			}
+
 			// Verifică dacă jucătorul are power-up-ul și este echipat
 			if (!storage.IsPowerUpEquipped(playerId, powerUpId)) {
 				return crow::response(400, R"({"error":"Power-up not equipped or not owned"})");
@@ -855,7 +868,6 @@ void http::Routing::Run(UserProfiles& storage)
 			}
 
 			try {
-				Game& gameInst = it->second;
 				Player& player = gameInst.GetPlayer(playerId);
 				PowerUp powerUp = powerUpOpt.value();
 
@@ -870,6 +882,15 @@ void http::Routing::Run(UserProfiles& storage)
 				if (success) {
 					// Șterge power-up-ul din inventar după utilizare
 					storage.RemovePowerUpFromUser(playerId, powerUpId);
+
+					// Dacă este SKIP_TURN, sari peste tura curentă
+					if (powerUp.GetType() == PowerUpType::SKIP_TURN) {
+						// Resetează cărțile plasate (deja făcut în PowerUp::ExecuteSkipTurn)
+						player.ResetCardsPlacedThisTurn();
+
+						// Avansează la următorul jucător (exact ca în /endturn)
+						gameInst.AdvanceTurn();
+					}
 
 					crow::json::wvalue resp;
 					resp["success"] = true;
