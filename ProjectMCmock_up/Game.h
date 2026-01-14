@@ -46,6 +46,10 @@ public:
 	void SetCurrentPlayerIndex(size_t index);
 	void AdvanceTurn(int steps = 1);
 	bool IsGameOver() const;
+
+	void StartTurnTimerIfNeeded();
+	void StopTurnTimer();
+	void CheckTurnTimeout();
 private:
 	std::vector<Player> m_players;
 	std::stack<Card> m_cardsDeck;
@@ -55,6 +59,9 @@ private:
 	bool m_areCardsShuffled;
 	GameTimer m_chatTimer;
 	size_t m_currentPlayerIndex;
-	
+
+	GameTimer m_turnTimer;
+	bool m_gameLost = false;
+	size_t m_lastPlayerWithTimer = SIZE_MAX;
 };
 

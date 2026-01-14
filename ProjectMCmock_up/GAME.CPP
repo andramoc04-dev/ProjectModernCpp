@@ -273,6 +273,9 @@ const Player& Game::GetCurrentPlayer() const
 
 Game::GameStatus Game::GetGameStatus() const
 {
+	if (m_gameLost)
+		return GameStatus::Lost;
+
 	if (m_cardsDeck.empty()) {
 		bool allHandsEmpty = true;
 		for (const auto& player : m_players) {
@@ -309,3 +312,35 @@ bool Game::IsGameOver() const
 {
 	return GetGameStatus() != GameStatus::Playing;
 }
+
+
+void Game::StartTurnTimerIfNeeded()
+{
+	if (m_lastPlayerWithTimer != m_currentPlayerIndex)
+	{
+		m_turnTimer.start(60); // 60 secunde
+		m_lastPlayerWithTimer = m_currentPlayerIndex;
+	}
+}
+
+void Game::StopTurnTimer()
+{
+	m_turnTimer.stop();
+}
+
+void Game::CheckTurnTimeout()
+{
+	if (!m_turnTimer.running() || !m_turnTimer.expired())
+		return;
+
+	Player& player = GetCurrentPlayer();
+
+	int placed = player.GetCardsPlacedThisTurn();
+	int minRequired = m_cardsDeck.empty() ? 1 : 2;
+
+	if (placed < minRequired)
+	{
+		m_gameLost = true;
+	}
+}
+

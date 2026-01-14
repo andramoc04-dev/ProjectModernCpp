@@ -367,6 +367,14 @@ void http::Routing::Run(UserProfiles& storage)
 
 			Game& gameInst = it->second;
 
+			// VERIFICĂ TIMEOUT LA ORICE ACȚIUNE
+			gameInst.CheckTurnTimeout();
+			if (gameInst.GetGameStatus() == Game::GameStatus::Lost)
+			{
+				return crow::response(400, R"({"error":"Time expired. Game over."})");
+			}
+
+
 			try {
 				Player& player = gameInst.GetPlayer(playerId);
 				Card chosen(cardValue);
@@ -428,6 +436,22 @@ void http::Routing::Run(UserProfiles& storage)
 			}
 
 			Game& gameInst = it->second;
+
+			// PORNEȘTE TIMERUL DACĂ E TURĂ NOUĂ
+			gameInst.StartTurnTimerIfNeeded();
+
+			// VERIFICĂ DACĂ A EXPIRAT TIMERUL
+			gameInst.CheckTurnTimeout();
+
+			// DACĂ A EXPIRAT -> GAME LOST
+			if (gameInst.GetGameStatus() == Game::GameStatus::Lost)
+			{
+				crow::json::wvalue resp;
+				resp["gameStatus"] = "lost";
+				resp["gameMessage"] = "Time expired. All players lost.";
+				return crow::response{ resp.dump() };
+			}
+
 
 			crow::json::wvalue resp;
 			resp["gameId"] = gameId;
@@ -569,9 +593,13 @@ void http::Routing::Run(UserProfiles& storage)
 					}
 				}
 
-				// Reset contorul pentru următoarea tură
+				// OPREȘTE TIMERUL TUREI CURENTE
+				gameInst.StopTurnTimer();
+
+				// RESET PENTRU URMĂTORUL JUCĂTOR
 				player.ResetCardsPlacedThisTurn();
 				gameInst.AdvanceTurn();
+
 
 				crow::json::wvalue resp;
 				resp["success"] = true;

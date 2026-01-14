@@ -371,6 +371,13 @@ void GamePage::fetchGameState()
 		// Apelăm enablePowerUps pentru a actualiza butoanele existente
 		enablePowerUps(m_isMyTurn);
 
+		QJsonArray players = obj["players"].toArray();
+		m_allPlayerNames.clear(); // Golim lista veche
+		for (const auto& playerVal : players) {
+			QJsonObject playerObj = playerVal.toObject();
+			QString username = playerObj["username"].toString();
+			m_allPlayerNames << username; // Adăugăm numele în listă
+		}
 		QString newTitle;
 		if (m_isMyTurn) newTitle = QString("Your turn | Team: %1").arg(m_allPlayerNames.join(", "));
 		else newTitle = QString("%1's turn | Team: %2").arg(currentPlayerName).arg(m_allPlayerNames.join(", "));
