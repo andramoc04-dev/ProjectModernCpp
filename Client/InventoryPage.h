@@ -7,7 +7,7 @@
 #include "ui_InventoryPage.h"
 #include "../TimerDLL/GameTimer.h"
 #include <vector>
-
+#include <map>
 
 class InventoryPage : public QDialog
 {
@@ -18,7 +18,8 @@ public:
 	~InventoryPage();
 	void setPlayerData(int playerId, const QString& playerName, int gameId, int opponentId);
 	void fetchAvailablePowerUps();
-	void showPowerUpOptions(std::vector<QString> availablePowerups);
+	void showPowerUpOptions(std::unordered_set<QString> availablePowerups,
+		const std::unordered_map<QString, int>& powerUpToInventoryId);
 	void equipPowerUp(int powerUpId);
 	void unequipPowerUp(int powerUpId);
 	int getSelectedCount() const;

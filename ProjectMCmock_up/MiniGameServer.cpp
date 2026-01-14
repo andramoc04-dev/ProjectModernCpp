@@ -8,13 +8,13 @@ http::MinigameServer::MinigameServer()
 
 void http::MinigameServer::InitializeRewardTiers()
 {
-    m_rewardTiers = {
+    m_rewardTiers = { {
         {15, PowerUpType::PLACE_ANY_CARD, "Wild Card - Place any card anywhere"},
         {12, PowerUpType::DISCARD_CARD, "Discard - Remove an unwanted card"},
         {9, PowerUpType::STEAL_CARD, "Pickpocket - Steal a card from opponent"},
         {6, PowerUpType::NO_SCORE_LOSS,"Safety Net - Protection from score loss"},
         {3, PowerUpType::SKIP_TURN, "Skip Turn - Skip without penalty"}
-    };
+    } };
 }
 
 PowerUpType http::MinigameServer::GetRewardForScore(int score) const
@@ -52,7 +52,7 @@ std::string http::MinigameServer::GetRewardDescription(int score) const
     return "No reward - Score too low";
 }
 
-const std::vector<http::MinigameReward>& http::MinigameServer::GetRewardTiers() const
+const std::array<http::MinigameReward, 5>& http::MinigameServer::GetRewardTiers() const
 {
     return m_rewardTiers;
 }

@@ -165,10 +165,6 @@ const std::unordered_set<Card>& Player::GetHand() const
 	return m_hand;
 }
 
-bool Player::GetHasPowerUpsReady() const
-{
-	return m_hasPowerUpsReady;
-}
 
 void Player::IncrementCardsPlacedThisTurn()
 {
@@ -190,20 +186,6 @@ Player Player::ConvertUserToPlayer(const User& user)
 	return Player(user.GetId(), user.GetUsername());
 }
 
-void Player::AddPowerUp(const PowerUp& powerUp)
-{
-	m_inventory.push_back(powerUp);
-}
-
-const std::vector<PowerUp>& Player::GetInventory() const
-{
-	return m_inventory;
-}
-
-void Player::SetHasPowerUpsReady(bool hasPowerUpsReady)
-{
-	m_hasPowerUpsReady = hasPowerUpsReady;
-}
 
 
 

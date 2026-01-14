@@ -82,8 +82,8 @@ namespace http
 		int GetPowerUpCount(uint32_t userId, PowerUpType type);
 
 
-		void EquipPowerUp(uint32_t userId, uint32_t powerUpId);
-		void UnequipPowerUp(uint32_t userId, uint32_t powerUpId);
+		void EquipPowerUp(uint32_t userId, uint32_t inventoryId);
+		void UnequipPowerUp(uint32_t userId, uint32_t inventoryId);
 		std::vector<PowerUp> GetEquippedPowerUps(uint32_t userId);
 		bool IsPowerUpEquipped(uint32_t userId, uint32_t powerUpId);
 

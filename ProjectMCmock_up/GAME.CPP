@@ -8,7 +8,7 @@ Game::Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck
 	m_ascendingDeck1(ASCENDING_DECK_START), m_ascendingDeck2(ASCENDING_DECK_START), m_areCardsDealt(false), m_areCardsShuffled(false), m_currentPlayerIndex(0)
 {
 	m_chatTimer.start(CHAT_TIMER_DEFAULT_SECONDS); 
-
+	m_players.reserve(5);
 
 }
 
@@ -169,7 +169,7 @@ void Game::SetCardsDeck(std::stack<Card> cardsDeck)
 
 void Game::AddPlayer(const Player& player)
 {
-	m_players.push_back(player);
+	m_players.emplace_back(player);
 }
 
 const Player& Game::GetPlayer(int id) const
@@ -314,7 +314,7 @@ void Game::StartTurnTimerIfNeeded()
 {
 	if (m_lastPlayerWithTimer != m_currentPlayerIndex)
 	{
-		m_turnTimer.start(60); // 60 secunde
+		m_turnTimer.start(60);
 		m_lastPlayerWithTimer = m_currentPlayerIndex;
 	}
 }

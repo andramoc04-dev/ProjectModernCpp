@@ -40,16 +40,9 @@ public:
 	void ResetCardsPlacedThisTurn();
 	
 	static Player ConvertUserToPlayer(const User& user);
-
-	void AddPowerUp(const PowerUp& powerUp);
-	const std::vector<PowerUp>& GetInventory() const;
-
-	void SetHasPowerUpsReady(bool hasPowerUpsReady);
 private:
 	
 	std::unordered_set<Card> m_hand;
 	int m_numberOfPlacedCards = 0;
-	std::vector<PowerUp> m_inventory;
-	bool m_hasPowerUpsReady = false;
 };
 

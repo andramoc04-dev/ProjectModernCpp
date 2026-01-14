@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <string>
-#include <vector>
+#include <array>
 #include "PowerUp.h"
 
 namespace http
@@ -24,11 +24,11 @@ namespace http
 
         std::string GetRewardDescription(int score) const;
 
-        const std::vector<MinigameReward>& GetRewardTiers() const;
+        const std::array<http::MinigameReward, 5>& GetRewardTiers() const;
 
     private:
         void InitializeRewardTiers();
 
-        std::vector<MinigameReward> m_rewardTiers;
+        std::array<http::MinigameReward, 5> m_rewardTiers;
     };
 }

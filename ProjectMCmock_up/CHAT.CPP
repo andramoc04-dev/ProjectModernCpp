@@ -11,7 +11,7 @@ void Chat::AddMessage(const Message& message)
     m_messages.push_back(message);
 }
 
-std::vector<Message> Chat::GetMessages() const
+std::deque<Message> Chat::GetMessages() const
 {
     return m_messages;
 }

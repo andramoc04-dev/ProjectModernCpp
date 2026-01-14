@@ -1,6 +1,6 @@
 #pragma once
 #include<string>
-#include<vector>
+#include<deque>
 #include"Message.h"
 
 
@@ -10,9 +10,9 @@ public:
 	Chat()=default;
 
 	void AddMessage(const Message& message);
-	std::vector<Message> GetMessages() const;
+	std::deque<Message> GetMessages() const;
 	void PrintMessages() const;
 private:
-	std::vector<Message>m_messages;
+	std::deque<Message>m_messages;
 };
 

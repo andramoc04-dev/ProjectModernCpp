@@ -98,29 +98,31 @@ void GamePage::fetchEquippedPowerUps()
 
 	connect(reply, &QNetworkReply::finished, [this, reply]() {
 		if (reply->error() == QNetworkReply::NoError) {
-			QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+			QByteArray responseData = reply->readAll();
+			QJsonDocument doc = QJsonDocument::fromJson(responseData);
 			QJsonObject obj = doc.object();
-
-			qDebug() << "Equipped power-ups received for player" << obj["playerId"].toInt();
-			qDebug() << "Total equipped:" << obj["totalEquipped"].toInt();
+			
+			qDebug() << "=== EQUIPPED POWER-UPS RESPONSE ===";
+			qDebug() << doc.toJson(QJsonDocument::Indented);
+			qDebug() << "===================================";
 
 			QJsonArray powerUpsArray = obj["powerUps"].toArray();
-			qDebug() << "Equipped power-ups count:" << powerUpsArray.size();
+			
+			qDebug() << "Array size:" << powerUpsArray.size();
 
-			std::vector<int> equippedPowerUpIds;
-			for (const QJsonValue& powerUpValue : powerUpsArray) {
-				QJsonObject powerUp = powerUpValue.toObject();
-				int powerUpId = powerUp["id"].toInt();
-				QString type = powerUp["type"].toString();
-				QString name = powerUp["name"].toString();
-
-				qDebug() << "  Equipped Power-up ID:" << powerUpId
-					<< "Type:" << type
-					<< "Name:" << name;
-
-				equippedPowerUpIds.push_back(powerUpId);
+			std::unordered_set<int> equippedPowerUpIds;
+			for (const QJsonValue& value : powerUpsArray) {
+				if (value.isObject()) {
+					QJsonObject powerUpObj = value.toObject();
+					int powerUpId = powerUpObj["id"].toInt();
+					qDebug() << "Found equipped power-up ID:" << powerUpId;
+					equippedPowerUpIds.insert(powerUpId);
+				} else {
+					qDebug() << "WARNING: Unexpected value type in powerUps array";
+				}
 			}
 
+			qDebug() << "Power-ups găsite:" << equippedPowerUpIds.size();
 			showPowerUps(equippedPowerUpIds);
 		}
 		else {
@@ -129,7 +131,6 @@ void GamePage::fetchEquippedPowerUps()
 		reply->deleteLater();
 		});
 }
-
 void GamePage::FetchHand()
 {
 
@@ -403,7 +404,7 @@ void GamePage::fetchGameState()
 		});
 }
 
-void GamePage::showPowerUps(const std::vector<int>& equippedPowerUpIds)
+void GamePage::showPowerUps(const std::unordered_set<int>& equippedPowerUpIds)
 {
 	QLayoutItem* item;
 	while ((item = ui.powerupsGrid->takeAt(0)) != nullptr) {
@@ -434,20 +435,15 @@ void GamePage::showPowerUps(const std::vector<int>& equippedPowerUpIds)
 			"QPushButton {"
 			"    border: 2px solid #333;"
 			"    border-radius: 5px;"
-			"    background: #4CAF50 url(%1) no-repeat center;"
-			"    background-size: cover;"
+			"	 border: 4px solid #FFADC6;"
+			"    background: url(%1) no-repeat center;"
 			"}"
 			"QPushButton:hover {"
-			"    border-color: #FFD700;"
-			"    background-color: #45a049;"
+			"    border-color: #666;"
 			"}"
-			"QPushButton:pressed {"
-			"    background-color: #3d8b40;"
-			"}"
-			"QPushButton:disabled {"
-			"    opacity: 0.5;"
-			"    background-color: #cccccc;"
-			"    border-color: #999;"
+			"QPushButton:checked {"
+			"    border: 4px solid #E34989;"
+			"    background-color: #66BB6A;"
 			"}"
 		).arg(imgPath));
 
@@ -1001,7 +997,6 @@ void GamePage::fetchMessages()
 		ui.chatMessages->clear();
 		ui.chatMessages->setPlainText(m_chatLines.join("\n"));
 
-		// 🔑 Scrollez automat la final
 		QTextCursor cursor = ui.chatMessages->textCursor();
 		cursor.movePosition(QTextCursor::End);
 		ui.chatMessages->setTextCursor(cursor);

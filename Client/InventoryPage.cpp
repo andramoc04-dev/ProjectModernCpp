@@ -59,41 +59,31 @@ void InventoryPage::fetchAvailablePowerUps()
 			QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
 			QJsonObject obj = doc.object();
 
-			qDebug() << "Power-ups received for player" << obj["playerId"].toInt();
-			qDebug() << "Total power-ups:" << obj["totalPowerUps"].toInt();
-
 			QJsonArray powerUpsArray = obj["powerUps"].toArray();
-			qDebug() << "Available power-ups count:" << powerUpsArray.size();
 
-			std::vector<QString> powerUpsValues;
+			std::unordered_set<QString> powerUpsValues;
+			std::unordered_map<QString, int> powerUpToInventoryId;
+
 			for (const QJsonValue& powerUpValue : powerUpsArray) {
 				QJsonObject powerUp = powerUpValue.toObject();
 
-				// Get the type ID (1-5) for the image
 				QString powerUpId = QString::number(powerUp["powerUpId"].toInt());
 				int inventoryId = powerUp["inventoryId"].toInt();
-				QString type = powerUp["type"].toString();
-				QString name = powerUp["name"].toString();
+				if (powerUpToInventoryId.find(powerUpId) == powerUpToInventoryId.end()) {
+					powerUpToInventoryId[powerUpId] = inventoryId;
+				}
 
-				qDebug() << "  InventoryID:" << inventoryId
-					<< "PowerUpID:" << powerUpId
-					<< "Type:" << type
-					<< "Name:" << name;
-
-				// Push the powerUpId (for image), but we have unique instances now
-				powerUpsValues.push_back(powerUpId);
+				powerUpsValues.insert(powerUpId);
 			}
-			showPowerUpOptions(powerUpsValues);
-		}
-		else {
-			qDebug() << "Error fetching power-ups:" << reply->errorString();
+			showPowerUpOptions(powerUpsValues, powerUpToInventoryId);
 		}
 		reply->deleteLater();
 		});
 }
 
 
-void InventoryPage::showPowerUpOptions(std::vector<QString> availablePowerups)
+void InventoryPage::showPowerUpOptions(std::unordered_set<QString> availablePowerups,
+	const std::unordered_map<QString, int>& powerUpToInventoryId)
 {
 	QLayoutItem* item;
 	while ((item = ui.grid->takeAt(0)) != nullptr) {
@@ -108,10 +98,10 @@ void InventoryPage::showPowerUpOptions(std::vector<QString> availablePowerups)
 	ui.grid->setSpacing(10);
 	ui.grid->setContentsMargins(10, 10, 10, 10);
 
-	int buttonsPerRow = 5;
 	int index = 0;
 
-	for (const auto& powerUpValue : availablePowerups) {
+	for (const auto& powerUpValue: availablePowerups) {
+		
 		QPushButton* button = new QPushButton(this);
 		button->setFixedSize(100, 100);
 		button->setCheckable(true);
@@ -135,12 +125,15 @@ void InventoryPage::showPowerUpOptions(std::vector<QString> availablePowerups)
 
 		m_powerUpButtons.append(button);
 
-		connect(button, &QPushButton::clicked, [this, powerUpValue, button]() {
+		int inventoryId = powerUpToInventoryId.at(powerUpValue);
+
+
+		connect(button, &QPushButton::clicked, [this, powerUpValue, button, inventoryId]() {
 			int powerUpId = powerUpValue.toInt();
 			int selectedCount = getSelectedCount();
 
 			if (button->isChecked() && selectedCount > MAX_EQUIPPED) {
-				qDebug() << "⚠️ Cannot select more than" << MAX_EQUIPPED << "power-ups!";
+				qDebug() << "Cannot select more than" << MAX_EQUIPPED << "power-ups!";
 				button->setChecked(false);
 				QMessageBox::warning(this, "Selection Limit",
 					QString("You can only equip %1 power-ups at a time!").arg(MAX_EQUIPPED));
@@ -149,21 +142,17 @@ void InventoryPage::showPowerUpOptions(std::vector<QString> availablePowerups)
 
 			if (button->isChecked()) {
 				qDebug() << "Equipping power-up:" << powerUpId;
-				equipPowerUp(powerUpId);
+				equipPowerUp(inventoryId);
 			}
 			else {
 				qDebug() << "Unequipping power-up:" << powerUpId;
-				unequipPowerUp(powerUpId);
+				unequipPowerUp(inventoryId);
 			}
 			});
 
 
-		int row = index / buttonsPerRow;
-		int col = index % buttonsPerRow;
+		ui.grid->addWidget(button, 0, ++index, Qt::AlignCenter);
 
-		ui.grid->addWidget(button, row, col, Qt::AlignCenter);
-
-		index++;
 	}
 
 	qDebug() << "Displayed" << availablePowerups.size() << "power-up instances in grid";
@@ -186,15 +175,12 @@ void InventoryPage::equipPowerUp(int powerUpId)
 		.arg(m_playerId)
 		.arg(powerUpId);
 
-	//QUrl url("http://127.0.0.1:18080/player/%1/powerups/%2/equip");
-
-	
 	QNetworkRequest request(urlString);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
 	QNetworkReply* reply = m_networkManager->post(request, QByteArray());
 
-	connect(reply, &QNetworkReply::finished, [this, reply, powerUpId]() {
+	connect(reply, &QNetworkReply::finished, [reply, powerUpId]() {
 		if (reply->error() == QNetworkReply::NoError) {
 			qDebug() << "Power-up" << powerUpId << "equipped successfully!";
 		}
@@ -216,7 +202,7 @@ void InventoryPage::unequipPowerUp(int powerUpId)
 
 	QNetworkReply* reply = m_networkManager->post(request, QByteArray());
 
-	connect(reply, &QNetworkReply::finished, [this, reply, powerUpId]() {
+	connect(reply, &QNetworkReply::finished, [reply, powerUpId]() {
 		if (reply->error() == QNetworkReply::NoError) {
 			qDebug() << "Power-up" << powerUpId << "unequipped successfully!";
 		}

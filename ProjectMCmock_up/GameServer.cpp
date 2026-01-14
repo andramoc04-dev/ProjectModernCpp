@@ -760,7 +760,6 @@ void http::Routing::Run(UserProfiles& storage)
 			}
 				});
 
-		// Obține power-up-urile echipate ale unui jucător
 		CROW_ROUTE(m_app, "/player/<int>/powerups/equipped").methods(crow::HTTPMethod::GET)
 			([&storage](int playerId) {
 			auto userOpt = storage.GetUserById(playerId);
@@ -792,28 +791,35 @@ void http::Routing::Run(UserProfiles& storage)
 				return crow::response(500, errorResp.dump());
 			}
 				});
-
-		// Echipează un power-up
 		CROW_ROUTE(m_app, "/player/<int>/powerups/<int>/equip").methods(crow::HTTPMethod::POST)
-			([&storage](int playerId, int powerUpId) {
+			([&storage](int playerId, int inventoryId) {
 			auto userOpt = storage.GetUserById(playerId);
 			if (!userOpt.has_value()) {
 				return crow::response(404, R"({"error":"Player not found"})");
 			}
 
-			// Verifică dacă jucătorul are acest power-up
-			if (!storage.UserHasPowerUp(playerId, powerUpId)) {
+			// Check if the inventory entry belongs to this player
+			auto inventoryEntries = storage.GetUserInventoryEntries(playerId);
+			bool found = false;
+			for (const auto& entry : inventoryEntries) {
+				if (entry.GetId() == inventoryId) {
+					found = true;
+					break;
+				}
+			}
+
+			if (!found) {
 				return crow::response(400, R"({"error":"Player does not own this power-up"})");
 			}
 
 			try {
-				storage.EquipPowerUp(playerId, powerUpId);
+				storage.EquipPowerUp(playerId, inventoryId);
 
 				crow::json::wvalue resp;
 				resp["success"] = true;
 				resp["message"] = "Power-up equipped successfully";
 				resp["playerId"] = playerId;
-				resp["powerUpId"] = powerUpId;
+				resp["inventoryId"] = inventoryId;
 
 				return crow::response{ resp.dump() };
 			}
@@ -826,20 +832,20 @@ void http::Routing::Run(UserProfiles& storage)
 
 		// Dezechipează un power-up
 		CROW_ROUTE(m_app, "/player/<int>/powerups/<int>/unequip").methods(crow::HTTPMethod::POST)
-			([&storage](int playerId, int powerUpId) {
+			([&storage](int playerId, int inventoryId) {
 			auto userOpt = storage.GetUserById(playerId);
 			if (!userOpt.has_value()) {
 				return crow::response(404, R"({"error":"Player not found"})");
 			}
 
 			try {
-				storage.UnequipPowerUp(playerId, powerUpId);
+				storage.UnequipPowerUp(playerId, inventoryId);
 
 				crow::json::wvalue resp;
 				resp["success"] = true;
 				resp["message"] = "Power-up unequipped successfully";
 				resp["playerId"] = playerId;
-				resp["powerUpId"] = powerUpId;
+				resp["inventoryId"] = inventoryId;
 
 				return crow::response{ resp.dump() };
 			}
@@ -849,7 +855,6 @@ void http::Routing::Run(UserProfiles& storage)
 				return crow::response(500, errorResp.dump());
 			}
 				});
-
 		// Folosește un power-up în timpul jocului
 		CROW_ROUTE(m_app, "/game/<int>/player/<int>/usepower").methods(crow::HTTPMethod::POST)
 			([this, &storage](const crow::request& req, int gameId, int playerId) {

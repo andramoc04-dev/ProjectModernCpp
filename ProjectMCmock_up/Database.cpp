@@ -200,13 +200,13 @@ int http::UserProfiles::GetPowerUpCount(uint32_t userId, PowerUpType type)
 }
 
 
-void http::UserProfiles::EquipPowerUp(uint32_t userId, uint32_t powerUpId)
+void http::UserProfiles::EquipPowerUp(uint32_t userId, uint32_t inventoryId)
 {
     using namespace sql;
 
     auto entries = m_db.get_all<Inventory>(
         where(c(&Inventory::GetUserId) == userId &&
-            c(&Inventory::GetPowerUpId) == powerUpId),
+            c(&Inventory::GetId) == inventoryId),
         limit(1)
     );
 
@@ -217,13 +217,13 @@ void http::UserProfiles::EquipPowerUp(uint32_t userId, uint32_t powerUpId)
     }
 }
 
-void http::UserProfiles::UnequipPowerUp(uint32_t userId, uint32_t powerUpId)
+void http::UserProfiles::UnequipPowerUp(uint32_t userId, uint32_t inventoryId)
 {
     using namespace sql;
 
     auto entries = m_db.get_all<Inventory>(
         where(c(&Inventory::GetUserId) == userId &&
-            c(&Inventory::GetPowerUpId) == powerUpId),
+            c(&Inventory::GetId) == inventoryId),
         limit(1)
     );
 
