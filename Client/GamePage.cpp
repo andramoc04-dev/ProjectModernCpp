@@ -19,6 +19,11 @@ GamePage::GamePage(QWidget *parent)
 	: QDialog(parent)
 {
 	ui.setupUi(this);
+	// CHAT – fără scrollbar
+	ui.chatMessages->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	ui.chatMessages->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	ui.chatMessages->setReadOnly(true);
+
 	net = new QNetworkAccessManager(this);
 
 	connect(ui.sendButton, &QPushButton::clicked,
@@ -945,35 +950,63 @@ void GamePage::hideStealCardDialog()
 }
 
 
-
 void GamePage::fetchMessages()
 {
-	
 	QNetworkRequest req(QUrl(
-		QString("http://127.0.0.1:18080/game/%1/chat/messages").arg(m_gameId)
+		QString("http://127.0.0.1:18080/game/%1/chat/messages")
+		.arg(m_gameId)
 	));
 
 	QNetworkReply* reply = net->get(req);
 
-	connect(reply, &QNetworkReply::finished, [this, reply]()
-		{
-			if (reply->error() == QNetworkReply::NoError)
-			{
-				QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
-				if (doc.isArray())
-				{
-					QString all;
-					for (const auto& v : doc.array())
-					{
-						auto o = v.toObject();
-						all += QString("%1: %2\n")
-							.arg(o["playerName"].toString())
-							.arg(o["text"].toString());
-					}
-					ui.chatMessages->setPlainText(all);
-				}
-			}
+	connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+		if (reply->error() != QNetworkReply::NoError) {
 			reply->deleteLater();
+			return;
+		}
+
+		QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+		if (!doc.isArray()) {
+			reply->deleteLater();
+			return;
+		}
+
+		QJsonArray arr = doc.array();
+		QStringList newLines;
+
+		for (const QJsonValue& v : arr) {
+			if (!v.isObject()) continue;
+
+			QJsonObject msg = v.toObject();
+
+			QString line = QString("%1: %2")
+				.arg(msg["playerName"].toString())
+				.arg(msg["text"].toString());
+
+			newLines << line;
+		}
+
+		// păstrăm ultimele MAX_CHAT_MESSAGES mesaje
+		while (newLines.size() > MAX_CHAT_MESSAGES) {
+			newLines.removeFirst();
+		}
+
+		if (newLines == m_chatLines) {
+			reply->deleteLater();
+			return;
+		}
+
+		m_chatLines = newLines;
+
+		ui.chatMessages->clear();
+		ui.chatMessages->setPlainText(m_chatLines.join("\n"));
+
+		// 🔑 Scrollez automat la final
+		QTextCursor cursor = ui.chatMessages->textCursor();
+		cursor.movePosition(QTextCursor::End);
+		ui.chatMessages->setTextCursor(cursor);
+
+		reply->deleteLater();
 		});
 }
 
