@@ -584,41 +584,6 @@ void GamePage::onSendClicked()
 
 void GamePage::onPileClicked(int pileId, QLabel* pileLabel)
 {
-	//if (m_selectedCardValue == -1) {
-	//	QMessageBox::warning(this, "No card selected", "Select a card before choosing a card placer.");
-	//	return;
-	//}
-
-	//QJsonObject obj;
-	//obj["cardValue"] = m_selectedCardValue;
-	//obj["pileId"] = pileId;
-
-	//QNetworkRequest req(QUrl(QString("http://localhost:18080/game/%1/player/%2/place")
-	//	.arg(m_gameId).arg(m_playerId)));
-	//req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-	//QNetworkReply* reply = net->post(req, QJsonDocument(obj).toJson());
-	//connect(reply, &QNetworkReply::finished, this, [=]() {
-	//	auto data = reply->readAll();
-	//	QJsonDocument doc = QJsonDocument::fromJson(data);
-	//	QJsonObject respObj = doc.object();
-
-	//	qDebug() << "Server response:" << doc;
-
-	//	if (doc["success"].toBool()) {
-	//		int newPileValue = doc["newPileValue"].toInt();
-	//		int cardsPlaced = respObj["cardsPlacedThisTurn"].toInt();
-
-	//		updatePileVisual(pileLabel, newPileValue);
-	//		m_selectedCardValue = -1;
-	//		m_cardsPlacedThisTurn = cardsPlaced;
-	//		FetchHand(); // reîncarcă mâna
-	//	}
-	//	else {
-	//		QMessageBox::warning(this, "Invalid move", "You can't place this card on the chosen card placer.");
-	//	}
-	//	reply->deleteLater();
-	//	});
 
 	if (m_selectedCardValue == -1) {
 		QMessageBox::warning(this, "No card selected", "Select a card before choosing a card placer.");
@@ -843,12 +808,12 @@ void GamePage::showStealCardDialog()
 		m_stealCardWidget = new QWidget(this);
 		m_stealCardWidget->setStyleSheet(
 			"QWidget {"
-			"    background-color: rgba(0, 0, 0, 180);"
-			"    border: 2px solid #FFD700;"
+			"    background-color: #FDEED9;"
+			"    border: 2px solid #A98360;"
 			"    border-radius: 10px;"
 			"}"
 			"QPushButton {"
-			"    background-color: #4CAF50;"
+			"    background-color: #FFADC6;"
 			"    color: white;"
 			"    border: none;"
 			"    padding: 10px;"
@@ -857,10 +822,10 @@ void GamePage::showStealCardDialog()
 			"    border-radius: 5px;"
 			"}"
 			"QPushButton:hover {"
-			"    background-color: #45a049;"
+			"    background-color: #E34989;"
 			"}"
 			"QLabel {"
-			"    color: white;"
+			"    color: #537c27;"
 			"    font-size: 16pt;"
 			"    font-weight: bold;"
 			"}"
@@ -870,6 +835,13 @@ void GamePage::showStealCardDialog()
 
 		QLabel* title = new QLabel("Select a player to steal from:", m_stealCardWidget);
 		title->setAlignment(Qt::AlignCenter);
+
+		title->setStyleSheet(
+			"color: #573c27;"       
+			"font-size: 15pt;"      
+			"font-weight: bold;"    
+			"font-family: 'Arial';" 
+		);
 		m_stealCardLayout->addWidget(title);
 
 		m_stealCardWidget->setLayout(m_stealCardLayout);
@@ -928,10 +900,10 @@ void GamePage::showStealCardDialog()
 		QPushButton* cancelBtn = new QPushButton("Cancel", m_stealCardWidget);
 		cancelBtn->setStyleSheet(
 			"QPushButton {"
-			"    background-color: #f44336;"
+			"    background-color: #A98360;"
 			"}"
 			"QPushButton:hover {"
-			"    background-color: #da190b;"
+			"    background-color: #573c27;"
 			"}"
 		);
 		connect(cancelBtn, &QPushButton::clicked, this, [this]() {
