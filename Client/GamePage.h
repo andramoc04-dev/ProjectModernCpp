@@ -52,8 +52,14 @@ private:
 	int m_opponentId = -1;
 	int m_selectedCardValue = -1;
 	int m_cardsPlacedThisTurn = 0;
+	bool m_isMyTurn = false;
+	std::vector<int> m_currentHand;
 	QStringList m_allPlayerNames;
 	
+
+	std::vector<int> m_lastHandCards;      
+	int m_lastPileValues[4] = { -1, -1, -1, -1 }; 
+	bool m_isFetchingState = false;
 
 	int m_activePowerUpId = -1;
 	int m_activePowerUpType = -1;

@@ -26,7 +26,7 @@ GamePage::GamePage(QWidget *parent)
 
 	// pornește timerele DLL
 	m_chatTimer.start(1);   // 1 sec
-	m_stateTimer.start(2);  // 2 sec
+	m_stateTimer.start(2);  // 1 sec
 
 	m_pollTimer = new QTimer(this);
 	connect(m_pollTimer, &QTimer::timeout, this, &GamePage::checkTimers);
@@ -167,60 +167,12 @@ void GamePage::FetchHand()
 
 void GamePage::ShowCards(const std::vector<int>& cardsValues)
 {
-	
-	//QLayoutItem* item;
-	//while ((item = ui.layout->takeAt(0)) != nullptr) {
-	//	if (item->widget()) {
-	//		delete item->widget();
-	//	}
-	//	delete item;
-	//}
+	if (m_lastHandCards == cardsValues) {
+		return;
+	}
+	m_lastHandCards = cardsValues;
 
-
-	//QString style =
-	//	"QPushButton {"
-	//	"    border: none;"
-	//	"    background-image: url(:/Client/resources/CardButton.png);"
-	//	"}";
-
-	//ui.layout->setSpacing(0);
-	//ui.layout->setContentsMargins(0, 0, 0, 0);
-
-	//int index = 0;
-	//for (const auto& cardValue : cardsValues) {
-	//	QPushButton* button = new QPushButton(this);
-	//	button->setStyleSheet(style);
-	//	button->setFixedSize(100, 315);
-
-	//	// --- partea grafică pentru număr ---
-	//	if (cardValue >= 10) {
-	//		QLabel* nr1 = new QLabel("", button);
-	//		nr1->setFixedSize(32, 41);
-	//		nr1->move(22, 45);
-	//		QString imgPath1 = QString(":/Client/resources/%1.png").arg(cardValue / 10);
-	//		nr1->setStyleSheet(QString("QLabel { background-image: url(%1); }").arg(imgPath1));
-
-	//		QLabel* nr2 = new QLabel("", button);
-	//		nr2->setFixedSize(32, 41);
-	//		nr2->move(50, 45);
-	//		QString imgPath2 = QString(":/Client/resources/%1.png").arg(cardValue % 10);
-	//		nr2->setStyleSheet(QString("QLabel { background-image: url(%1); }").arg(imgPath2));
-	//	}
-	//	else {
-	//		QLabel* nr = new QLabel("", button);
-	//		nr->setFixedSize(32, 41);
-	//		nr->move(32, 45);
-	//		QString imgPath1 = QString(":/Client/resources/%1.png").arg(cardValue);
-	//		nr->setStyleSheet(QString("QLabel { background-image: url(%1); }").arg(imgPath1));
-	//	}
-	//	connect(button, &QPushButton::clicked, this, [=]() {
-	//		m_selectedCardValue = cardValue;
-	//		qDebug() << "Selected card:" << m_selectedCardValue;
-	//		});
-
-	//	ui.layout->addWidget(button, 0, index++);
-	//}
-
+	qDebug() << "Redrawing hand (change detected)...";
 
 	QLayoutItem* item;
 	while ((item = ui.layout->takeAt(0)) != nullptr) {
@@ -245,7 +197,6 @@ void GamePage::ShowCards(const std::vector<int>& cardsValues)
 		button->setStyleSheet(style);
 		button->setFixedSize(100, 315);
 
-		// Numărul pe carte
 		if (cardValue >= 10) {
 			QLabel* nr1 = new QLabel("", button);
 			nr1->setFixedSize(32, 41);
@@ -268,29 +219,24 @@ void GamePage::ShowCards(const std::vector<int>& cardsValues)
 		}
 
 		connect(button, &QPushButton::clicked, this, [=]() {
-			// Verifică dacă este activ un power-up
 			if (m_isPowerUpActive) {
 				if (m_activePowerUpType == POWERUP_DISCARD_CARD) {
-					// Discard Card - folosește power-up-ul imediat
 					usePowerUp(m_activePowerUpId, -1, cardValue, -1);
 					m_isPowerUpActive = false;
 					m_activePowerUpId = -1;
 					m_activePowerUpType = -1;
 				}
 				else if (m_activePowerUpType == POWERUP_PLACE_ANY_CARD) {
-					// Wild Card - doar selectează cartea
 					m_selectedCardValue = cardValue;
 					QMessageBox::information(this, "Wild Card",
 						QString("Card %1 selected. Now choose any pile.").arg(cardValue));
 				}
 				else {
-					// Alt power-up care nu necesită selecție de carte
 					m_selectedCardValue = cardValue;
 					qDebug() << "Selected card:" << m_selectedCardValue;
 				}
 			}
 			else {
-				// Comportament normal
 				m_selectedCardValue = cardValue;
 				qDebug() << "Selected card:" << m_selectedCardValue;
 			}
@@ -298,14 +244,23 @@ void GamePage::ShowCards(const std::vector<int>& cardsValues)
 
 		ui.layout->addWidget(button, 0, index++);
 	}
-
-
-
 }
 
 void GamePage::updatePileVisual(QLabel* pileLabel, int cardValue)
 {
-	qDebug() << "updatePileVisual called with value:" << cardValue;
+	int pileIndex = -1;
+	if (pileLabel == ui.DescendingDeck1Number) pileIndex = 0;
+	else if (pileLabel == ui.DescendingDeck2Number) pileIndex = 1;
+	else if (pileLabel == ui.AscendingDeck1Number) pileIndex = 2;
+	else if (pileLabel == ui.AscendingDeck2Number) pileIndex = 3;
+
+	if (pileIndex != -1 && m_lastPileValues[pileIndex] == cardValue) {
+		return;
+	}
+
+	if (pileIndex != -1) {
+		m_lastPileValues[pileIndex] = cardValue;
+	}
 
 	QPixmap pix;
 
@@ -366,15 +321,25 @@ void GamePage::enablePowerUps(bool enabled)
 
 void GamePage::fetchGameState()
 {
+	if (m_isFetchingState) return;
+
+	m_isFetchingState = true;
+
 	QNetworkRequest req(QUrl(QString("http://127.0.0.1:18080/game/%1/state").arg(m_gameId)));
 	QNetworkReply* reply = net->get(req);
 
 	connect(reply, &QNetworkReply::finished, this, [=]() {
+		m_isFetchingState = false; 
+
+		if (reply->error() != QNetworkReply::NoError) {
+			reply->deleteLater();
+			return;
+		}
+
 		auto data = reply->readAll();
 		QJsonDocument doc = QJsonDocument::fromJson(data);
 
 		if (!doc.isObject()) {
-			qDebug() << "Invalid JSON received";
 			reply->deleteLater();
 			return;
 		}
@@ -393,25 +358,25 @@ void GamePage::fetchGameState()
 
 		int currentPlayerId = obj["currentPlayerId"].toInt();
 		QString currentPlayerName = obj["currentPlayerName"].toString();
-		bool isMyTurn = (currentPlayerId == m_playerId);
+		m_isMyTurn = (currentPlayerId == m_playerId);
 
-		// Activează/Dezactivează butoanele de plasare cărți
-		ui.DescendingCardPlacer1->setEnabled(isMyTurn);
-		ui.DescendingCardPlacer2->setEnabled(isMyTurn);
-		ui.AscendingCardPlacer1->setEnabled(isMyTurn);
-		ui.AscendingCardPlacer2->setEnabled(isMyTurn);
-		ui.deckButton->setEnabled(isMyTurn);
+		// Activează/Dezactivează butoanele de plasare
+		// (Nu mai e nevoie să verifici isEnabled anterior, setEnabled e destul de eficient în Qt)
+		ui.DescendingCardPlacer1->setEnabled(m_isMyTurn);
+		ui.DescendingCardPlacer2->setEnabled(m_isMyTurn);
+		ui.AscendingCardPlacer1->setEnabled(m_isMyTurn);
+		ui.AscendingCardPlacer2->setEnabled(m_isMyTurn);
+		ui.deckButton->setEnabled(m_isMyTurn);
 
-		// Activează/Dezactivează power-up-urile
-		enablePowerUps(isMyTurn);
+		// Apelăm enablePowerUps pentru a actualiza butoanele existente
+		enablePowerUps(m_isMyTurn);
 
-		if (isMyTurn) {
-			this->setWindowTitle(QString("Your turn | Team: %1").arg(m_allPlayerNames.join(", ")));
-		}
-		else {
-			this->setWindowTitle(QString("%1's turn | Team: %2")
-				.arg(currentPlayerName)
-				.arg(m_allPlayerNames.join(", ")));
+		QString newTitle;
+		if (m_isMyTurn) newTitle = QString("Your turn | Team: %1").arg(m_allPlayerNames.join(", "));
+		else newTitle = QString("%1's turn | Team: %2").arg(currentPlayerName).arg(m_allPlayerNames.join(", "));
+
+		if (this->windowTitle() != newTitle) {
+			this->setWindowTitle(newTitle);
 		}
 
 		QJsonArray piles = obj["piles"].toArray();
@@ -420,13 +385,7 @@ void GamePage::fetchGameState()
 		updatePileVisual(ui.AscendingDeck1Number, piles[2].toInt());
 		updatePileVisual(ui.AscendingDeck2Number, piles[3].toInt());
 
-		QJsonArray players = obj["players"].toArray();
-		m_allPlayerNames.clear();
-		for (const auto& playerVal : players) {
-			QJsonObject playerObj = playerVal.toObject();
-			QString username = playerObj["username"].toString();
-			m_allPlayerNames << username;
-		}
+		FetchHand();
 
 		reply->deleteLater();
 		});
@@ -489,7 +448,7 @@ void GamePage::showPowerUps(const std::vector<int>& equippedPowerUpIds)
 			});
 
 		// Inițial disabled până verificăm dacă este tura jucătorului
-		button->setEnabled(false);
+		button->setEnabled(m_isMyTurn);
 
 		ui.powerupsGrid->addWidget(button, row, Qt::AlignCenter);
 		row++;
@@ -574,7 +533,7 @@ void GamePage::initializeGame(int playerId,const QString& playerName, int gameId
 	m_cardsPlacedThisTurn = 0;
 	
 
-	
+	m_isMyTurn = false;
 
 	net = new QNetworkAccessManager(this);
 
