@@ -4,15 +4,11 @@
 #include <deque>
 
 Game::Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck, const Chat& chat):
-	m_players(players), m_cardsDeck(cardsDeck), m_chat(chat), m_descendingDeck1(100), m_descendingDeck2(100),
-	m_ascendingDeck1(1), m_ascendingDeck2(1), m_areCardsDealt(false), m_areCardsShuffled(false), m_currentPlayerIndex(0)
+	m_players(players), m_cardsDeck(cardsDeck), m_chat(chat), m_descendingDeck1(DESCENDING_DECK_START), m_descendingDeck2(DESCENDING_DECK_START),
+	m_ascendingDeck1(ASCENDING_DECK_START), m_ascendingDeck2(ASCENDING_DECK_START), m_areCardsDealt(false), m_areCardsShuffled(false), m_currentPlayerIndex(0)
 {
-	m_chatTimer.start(999999); 
+	m_chatTimer.start(CHAT_TIMER_DEFAULT_SECONDS); 
 
-	m_descendingDeck1 = Card(100);
-	m_descendingDeck2 = Card(100);
-	m_ascendingDeck1 = Card(1);
-	m_ascendingDeck2 = Card(1);
 
 }
 
