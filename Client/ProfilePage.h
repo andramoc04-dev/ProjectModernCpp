@@ -19,6 +19,7 @@ class ProfilePage : public QDialog
 
 public:
     ProfilePage(int playerId, const QString& serverUrl, QWidget* parent = nullptr);
+    ProfilePage(int playerId, const QString& playerName, const QString& serverUrl, QWidget* parent = nullptr);
     ~ProfilePage();
 
 private slots:
@@ -30,6 +31,7 @@ private:
     QNetworkAccessManager* network;
     int m_playerId;
     QString m_serverUrl;
+    QString m_playerName;
 
 	
 };

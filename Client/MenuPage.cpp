@@ -10,6 +10,15 @@ MenuPage::MenuPage(QWidget* parent)
     connect(ui->playButton, &QPushButton::clicked, this, &MenuPage::OpenLobbyPage);
 }
 
+MenuPage::MenuPage(int playerId, const QString& playerName, QWidget* parent)
+    : QDialog(parent), ui(new Ui::StartupPageClass), profilePage(nullptr), lobbyPage(nullptr),
+    m_playerId(playerId), playerName(playerName)
+{
+    ui->setupUi(this);
+    connect(ui->profileButton, &QPushButton::clicked, this, &MenuPage::openProfilePage);
+    connect(ui->playButton, &QPushButton::clicked, this, &MenuPage::OpenLobbyPage);
+}
+
 MenuPage::~MenuPage()
 {
 }
@@ -37,8 +46,7 @@ QString MenuPage::getPlayerName() const
 void MenuPage::openProfilePage()
 {
     if (!profilePage)
-        profilePage = new ProfilePage(m_playerId, "http://127.0.0.1:18080", nullptr);
-
+        profilePage = new ProfilePage(m_playerId, playerName, "http://127.0.0.1:18080", nullptr);
     profilePage->show();
     this->close();
 
