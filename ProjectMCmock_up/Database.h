@@ -28,7 +28,8 @@ namespace http
 				sql::make_column("score", &User::SetScore, &User::GetScore),
 				sql::make_column("wins", &User::SetWins, &User::GetWins),
 				sql::make_column("hoursPlayed", &User::SetHoursPlayed, &User::GetHoursPlayed),
-				sql::make_column("unusedCards", &User::SetUnusedCards, &User::GetUnusedCards)
+				sql::make_column("unusedCards", &User::SetUnusedCards, &User::GetUnusedCards),
+				sql::make_column("gamesPlayed", &User::SetGamesPlayed, &User::GetGamesPlayed)
 
 			),
 

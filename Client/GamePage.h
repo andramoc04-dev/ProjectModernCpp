@@ -64,6 +64,8 @@ private:
 	int m_activePowerUpType = -1;
 	bool m_isPowerUpActive = false;
 
+	int m_currentUnusedCards = 0;
+
 	// Power-up type constants
 	static const int POWERUP_SKIP_TURN = 1;
 	static const int POWERUP_PLACE_ANY_CARD = 2;

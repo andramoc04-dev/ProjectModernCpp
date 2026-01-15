@@ -444,6 +444,69 @@ void http::Routing::Run(UserProfiles& storage)
 			// VERIFICĂ DACĂ A EXPIRAT TIMERUL
 			gameInst.CheckTurnTimeout();
 
+			auto status = gameInst.GetGameStatus();
+
+			// Dacă jocul s-a terminat și nu am procesat încă rezultatul
+			static std::unordered_set<int> processedGames; // Jocuri pentru care am procesat deja rezultatul
+
+			if ((status == Game::GameStatus::Won || status == Game::GameStatus::Lost)
+				&& processedGames.find(gameId) == processedGames.end()) {
+
+				std::cout << "Game " << gameId << " ended. Processing results for all players..." << std::endl;
+
+				// Marchează jocul ca procesat
+				processedGames.insert(gameId);
+
+				// Procesează rezultatul pentru TOȚI jucătorii
+				for (const auto& player : gameInst.GetPlayers()) {
+					int playerId = player.GetId();
+
+					auto userOpt = storage.GetUserById(playerId);
+					if (!userOpt.has_value()) {
+						std::cerr << "Player " << playerId << " not found in database" << std::endl;
+						continue;
+					}
+
+					User user = userOpt.value();
+
+					if (status == Game::GameStatus::Won) {
+						// VICTORIE - toți jucătorii câștigă
+						user.SetWins(user.GetWins() + 1);
+						user.SetGamesPlayed(user.GetGamesPlayed() + 1);
+
+						std::cout << "Player " << playerId << " - Win recorded" << std::endl;
+					}
+					else {
+						// PIERDERE - adaugă cărțile nefolosite
+						int unusedCards = player.GetHand().size();
+						user.SetUnusedCards(user.GetUnusedCards() + unusedCards);
+						user.SetGamesPlayed(user.GetGamesPlayed() + 1);
+
+						std::cout << "Player " << playerId << " - Loss recorded with "
+							<< unusedCards << " unused cards" << std::endl;
+					}
+
+					// Recalculează scorul
+					Player tempPlayer = Player::ConvertUserToPlayer(user);
+					tempPlayer.SetWins(user.GetWins());
+					tempPlayer.SetGamesPlayed(user.GetGamesPlayed());
+					tempPlayer.SetUnusedCards(user.GetUnusedCards());
+					tempPlayer.Score();
+					user.SetScore(tempPlayer.GetScore());
+
+					try {
+						storage.UpdateUser(user);
+						std::cout << "Player " << playerId << " - Database updated successfully" << std::endl;
+					}
+					catch (const std::exception& e) {
+						std::cerr << "Failed to update player " << playerId << ": " << e.what() << std::endl;
+					}
+				}
+
+				std::cout << "All players updated for game " << gameId << std::endl;
+			}
+
+
 			// DACĂ A EXPIRAT -> GAME LOST
 			if (gameInst.GetGameStatus() == Game::GameStatus::Lost)
 			{
@@ -467,7 +530,7 @@ void http::Routing::Run(UserProfiles& storage)
 				resp["currentPlayerId"] = -1;
 				resp["currentPlayerName"] = "Unknown";
 			}
-			auto status = gameInst.GetGameStatus();
+			
 			switch (status) {
 			case Game::GameStatus::Won:
 				resp["gameStatus"] = "won";
@@ -1017,6 +1080,132 @@ void http::Routing::Run(UserProfiles& storage)
 				resp["secondsAdded"] = seconds;
 				resp["totalHours"] = newHours;
 				resp["message"] = "Play time updated successfully";
+
+				return crow::response(200, resp.dump());
+			}
+			catch (const std::exception& e) {
+				crow::json::wvalue errorResp;
+				errorResp["error"] = std::string("Database error: ") + e.what();
+				return crow::response(500, errorResp.dump());
+			}
+				});
+
+
+		// Ruta pentru actualizare la câștig
+		CROW_ROUTE(m_app, "/game/<int>/player/<int>/win").methods(crow::HTTPMethod::POST)
+			([&storage](int gameId, int playerId) {
+			auto userOpt = storage.GetUserById(playerId);
+			if (!userOpt.has_value()) {
+				return crow::response(404, R"({"error":"Player not found"})");
+			}
+
+			User user = userOpt.value();
+
+			// Incrementează numărul de victorii
+			user.SetWins(user.GetWins() + 1);
+
+			// Incrementează numărul de jocuri jucate
+			user.SetGamesPlayed(user.GetGamesPlayed() + 1);
+
+			try {
+				storage.UpdateUser(user);
+
+				crow::json::wvalue resp;
+				resp["success"] = true;
+				resp["wins"] = user.GetWins();
+				resp["gamesPlayed"] = user.GetGamesPlayed();
+				resp["message"] = "Win recorded successfully";
+
+				return crow::response(200, resp.dump());
+			}
+			catch (const std::exception& e) {
+				crow::json::wvalue errorResp;
+				errorResp["error"] = std::string("Database error: ") + e.what();
+				return crow::response(500, errorResp.dump());
+			}
+				});
+
+		// Ruta pentru actualizare la pierdere
+		CROW_ROUTE(m_app, "/game/<int>/player/<int>/loss").methods(crow::HTTPMethod::POST)
+			([this, &storage](const crow::request& req, int gameId, int playerId) {
+			auto body = crow::json::load(req.body);
+			if (!body) {
+				return crow::response(400, R"({"error":"Invalid JSON"})");
+			}
+
+			if (!body.has("unusedCards")) {
+				return crow::response(400, R"({"error":"Missing unusedCards field"})");
+			}
+
+			int unusedCards = (int)body["unusedCards"].i();
+
+			if (unusedCards < 0) {
+				return crow::response(400, R"({"error":"Invalid unusedCards value"})");
+			}
+
+			auto userOpt = storage.GetUserById(playerId);
+			if (!userOpt.has_value()) {
+				return crow::response(404, R"({"error":"Player not found"})");
+			}
+
+			User user = userOpt.value();
+
+			// Adaugă cărțile nefolosite la totalul din baza de date
+			user.SetUnusedCards(user.GetUnusedCards() + unusedCards);
+
+			// Incrementează numărul de jocuri jucate
+			user.SetGamesPlayed(user.GetGamesPlayed() + 1);
+
+			try {
+				storage.UpdateUser(user);
+
+				crow::json::wvalue resp;
+				resp["success"] = true;
+				resp["totalUnusedCards"] = user.GetUnusedCards();
+				resp["gamesPlayed"] = user.GetGamesPlayed();
+				resp["message"] = "Loss recorded successfully";
+
+				return crow::response(200, resp.dump());
+			}
+			catch (const std::exception& e) {
+				crow::json::wvalue errorResp;
+				errorResp["error"] = std::string("Database error: ") + e.what();
+				return crow::response(500, errorResp.dump());
+			}
+				});
+
+		// Ruta pentru recalculare scor
+		CROW_ROUTE(m_app, "/player/<int>/recalculate-score").methods(crow::HTTPMethod::POST)
+			([&storage](int playerId) {
+			auto userOpt = storage.GetUserById(playerId);
+			if (!userOpt.has_value()) {
+				return crow::response(404, R"({"error":"Player not found"})");
+			}
+
+			User user = userOpt.value();
+
+			// Convertește User în Player temporar pentru a calcula scorul
+			Player tempPlayer = Player::ConvertUserToPlayer(user);
+			tempPlayer.SetWins(user.GetWins());
+			tempPlayer.SetGamesPlayed(user.GetGamesPlayed());
+			tempPlayer.SetUnusedCards(user.GetUnusedCards());
+
+			// Calculează scorul folosind metoda Score()
+			tempPlayer.Score();
+
+			// Actualizează scorul în user
+			user.SetScore(tempPlayer.GetScore());
+
+			try {
+				storage.UpdateUser(user);
+
+				crow::json::wvalue resp;
+				resp["success"] = true;
+				resp["newScore"] = user.GetScore();
+				resp["wins"] = user.GetWins();
+				resp["gamesPlayed"] = user.GetGamesPlayed();
+				resp["unusedCards"] = user.GetUnusedCards();
+				resp["message"] = "Score recalculated successfully";
 
 				return crow::response(200, resp.dump());
 			}

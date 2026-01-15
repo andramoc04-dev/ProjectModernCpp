@@ -352,13 +352,33 @@ void GamePage::fetchGameState()
 		QJsonObject obj = doc.object();
 
 		QString gameStatus = obj["gameStatus"].toString();
+
 		if (gameStatus == "won" || gameStatus == "lost") {
 			m_pollTimer->stop();
 			m_chatTimer.stop();
 			m_stateTimer.stop();
+			
+			int unusedCards = 0;
+			if (gameStatus == "lost") {
+				// Caută jucătorul curent în array-ul de players
+				QJsonArray players = obj["players"].toArray();
+				for (const auto& playerVal : players) {
+					QJsonObject playerObj = playerVal.toObject();
+					int playerId = playerObj["id"].toInt();
+
+					if (playerId == m_playerId) {
+						QJsonArray hand = playerObj["hand"].toArray();
+						unusedCards = hand.size();
+						qDebug() << "Player" << m_playerId << "has" << unusedCards << "unused cards";
+						break;
+					}
+				}
+			}
+			m_currentUnusedCards = unusedCards;
 			openEndgamePage(gameStatus);
 			reply->deleteLater();
 			return;
+
 		}
 
 		int currentPlayerId = obj["currentPlayerId"].toInt();
@@ -697,10 +717,22 @@ void GamePage::checkTimers()
 
 void GamePage::openEndgamePage(QString gameStatus)
 {
+	qDebug() << "Opening EndgamePage with status:" << gameStatus
+		<< "Unused cards:" << m_currentUnusedCards;
 
-	endgamePage = new EndgamePage(m_playerId, gameStatus,"http://127.0.0.1:18080", nullptr);
+	endgamePage = new EndgamePage(
+		m_playerId,
+		m_playerName,
+		m_gameId,
+		gameStatus,              // "won" sau "lost"
+		m_currentUnusedCards,    // numărul de cărți nefolosite
+		"http://127.0.0.1:18080",
+		nullptr
+	);
+
 	endgamePage->show();
 	this->close();
+	this->deleteLater();
 }
 
 void GamePage::onPowerUpClicked(int powerUpId, int powerUpType)

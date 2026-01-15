@@ -1,18 +1,45 @@
 #pragma once
-
 #include <QDialog>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QShowEvent>
 #include "ui_EndgamePage.h"
-
 
 class EndgamePage : public QDialog
 {
-	Q_OBJECT
-
+    Q_OBJECT
 public:
-	EndgamePage(int playerId, QString gameEnding, const QString& serverUrl, QWidget* parent = nullptr);
-	~EndgamePage();
+    EndgamePage(int playerId, const QString& playerName, int gameId,
+        QString gameEnding, int unusedCardsCount,
+        const QString& serverUrl, QWidget* parent = nullptr);
+    ~EndgamePage();
+
+protected:
+    void showEvent(QShowEvent* event) override;
+
+private slots:
+    void onWinReplyFinished();
+    void onLossReplyFinished();
+    void onRecalculateScoreFinished();
+    void onBackToMenuClicked();
 
 private:
-	Ui::EndgamePageClass ui;
-};
+    void submitGameResult();
+    void recordWin();
+    void recordLoss();
+    void recalculateScore();
 
+private:
+    Ui::EndgamePageClass ui;
+    QNetworkAccessManager* m_network;
+
+    int m_playerId;
+    QString m_playerName;
+    int m_gameId;
+    QString m_gameEnding; // "won" sau "lost"
+    int m_unusedCardsCount;
+    QString m_serverUrl;
+
+    bool m_resultSubmitted{ false };
+    bool m_scoreRecalculated{ false };
+};
