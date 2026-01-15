@@ -166,6 +166,27 @@ int InventoryPage::getSelectedCount() const
 	return count;
 }
 
+void InventoryPage::resetAllPowerUps()
+{
+	QString urlString = QString("http://127.0.0.1:18080/player/%1/powerups/reset")
+		.arg(m_playerId);
+
+	QNetworkRequest request(urlString);
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+	QNetworkReply* reply = m_networkManager->post(request, QByteArray());
+
+	connect(reply, &QNetworkReply::finished, [reply]() {
+		if (reply->error() == QNetworkReply::NoError) {
+			qDebug() << "All power-ups reset successfully!";
+		}
+		else {
+			qDebug() << "Error resetting power-ups:" << reply->errorString();
+		}
+		reply->deleteLater();
+		});
+}
+
 void InventoryPage::equipPowerUp(int powerUpId)
 {
 	QString urlString = QString("http://127.0.0.1:18080/player/%1/powerups/%2/equip")

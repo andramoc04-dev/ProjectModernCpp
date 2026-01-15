@@ -22,6 +22,7 @@ public:
 	void equipPowerUp(int powerUpId);
 	void unequipPowerUp(int powerUpId);
 	int getSelectedCount() const;
+	void resetAllPowerUps();
 protected:
 	bool event(QEvent* e) override;
 

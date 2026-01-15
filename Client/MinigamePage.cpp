@@ -136,10 +136,10 @@ void MinigamePage::submitMinigameScore(int playerId, int score, const QString& p
 
         reply->deleteLater();
 
-        // NOW open the InventoryPage after server has processed the reward
         InventoryPage* inventoryPage = new InventoryPage();
         inventoryPage->setAttribute(Qt::WA_DeleteOnClose);
         inventoryPage->setPlayerData(playerId, playerName, gameId);
+		inventoryPage->resetAllPowerUps();
         inventoryPage->fetchAvailablePowerUps();
         inventoryPage->show();
 

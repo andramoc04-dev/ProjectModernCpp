@@ -717,7 +717,36 @@ void http::Routing::Run(UserProfiles& storage)
 				return crow::response(500, errorResp.dump());
 			}
 				});
+		
+		CROW_ROUTE(m_app, "/player/<int>/powerups/reset").methods(crow::HTTPMethod::POST)
+			([&storage](int playerId) {
+			auto userOpt = storage.GetUserById(playerId);
+			if (!userOpt.has_value()) {
+				return crow::response(404, R"({"error":"Player not found"})");
+			}
 
+			try {
+				auto inventoryEntries = storage.GetUserInventoryEntries(playerId);
+
+				for (const auto& entry : inventoryEntries) {
+					if (entry.GetIsEquipped()) {
+						storage.UnequipPowerUp(playerId, entry.GetId());
+					}
+				}
+
+				crow::json::wvalue resp;
+				resp["success"] = true;
+				resp["message"] = "All power-ups reset to unequipped";
+				resp["playerId"] = playerId;
+
+				return crow::response{ resp.dump() };
+			}
+			catch (const std::exception& e) {
+				crow::json::wvalue errorResp;
+				errorResp["error"] = std::string("Database error: ") + e.what();
+				return crow::response(500, errorResp.dump());
+			}
+				});
 		// Obține inventarul de power-up-uri al unui jucător
 		CROW_ROUTE(m_app, "/player/<int>/powerups").methods(crow::HTTPMethod::GET)
 			([&storage](int playerId) {
