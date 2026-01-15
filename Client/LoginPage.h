@@ -9,7 +9,6 @@
 
 #include <QDialog>
 #include <QMessageBox>
-#include <QLabel>
 #include <QRegularExpression>
 #include "ui_LoginPage.h"
 #include "MenuPage.h"
@@ -23,7 +22,6 @@ class LoginPage : public QDialog
 public:
     LoginPage(QWidget* parent = nullptr);
     ~LoginPage();
-    bool getLoggedIn();
 
 private slots:
     void on_loginButton_clicked();
@@ -32,6 +30,7 @@ private slots:
     void onRegisterReply(QNetworkReply* reply);
     void onLoginReply(QNetworkReply* reply);
 private:
+    bool validateInput(const QString& username, const QString& password);
     Ui::LoginPageClass* ui;
     QNetworkAccessManager* manager;
     bool loggedIn;

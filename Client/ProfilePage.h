@@ -1,16 +1,12 @@
 ﻿#pragma once
 
 #include <QDialog>
-#include<QLabel>
 #include "ui_ProfilePage.h"
 #include <QNetworkAccessManager>
-#include <QNetworkRequest>
+//#include <QNetworkRequest>
 #include <QNetworkReply>
-#include <QUrl>
-#include <QJsonObject>
-#include <QJsonDocument>
-#include <QDebug>
-#include <QMessageBox>
+//#include <QUrl>
+
 
 
 class ProfilePage : public QDialog
@@ -27,7 +23,7 @@ private slots:
     void onBackButtonClicked();
 
 private:
-    Ui::ProfilePageClass ui;
+    Ui::ProfilePageClass* ui;
     QNetworkAccessManager* network;
     int m_playerId;
     QString m_serverUrl;

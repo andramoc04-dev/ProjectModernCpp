@@ -9,7 +9,6 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QDebug>
-#include <cstdlib>
 #include <QNetworkRequest> 
 #include <QNetworkAccessManager> 
 #include <QMessageBox>
@@ -62,9 +61,9 @@ GamePage::GamePage(QWidget *parent)
 	
 }
 
-GamePage::GamePage(int playerId,const QString& playerName, int gameId, int opponentId, QWidget* parent) : GamePage(parent)
+GamePage::GamePage(int playerId,const QString& playerName, int gameId, QWidget* parent) : GamePage(parent)
 {
-	initializeGame(playerId,playerName, gameId, opponentId);
+	initializeGame(playerId,playerName, gameId);
 	shuffleDeck();
 }
 
@@ -532,12 +531,11 @@ void GamePage::DistributeCards()
 
 
 
-void GamePage::initializeGame(int playerId,const QString& playerName, int gameId, int opponentId)
+void GamePage::initializeGame(int playerId,const QString& playerName, int gameId)
 {
 	m_playerId = playerId;
 	m_playerName = playerName;
 	m_gameId = gameId;
-	m_opponentId = opponentId;
 	m_cardsPlacedThisTurn = 0;
 	
 

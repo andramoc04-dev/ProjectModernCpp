@@ -47,10 +47,9 @@ void MinigamePage::updateTimerUi()
         int playerId = property("playerId").toInt();
         QString playerName = property("playerName").toString();
         int gameId = property("gameId").toInt();
-        int opponentId = property("opponentId").toInt();
 
         // Submit minigame score and award power-ups
-        submitMinigameScore(playerId, m_counter, playerName, gameId, opponentId);
+        submitMinigameScore(playerId, m_counter, playerName, gameId);
 
 
        
@@ -99,7 +98,7 @@ void MinigamePage::RunMinigame()
     QCoreApplication::postEvent(this, new QEvent(QEvent::User));
 }
 
-void MinigamePage::submitMinigameScore(int playerId, int score, const QString& playerName, int gameId, int opponentId)
+void MinigamePage::submitMinigameScore(int playerId, int score, const QString& playerName, int gameId)
 {
     QNetworkAccessManager* networkManager = new QNetworkAccessManager(this);
 
@@ -116,7 +115,7 @@ void MinigamePage::submitMinigameScore(int playerId, int score, const QString& p
 
     QNetworkReply* reply = networkManager->post(request, data);
 
-    connect(reply, &QNetworkReply::finished, [this, reply, score, playerId, playerName, gameId, opponentId]() {
+    connect(reply, &QNetworkReply::finished, [this, reply, score, playerId, playerName, gameId]() {
         if (reply->error() == QNetworkReply::NoError) {
             QJsonDocument responseDoc = QJsonDocument::fromJson(reply->readAll());
             QJsonObject responseObj = responseDoc.object();
@@ -140,7 +139,7 @@ void MinigamePage::submitMinigameScore(int playerId, int score, const QString& p
         // NOW open the InventoryPage after server has processed the reward
         InventoryPage* inventoryPage = new InventoryPage();
         inventoryPage->setAttribute(Qt::WA_DeleteOnClose);
-        inventoryPage->setPlayerData(playerId, playerName, gameId, opponentId);
+        inventoryPage->setPlayerData(playerId, playerName, gameId);
         inventoryPage->fetchAvailablePowerUps();
         inventoryPage->show();
 

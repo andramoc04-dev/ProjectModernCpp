@@ -6,8 +6,7 @@
 #include <QEvent>
 #include "ui_InventoryPage.h"
 #include "../TimerDLL/GameTimer.h"
-#include <vector>
-#include <map>
+#include <unordered_map>
 
 class InventoryPage : public QDialog
 {
@@ -16,7 +15,7 @@ class InventoryPage : public QDialog
 public:
 	InventoryPage(QWidget* parent = nullptr);
 	~InventoryPage();
-	void setPlayerData(int playerId, const QString& playerName, int gameId, int opponentId);
+	void setPlayerData(int playerId, const QString& playerName, int gameId);
 	void fetchAvailablePowerUps();
 	void showPowerUpOptions(std::unordered_set<QString> availablePowerups,
 		const std::unordered_map<QString, int>& powerUpToInventoryId);
@@ -34,7 +33,6 @@ private:
 	QNetworkAccessManager* m_networkManager;
 	int m_playerId;
 	int m_gameId;
-	int m_opponentId;
 	QString m_playerName;
 
 	GameTimer m_gameTimer;
@@ -43,6 +41,5 @@ private:
 
 	QList<QPushButton*> m_powerUpButtons;
 	static const int MAX_EQUIPPED = 3;
-signals:
-	void inventoryFinished(int playerId, QString playerName, int gameId, int opponentId);
+
 };

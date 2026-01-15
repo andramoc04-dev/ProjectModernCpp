@@ -3,18 +3,18 @@
 #include <QMessageBox>
 
 MenuPage::MenuPage(QWidget* parent)
-    : QDialog(parent), ui(new Ui::StartupPageClass), profilePage(nullptr), lobbyPage(nullptr), m_playerId(-1)
+    : MenuPage(-1, "", parent)
 {
-    ui->setupUi(this);
-    connect(ui->profileButton, &QPushButton::clicked, this, &MenuPage::openProfilePage);
-    connect(ui->playButton, &QPushButton::clicked, this, &MenuPage::OpenLobbyPage);
 }
 
 MenuPage::MenuPage(int playerId, const QString& playerName, QWidget* parent)
-    : QDialog(parent), ui(new Ui::StartupPageClass), profilePage(nullptr), lobbyPage(nullptr),
-    m_playerId(playerId), playerName(playerName)
+    : QDialog(parent),
+    ui(new Ui::StartupPageClass),
+    m_playerId(playerId),
+    playerName(playerName)
 {
     ui->setupUi(this);
+
     connect(ui->profileButton, &QPushButton::clicked, this, &MenuPage::openProfilePage);
     connect(ui->playButton, &QPushButton::clicked, this, &MenuPage::OpenLobbyPage);
 }

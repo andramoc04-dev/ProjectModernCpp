@@ -1,11 +1,4 @@
 ﻿#include "LoginPage.h"
-#include "ui_LoginPage.h"
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrl>
-#include <QJsonObject>
-#include <QJsonDocument>
 #include <QDebug>
 
 LoginPage::LoginPage(QWidget* parent)
@@ -23,28 +16,14 @@ LoginPage::~LoginPage()
 {
 }
 
-bool LoginPage::getLoggedIn()
-{
-    return loggedIn;
-}
 
 void LoginPage::on_registerButton_clicked()
 {
     const QString username = ui->Username->text().trimmed();
     const QString password = ui->Password->text();
 
-    const QRegularExpression usernameRegex("^[A-Za-z][A-Za-z0-9]*$");
-    const QRegularExpression passwordRegex("^.{8,}$");
 
-    if (!usernameRegex.match(username).hasMatch()) {
-        QMessageBox::warning(this, "Eroare",
-            "Invalid Username!\n Only digits and letters are accepted and the username should always start with a letter!");
-        return;
-    }
-
-    if (!passwordRegex.match(password).hasMatch()) {
-        QMessageBox::warning(this, "Eroare",
-            "Invalid Password!\n You need 8 characters(letters, digits or symbols like @!#)");
+    if (!validateInput(username, password)) {
         return;
     }
 
@@ -72,18 +51,8 @@ void LoginPage::on_loginButton_clicked()
     const QString username = ui->Username->text();
     const QString password = ui->Password->text();
 
-    QRegularExpression usernameRegex("^[A-Za-z][A-Za-z0-9]*$");
-    QRegularExpression passwordRegex("^.{8,}$");
 
-    if (!usernameRegex.match(username).hasMatch()) {
-        QMessageBox::warning(this, "Eroare",
-            "Invalid Username!\n Only digits and letters are accepted and the username should always start with a letter!");
-        return;
-    }
-
-    if (!passwordRegex.match(password).hasMatch()) {
-        QMessageBox::warning(this, "Eroare",
-            "Invalid Password!\n You need 8 characters(letters, digits or symbols like @!#)");
+    if (!validateInput(username, password)) {
         return;
     }
 
@@ -201,4 +170,24 @@ void LoginPage::onLoginReply(QNetworkReply* reply)
     }
 
     reply->deleteLater();
+}
+
+bool LoginPage::validateInput(const QString& username, const QString& password)
+{
+    const QRegularExpression usernameRegex("^[A-Za-z][A-Za-z0-9]*$");
+    const QRegularExpression passwordRegex("^.{8,}$");
+
+    if (!usernameRegex.match(username).hasMatch()) {
+        QMessageBox::warning(this, "Eroare",
+            "Invalid Username!\nOnly digits and letters are accepted and the username should always start with a letter!");
+        return false; 
+    }
+
+    if (!passwordRegex.match(password).hasMatch()) {
+        QMessageBox::warning(this, "Eroare",
+            "Invalid Password!\nYou need at least 8 characters (letters, digits or symbols like @!#)");
+        return false; 
+    }
+
+    return true; 
 }

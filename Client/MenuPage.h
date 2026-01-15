@@ -12,7 +12,7 @@ class MenuPage : public QDialog
     Q_OBJECT
 
 public:
-    MenuPage(QWidget* parent = nullptr);
+    explicit MenuPage(QWidget* parent = nullptr);
     MenuPage(int playerId, const QString& playerName, QWidget* parent = nullptr);
     ~MenuPage();
 

@@ -9,14 +9,12 @@
 #include <QDebug>
 #include <QJsonArray>
 #include <QPushButton>
-#include <QFile>
 #include <QMessageBox>
 
 InventoryPage::InventoryPage(QWidget* parent)
 	: QDialog(parent)
 	, m_playerId(-1)
 	, m_gameId(-1)
-	, m_opponentId(-1)
 	, m_timerExpired(false)
 {
 	ui.setupUi(this);
@@ -34,14 +32,13 @@ InventoryPage::~InventoryPage()
 {
 }
 
-void InventoryPage::setPlayerData(int playerId, const QString& playerName, int gameId, int opponentId)
+void InventoryPage::setPlayerData(int playerId, const QString& playerName, int gameId)
 {
 	m_playerId = playerId;
 	m_playerName = playerName;
 	m_gameId = gameId;
-	m_opponentId = opponentId;
 
-	qDebug() << "InventoryPage - Player data set:" << playerId << playerName << gameId << opponentId;
+	qDebug() << "InventoryPage - Player data set:" << playerId << playerName << gameId;
 }
 
 void InventoryPage::fetchAvailablePowerUps()
@@ -257,7 +254,7 @@ void InventoryPage::onTimerExpired()
 		return;
 	}
 
-	GamePage* gamePage = new GamePage(m_playerId, m_playerName, m_gameId, m_opponentId, nullptr);
+	GamePage* gamePage = new GamePage(m_playerId, m_playerName, m_gameId,nullptr);
 	gamePage->show();
 
 	this->close();

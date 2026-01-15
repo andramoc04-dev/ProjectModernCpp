@@ -2,7 +2,6 @@
 
 #include <QDialog>
 #include <QNetworkAccessManager>
-#include "InventoryPage.h"
 #include <atomic>
 #include <thread>
 

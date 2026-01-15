@@ -18,7 +18,7 @@ public:
 	MinigamePage(QWidget* parent = nullptr);
 	~MinigamePage();
 	void RunMinigame();
-	void submitMinigameScore(int playerId, int score, const QString& playerName, int gameId, int opponentId);
+	void submitMinigameScore(int playerId, int score, const QString& playerName, int gameId);
 protected:
 	bool event(QEvent* e) override;
 	void closeEvent(QCloseEvent* event) override;
@@ -33,7 +33,7 @@ private:
 	GameTimer m_gameTimer;
 	int m_totalSeconds = 10;
 signals:
-	void minigameFinished(int playerId, QString playerName, int gameId, int opponentId);
+	void minigameFinished(int playerId, QString playerName, int gameId);
 
 };
 

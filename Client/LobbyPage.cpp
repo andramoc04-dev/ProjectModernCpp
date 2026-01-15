@@ -1,6 +1,5 @@
 ﻿#include "LobbyPage.h"
 #include "ui_LobbyPage.h"
-#include "GamePage.h" 
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QJsonDocument>
@@ -87,7 +86,6 @@ void LobbyPage::onStatusReplyFinished()
 			bool started = obj.value("started").toBool(false);
 			if (started) {
 				int gameId = obj.value("gameId").toInt(-1);
-				int opponentId = obj.value("opponentId").toInt(-1);
 
 				m_pollRunning = false;
 
@@ -96,7 +94,6 @@ void LobbyPage::onStatusReplyFinished()
 				mini->setProperty("playerId", m_playerId);
 				mini->setProperty("playerName", m_playerName);
 				mini->setProperty("gameId", gameId);
-				mini->setProperty("opponentId", opponentId);
 
 
 				mini->show();

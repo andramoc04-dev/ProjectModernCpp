@@ -6,8 +6,6 @@
 #include <QTimer> 
 #include "../TimerDLL/GameTimer.h"
 #include "ui_GamePage.h"
-#include <thread>
-#include <atomic>
 #include "EndgamePage.h"
 
 
@@ -20,7 +18,7 @@ class GamePage : public QDialog
 
 public:
 	GamePage(QWidget *parent = nullptr);
-	GamePage(int playerId,const QString& playerName, int gameId, int opponentId, QWidget* parent = nullptr);
+	GamePage(int playerId,const QString& playerName, int gameId, QWidget* parent = nullptr);
 	~GamePage();
 
 	void FetchHand();
@@ -49,11 +47,9 @@ private:
 	Ui::GameClass ui;
 	int m_playerId = -1;
 	int m_gameId = -1;
-	int m_opponentId = -1;
 	int m_selectedCardValue = -1;
 	int m_cardsPlacedThisTurn = 0;
 	bool m_isMyTurn = false;
-	std::vector<int> m_currentHand;
 	QStringList m_allPlayerNames;
 	
 	static constexpr int MAX_CHAT_MESSAGES = 8;
@@ -90,7 +86,7 @@ private:
 
 	QString m_playerName; 
 
-	void initializeGame(int playerId,const QString& playerName, int gameId, int opponentId);
+	void initializeGame(int playerId,const QString& playerName, int gameId);
 	EndgamePage* endgamePage;
 };
 
