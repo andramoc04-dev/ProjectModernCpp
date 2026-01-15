@@ -8,7 +8,6 @@ namespace sql = sqlite_orm;
 
 #include "Utils.h"
 #include "User.h"
-#include "Game.h"
 #include "PowerUp.h"
 #include "Inventory.h"
 

@@ -1,6 +1,5 @@
 #pragma once
 #include <cstdint>
-#include<iostream>
 #include <functional>
 class Card
 {
@@ -13,7 +12,7 @@ public:
 
 	Card(std::uint16_t number);
 	Card();
-	Card(const Card& other);
+	//Card(const Card& other);
 
 	std::uint16_t GetNumber() const;
 	OrderDirection GetDirection() const;
@@ -22,11 +21,9 @@ public:
 
 	void SetDirection(OrderDirection direction);
 
-	friend std::istream& operator>>(std::istream& in,Card& c);
-
 	bool operator ==(const Card& other) const;
 
-	Card& operator=(const Card& other);
+	//Card& operator=(const Card& other);
 	
 
 	

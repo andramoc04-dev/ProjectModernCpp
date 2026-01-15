@@ -14,11 +14,11 @@ Card::Card()
   
 }
 
-Card::Card(const Card& other)
-    : m_number(other.m_number),
-    m_direction(other.m_direction)
-{
-}
+//Card::Card(const Card& other)
+//    : m_number(other.m_number),
+//    m_direction(other.m_direction)
+//{
+//}
 
 std::uint16_t Card::GetNumber() const
 {
@@ -45,19 +45,12 @@ bool Card::operator==(const Card& other) const
     return m_number == other.m_number;
 }
 
-Card& Card::operator=(const Card& other)
-{
-    if (this != &other) {
-        m_number = other.m_number;
-        m_direction = other.m_direction;
-    }
-    return *this;
-}
+//Card& Card::operator=(const Card& other)
+//{
+//    if (this != &other) {
+//        m_number = other.m_number;
+//        m_direction = other.m_direction;
+//    }
+//    return *this;
+//}
 
-std::istream& operator>>(std::istream& in, Card& c)
-{
-    std::uint16_t number;
-    in >>number;
-    c = Card(number);
-    return in;
-}

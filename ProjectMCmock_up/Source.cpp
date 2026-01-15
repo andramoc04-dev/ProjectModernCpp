@@ -8,15 +8,7 @@ using namespace http;
 
 int main()
 {
-	/*Player player1("Viorica");
-	Player player2("Marcel");
-	std::vector<Player> players{ player1, player2 };
-	std::stack<Card> cards;
-	Chat chat = Chat();
-	Game game(players, cards, chat);
-	game.RunGame();*/
-
-
+	
 	UserProfiles storage;
 	if (!storage.Initialize())
 	{

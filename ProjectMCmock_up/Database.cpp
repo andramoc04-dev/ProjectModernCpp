@@ -1,5 +1,7 @@
 ﻿#include "Database.h"
 
+using namespace sql;
+
 bool http::UserProfiles::Initialize()
 {
     m_db.sync_schema(); 
@@ -13,13 +15,13 @@ std::vector<User> http::UserProfiles::GetUsers()
 
 std::optional<User> http::UserProfiles::GetUserById(int id)
 {
-    for (const auto& player : GetUsers()){   
-        if (player.GetId() == id) {
-            return player;
-        }
+    try {
+        auto user = m_db.get<User>(id);
+        return user;
     }
-
-    return std::nullopt;
+    catch (...) {
+        return std::nullopt;
+    }
 }
 
 void http::UserProfiles::AddUserToGame(const std::string& name, const std::string& password)
@@ -42,13 +44,8 @@ void http::UserProfiles::AddUserToGame(const std::string& name, const std::strin
 
 bool http::UserProfiles::HasUserWithName(const std::string& name)
 {
-    auto players = m_db.get_all<User>();
-    for (const auto& p : players)
-    {
-        if (p.GetUsername() == name)
-            return true;
-    }
-    return false;
+    auto count = m_db.count<User>(where(c(&User::GetUsername) == name));
+    return count > 0;
 }
 
 void http::UserProfiles::UpdateUser(const User& user)

@@ -1,5 +1,4 @@
 #include "Game.h"
-#include <iostream>
 #include <ranges>
 #include <deque>
 
@@ -29,108 +28,6 @@ void Game::ShuffleCards()
 	m_areCardsShuffled = true;
 }
 
-bool Game::EndGame(int numberOfPlacedCards)
-{
-	int minCardsRequired = m_cardsDeck.empty() ? 1 : 2;
-	if ( numberOfPlacedCards < minCardsRequired )
-	{
-		std::cout << "You lost..." << std::endl;
-		for (auto& player : m_players)
-		{
-			player.SetUnusedCards(player.GetUnusedCards()+player.GetHand().size());
-		}
-		return true;
-	}
-	if (m_cardsDeck.empty())
-	{
-		bool emptyHands = true;
-		for (auto& player : m_players)
-		{
-			if (!player.GetHand().empty())
-				emptyHands = false;
-		}
-		if(emptyHands==true)
-		{
-			std::cout << "You won!" << std::endl;
-			for (auto& player : m_players)
-			{
-				player.SetWins(player.GetWins()+1);
-			}
-			return true;
-		}
-	}
-	return false;
-}
-
-void Game::RunGame()
-{
-	
-	Card choosenCard; int numberOfPlacedCards=0;
-	ShuffleCards();
-	bool gameEnded = false;
-	std::cout << "Game started.\n";
-
-	CardsDistribution();
-
-	while (!gameEnded)
-	{
-		for (int i = 0; i < m_players.size(); i++)
-		{
-			std::cout << "It's " << m_players[i].GetUsername() << "'s turn.\n";
-
-			numberOfPlacedCards = 0;
-			if (m_cardsDeck.empty())
-				std::cout << "Choose one card to place\n";
-			else
-			std::cout << "Choose at least two cards\n";
-			DisplayGameState(m_descendingDeck1, m_descendingDeck2, m_ascendingDeck1, m_ascendingDeck2, m_players[i]);
-			std::cin >> choosenCard;
-
-			int pileId;
-			std::cout << "Choose pile (0=desc1, 1=desc2, 2=asc1, 3=asc2): ";
-			std::cin >> pileId;
-
-			while (choosenCard.GetNumber() != 0)
-			{
-				std::cout << "Choosed card value is " << static_cast<int>( choosenCard.GetNumber() )<< "\n";
-				numberOfPlacedCards += m_players[i].PlaceCard(choosenCard, m_descendingDeck1, m_descendingDeck2, m_ascendingDeck1, m_ascendingDeck2,pileId);
-				std::cout << "Press 0 if you are done\n";
-				std::cin >> choosenCard;
-			}
-			if (numberOfPlacedCards >= 2 && !m_cardsDeck.empty())
-				for (int j = 0; j < numberOfPlacedCards; j++)
-				{
-					if (!m_cardsDeck.empty())
-						m_players[i].TakeCard(m_cardsDeck);
-					else
-						break;
-
-				}
-			if (EndGame(numberOfPlacedCards))
-			{
-				gameEnded = true;
-				break;
-			}
-		}
-	}
-}
-
-void Game::DisplayGameState(const Card& descending1, const Card& descending2, const Card& ascending1, 
-	const Card& ascending2, const Player& player)
-{
-
-	std::cout << "First descending deck: " << static_cast<int>(descending1.GetNumber()) << " ->place lower cards\n";
-	std::cout << "Second descending deck: " << static_cast<int>(descending2.GetNumber()) << " ->place lower cards\n";
-	std::cout << "First ascending deck: " << static_cast<int>(ascending1.GetNumber()) << " ->place higher cards\n";
-	std::cout << "Second ascending deck: " << static_cast<int>(ascending2.GetNumber()) << " ->place higher cards\n";
-	std::cout << "Cards remaining in deck: " << m_cardsDeck.size() << "\n";
-	const auto& hand = player.GetHand();
-	for (const auto& card : hand)
-	{
-		std::cout << static_cast<int>(card.GetNumber()) << " ";
-	}
-	
-}
 
 void Game::CardsDistribution()
 {

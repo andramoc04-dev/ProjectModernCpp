@@ -1,6 +1,6 @@
 ﻿#include "Player.h"
 #include <iostream>
-#include <cmath>
+
 Player::Player():
 	User()
 {
@@ -39,59 +39,6 @@ void Player::Score()
 bool Player::PlaceCard(const Card& choosenCard, Card& descendingDeck1, Card& descendingDeck2, Card& ascendingDeck1, Card& ascendingDeck2, int pileId)
 {
 	
-	/*if (m_hand.empty())
-	{
-		std::cout << "Your hand is empty!!!\n";
-		return false;
-	}
-
-
-	auto foundCard = std::find(m_hand.begin(), m_hand.end(), choosenCard);
-	if (foundCard == m_hand.end())
-	{
-		std::cout << "This card isn't in your hand! Choose another one.";
-		return false;
-	}
-
-	using enum Card::OrderDirection;
-	auto canPlace = [](const Card& chosen, const Card& target, Card::OrderDirection dir) -> bool {
-		if (dir == Descending) {
-			
-			return (chosen.GetNumber() - target.GetNumber() == 10) || (chosen.GetNumber() < target.GetNumber());
-		}
-		else { 
-			
-			return (target.GetNumber() - chosen.GetNumber() == 10) || (chosen.GetNumber() > target.GetNumber());
-		}
-		};
-
-	
-	struct Target {
-		Card* card;
-		Card::OrderDirection dir;
-	};
-
-	Target targets[] = {
-		{ &descendingDeck1, Descending },
-		{ &descendingDeck2, Descending },
-		{ &ascendingDeck1,  Ascending  },
-		{ &ascendingDeck2,  Ascending  }
-	};
-
-	for (auto& t : targets) {
-		if (canPlace(choosenCard, *t.card, t.dir)) {
-			
-			*t.card = std::move(*foundCard);
-			t.card->SetDirection(t.dir);
-
-			
-			m_hand.erase(foundCard);
-			return true;
-		}
-	}
-
-	std::cout << "This card doesn't belong in any of the stacks!";
-	return false;*/
 
 	if (m_hand.empty()) {
 		std::cout << "Your hand is empty!\n";

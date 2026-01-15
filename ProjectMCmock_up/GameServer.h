@@ -4,7 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include "Game.h"
-#include "MiniGameServer.h"
+
 
 #include "../TimerDLL/GameTimer.h"
 
@@ -14,9 +14,6 @@ namespace http
 	{
 	public:
 		void Run(UserProfiles& storage);
-
-	private:
-		crow::response AddUsersToGameRute(UserProfiles& storage, const crow::request& req, int playerId)const;
 
 	private:
 		crow::SimpleApp m_app;
@@ -43,7 +40,7 @@ namespace http
 		int m_nextGameId =1;
 
 	private:
-		static constexpr int kMaxScoreDiff =1;
+
 		static constexpr int kLobbyTimeoutSeconds =10;
 		static constexpr int kMinPlayersPerGame =2;
 		static constexpr int kMaxPlayersPerGame =5;

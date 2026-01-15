@@ -53,7 +53,7 @@ public:
     void SetTypeString(const std::string& typeStr);
 
 
-public:
+private:
     uint32_t m_databaseId;  
     PowerUpType m_type;
     std::string m_name;

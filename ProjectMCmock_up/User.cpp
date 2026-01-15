@@ -1,4 +1,5 @@
 #include "User.h"
+#include <iostream>
 
 User::User():
 	m_username("Unknown"),
@@ -93,13 +94,6 @@ std::uint16_t User::GetGamesPlayed() const
 	return m_gamesPlayed;
 }
 
-void User::ViewProfile() const
-{
-	std::cout << "Username: " << m_username << "\n";
-	std::cout << "Total hours played: " << m_hoursPlayed << "\n";
-	std::cout << "Total number of games played: " << m_gamesPlayed << "\n";
-	std::cout << "Score: " << m_performanceScore << "\n";
-}
 
 void User::SetWins(std::uint16_t gamesWon)
 {

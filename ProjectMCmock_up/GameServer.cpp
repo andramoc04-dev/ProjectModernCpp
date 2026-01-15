@@ -1,4 +1,5 @@
 ﻿#include "GameServer.h"
+#include "MiniGameServer.h"
 #include <mutex>
 #include <vector>
 #include <algorithm>
@@ -952,8 +953,5 @@ void http::Routing::Run(UserProfiles& storage)
 	m_app.port(18080).multithreaded().run();
 }
 
-crow::response http::Routing::AddUsersToGameRute(UserProfiles& storage, const crow::request& req, int playerId) const
-{
-	return crow::response();
-}
+
 

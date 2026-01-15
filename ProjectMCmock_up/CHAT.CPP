@@ -1,17 +1,14 @@
 #include "Chat.h"
-#include<cctype>
-#include<iostream>
-#include <chrono>
+#include <iostream>
 #include <format>
 
-using namespace std::chrono;
 
 void Chat::AddMessage(const Message& message)
 {
     m_messages.push_back(message);
 }
 
-std::deque<Message> Chat::GetMessages() const
+const std::deque<Message>& Chat::GetMessages() const
 {
     return m_messages;
 }
