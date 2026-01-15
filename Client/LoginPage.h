@@ -12,6 +12,7 @@
 #include <QRegularExpression>
 #include "ui_LoginPage.h"
 #include "MenuPage.h"
+#include "PlayTimeTracker.h"
 
 namespace Ui { class LoginPageClass; }
 
@@ -22,6 +23,7 @@ class LoginPage : public QDialog
 public:
     LoginPage(QWidget* parent = nullptr);
     ~LoginPage();
+    static PlayTimeTracker* getPlayTimeTracker();
 
 private slots:
     void on_loginButton_clicked();
@@ -34,5 +36,6 @@ private:
     Ui::LoginPageClass* ui;
     QNetworkAccessManager* manager;
     bool loggedIn;
+    static PlayTimeTracker* s_playTimeTracker;
     MenuPage* menu;
 };

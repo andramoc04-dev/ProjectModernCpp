@@ -10,6 +10,12 @@ int main(int argc, char *argv[])
     LoginPage login;
     login.show();
     
+    QObject::connect(&app, &QApplication::aboutToQuit, []() {
+        auto* tracker = LoginPage::getPlayTimeTracker();
+        if (tracker && tracker->isTracking()) {
+            tracker->stopAndSync();
+        }
+        });
     
     return app.exec();
 }

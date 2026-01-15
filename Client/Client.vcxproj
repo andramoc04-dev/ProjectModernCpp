@@ -107,6 +107,7 @@
     <ClCompile Include="InventoryPage.cpp" />
     <ClCompile Include="LobbyPage.cpp" />
     <ClCompile Include="MinigamePage.cpp" />
+    <ClCompile Include="PlayTimeTracker.cpp" />
     <ClCompile Include="ProfilePage.cpp" />
     <ClCompile Include="MenuPage.cpp" />
     <QtRcc Include="Client.qrc" />
@@ -178,6 +179,9 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="InventoryPage.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="PlayTimeTracker.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

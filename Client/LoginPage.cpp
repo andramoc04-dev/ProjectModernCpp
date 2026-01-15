@@ -1,6 +1,8 @@
 ﻿#include "LoginPage.h"
 #include <QDebug>
 
+PlayTimeTracker* LoginPage::s_playTimeTracker = nullptr;
+
 LoginPage::LoginPage(QWidget* parent)
     : QDialog(parent),
     ui(new Ui::LoginPageClass),
@@ -10,10 +12,19 @@ LoginPage::LoginPage(QWidget* parent)
 {
     ui->setupUi(this);
     ui->Password->setEchoMode(QLineEdit::Password);
+
+    if (!s_playTimeTracker) {
+        s_playTimeTracker = new PlayTimeTracker(qApp); // parent = QApplication
+    }
 }
 
 LoginPage::~LoginPage()
 {
+}
+
+PlayTimeTracker* LoginPage::getPlayTimeTracker()
+{
+    return s_playTimeTracker;
 }
 
 
@@ -146,6 +157,10 @@ void LoginPage::onLoginReply(QNetworkReply* reply)
 
         QMessageBox::information(this, "Login", "Login successful!\nWelcome " + name);
         loggedIn = true;
+
+        if (id >= 0 && s_playTimeTracker) {
+            s_playTimeTracker->startTracking(id, "http://localhost:18080");
+        }
 
         // cream MenuPage, setam playerId si o aratam
         menu = new MenuPage(nullptr);

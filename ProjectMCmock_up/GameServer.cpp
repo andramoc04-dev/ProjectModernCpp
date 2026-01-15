@@ -948,6 +948,55 @@ void http::Routing::Run(UserProfiles& storage)
 			}
 				});
 		
+		CROW_ROUTE(m_app, "/player/<int>/updateplaytime").methods(crow::HTTPMethod::POST)
+			([&storage](const crow::request& req, int playerId) {
+			auto body = crow::json::load(req.body);
+			if (!body) {
+				return crow::response(400, R"({"error":"Invalid JSON"})");
+			}
+
+			if (!body.has("seconds")) {
+				return crow::response(400, R"({"error":"Missing seconds field"})");
+			}
+
+			int seconds = (int)body["seconds"].i();
+
+			// Validare: nu accepta valori negative sau absurd de mari
+			if (seconds < 0 || seconds > 86400) { // Max 24h într-o sincronizare
+				return crow::response(400, R"({"error":"Invalid seconds value"})");
+			}
+
+			auto userOpt = storage.GetUserById(playerId);
+			if (!userOpt.has_value()) {
+				return crow::response(404, R"({"error":"Player not found"})");
+			}
+
+			User user = userOpt.value();
+
+			// Converteste secundele in ore (float) si adauga la total
+			double hoursToAdd = seconds / 3600.0;
+			uint16_t currentHours = user.GetHoursPlayed();
+			uint16_t newHours = static_cast<uint16_t>(currentHours + std::round(hoursToAdd));
+
+			user.SetHoursPlayed(newHours);
+
+			try {
+				storage.UpdateUser(user);
+
+				crow::json::wvalue resp;
+				resp["success"] = true;
+				resp["secondsAdded"] = seconds;
+				resp["totalHours"] = newHours;
+				resp["message"] = "Play time updated successfully";
+
+				return crow::response(200, resp.dump());
+			}
+			catch (const std::exception& e) {
+				crow::json::wvalue errorResp;
+				errorResp["error"] = std::string("Database error: ") + e.what();
+				return crow::response(500, errorResp.dump());
+			}
+				});
 
 
 	m_app.port(18080).multithreaded().run();

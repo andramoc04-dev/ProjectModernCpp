@@ -58,6 +58,9 @@
     <ClCompile Include="InventoryPage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PlayTimeTracker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LoginPage.ui">
@@ -108,6 +111,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="InventoryPage.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="PlayTimeTracker.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
