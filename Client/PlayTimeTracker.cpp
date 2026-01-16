@@ -1,4 +1,4 @@
-#include "PlayTimeTracker.h"
+﻿#include "PlayTimeTracker.h"
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QNetworkRequest>
@@ -23,8 +23,16 @@ PlayTimeTracker::~PlayTimeTracker()
 
 void PlayTimeTracker::startTracking(int playerId, const QString& serverUrl)
 {
-    if (m_isTracking) {
-        qWarning() << "PlayTimeTracker: Already tracking!";
+    // IMPORTANT: Dacă deja trackuim pentru alt jucător, OPREȘTE și SINCRONIZEAZĂ
+    if (m_isTracking && m_playerId != playerId) {
+        qDebug() << "PlayTimeTracker: Switching from player" << m_playerId
+            << "to player" << playerId;
+        stopAndSync(); // Salvează timpul pentru jucătorul anterior
+    }
+
+    // Dacă deja trackuim pentru același jucător, nu face nimic
+    if (m_isTracking && m_playerId == playerId) {
+        qWarning() << "PlayTimeTracker: Already tracking for player" << playerId;
         return;
     }
 
@@ -34,7 +42,7 @@ void PlayTimeTracker::startTracking(int playerId, const QString& serverUrl)
     m_lastSync = m_sessionStart;
     m_isTracking = true;
 
-    // Porne?te backup timer-ul
+    // Pornește backup timer-ul
     m_backupTimer->start();
 
     qDebug() << "PlayTimeTracker: Started tracking for player" << playerId;
@@ -62,6 +70,11 @@ void PlayTimeTracker::stopAndSync()
 bool PlayTimeTracker::isTracking() const
 {
     return m_isTracking;
+}
+
+int PlayTimeTracker::getCurrentPlayerId() const
+{
+    return m_playerId;
 }
 
 void PlayTimeTracker::onBackupSync()

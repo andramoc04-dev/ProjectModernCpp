@@ -24,6 +24,8 @@ public:
     // Verific? dac? tracking-ul este activ
     bool isTracking() const;
 
+    int getCurrentPlayerId() const;
+
 private slots:
     void onBackupSync();
     void onSyncReplyFinished();
