@@ -19,7 +19,11 @@ void http::Routing::StartGameForGroupLocked(UserProfiles& storage, const std::ve
 		players.push_back(Player::ConvertUserToPlayer(u));
 	}
 
-	m_activeGames[gid] = Game(players, std::stack<Card>{}, Chat());
+	m_activeGames[gid] = std::make_unique<Game>(
+		players,
+		std::stack<Card>{},
+		Chat()
+	);
 
 	for (int pid : playerIds) {
 		LobbyInfo info;
@@ -237,7 +241,7 @@ void http::Routing::Run(UserProfiles& storage)
 			return crow::response(404);
 
 		Message msg(text, playerName);
-		it->second.GetChat().AddMessage(msg);
+		it->second->GetChat().AddMessage(msg);
 
 		return crow::response(200);
 			});
@@ -257,7 +261,7 @@ void http::Routing::Run(UserProfiles& storage)
 		crow::json::wvalue response;
 		int idx = 0;
 
-		for (const auto& m : it->second.GetChat().GetMessages()) {
+		for (const auto& m : it->second->GetChat().GetMessages()) {
 			response[idx]["playerName"] = m.GetPlayerName();
 			response[idx]["text"] = m.GetTextFromPlayer();
 			idx++;
@@ -279,7 +283,7 @@ void http::Routing::Run(UserProfiles& storage)
 			return crow::response(404, R"({"error":"Game not found"})");
 		}
 
-		Game& gameInst = it->second;
+		Game& gameInst = *(it->second);
 
 
 		if (!gameInst.GetAreCardsShuffled()) {
@@ -303,7 +307,7 @@ void http::Routing::Run(UserProfiles& storage)
 			return crow::response(404, R"({"error":"Game not found"})");
 		}
 
-		Game& gameInst = it->second;
+		Game& gameInst = *(it->second);
 
 		if (!gameInst.GetAreCardsShuffled()) {
 			return crow::response(400, R"({"error":"Deck not shuffled yet"})");
@@ -331,7 +335,7 @@ void http::Routing::Run(UserProfiles& storage)
 				return crow::response(404, R"({"error":"Game not found"})");
 			}
     
-			Game& gameInst = it->second;
+			Game& gameInst = *(it->second);
 			
 			crow::json::wvalue resp;
 			resp["playerId"] = playerId;
@@ -366,7 +370,7 @@ void http::Routing::Run(UserProfiles& storage)
 				return crow::response(404, R"({"error":"Game not found"})");
 			}
 
-			Game& gameInst = it->second;
+			Game& gameInst = *(it->second);
 
 			// VERIFICĂ TIMEOUT LA ORICE ACȚIUNE
 			gameInst.CheckTurnTimeout();
@@ -436,7 +440,7 @@ void http::Routing::Run(UserProfiles& storage)
 				return crow::response(404, R"({"error":"Game not found"})");
 			}
 
-			Game& gameInst = it->second;
+			Game& gameInst = *(it->second);
 
 			// PORNEȘTE TIMERUL DACĂ E TURĂ NOUĂ
 			gameInst.StartTurnTimerIfNeeded();
@@ -514,7 +518,7 @@ void http::Routing::Run(UserProfiles& storage)
 				return crow::response(404, R"({"error":"Game not found"})");
 			}
 
-			Game& gameInst = it->second;
+			Game& gameInst = *(it->second);
 
 			// Verifică dacă mai sunt cărți în teanc
 			if (gameInst.GetCardsDeck().empty()) {
@@ -552,7 +556,7 @@ void http::Routing::Run(UserProfiles& storage)
 				return crow::response(404, R"({"error":"Game not found"})");
 			}
 
-			Game& gameInst = it->second;
+			Game& gameInst = *(it->second);
 
 			try {
 				Player& player = gameInst.GetPlayer(playerId);
@@ -899,7 +903,7 @@ void http::Routing::Run(UserProfiles& storage)
 				return crow::response(404, R"({"error":"Game not found"})");
 			}
 
-			Game& gameInst = it->second;
+			Game& gameInst = *(it->second);
 
 			// Verifică dacă este tura jucătorului
 			try {

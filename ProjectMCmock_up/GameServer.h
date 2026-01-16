@@ -5,7 +5,6 @@
 #include <unordered_map>
 #include "Game.h"
 
-
 #include "../TimerDLL/GameTimer.h"
 
 namespace http
@@ -19,7 +18,7 @@ namespace http
 		crow::SimpleApp m_app;
 
 		
-		std::unordered_map<int, Game> m_activeGames;
+		std::unordered_map<int, std::unique_ptr<Game>> m_activeGames;
 
 		struct LobbyInfo {
 			int m_gameId = -1;
