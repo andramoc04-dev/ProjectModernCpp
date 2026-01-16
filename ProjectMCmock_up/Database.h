@@ -63,14 +63,14 @@ namespace http
 		bool Initialize();
 
 		std::vector<User> GetUsers();
-		std::optional<User> GetUserById(int id);
+		
 		void AddUserToGame(const std::string& name, const std::string& password = "");
 		bool HasUserWithName(const std::string& name);
 		void UpdateUser(const User& user);
 
 		void InitializePowerUps();
 		std::vector<PowerUp> GetAllPowerUps();
-		std::optional<PowerUp> GetPowerUpById(uint32_t id);
+		
 		std::optional<PowerUp> GetPowerUpByType(PowerUpType type);
 		uint32_t AddPowerUpToDataBase(const PowerUp& powerUp);
 
@@ -86,6 +86,18 @@ namespace http
 		void UnequipPowerUp(uint32_t userId, uint32_t inventoryId);
 		std::vector<PowerUp> GetEquippedPowerUps(uint32_t userId);
 		bool IsPowerUpEquipped(uint32_t userId, uint32_t powerUpId);
+
+
+		template<typename T>
+		std::optional<T> GetById(int id)
+		{
+			try {
+				return m_db.get<T>(id);
+			}
+			catch (const std::system_error&) {
+				return std::nullopt;
+			}
+		}
 
 
 	private:

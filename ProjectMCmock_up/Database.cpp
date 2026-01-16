@@ -13,16 +13,6 @@ std::vector<User> http::UserProfiles::GetUsers()
     return m_db.get_all<User>();
 }
 
-std::optional<User> http::UserProfiles::GetUserById(int id)
-{
-    try {
-        auto user = m_db.get<User>(id);
-        return user;
-    }
-    catch (...) {
-        return std::nullopt;
-    }
-}
 
 void http::UserProfiles::AddUserToGame(const std::string& name, const std::string& password)
 {
@@ -84,16 +74,6 @@ std::vector<PowerUp> http::UserProfiles::GetAllPowerUps()
     return m_db.get_all<PowerUp>();
 }
 
-std::optional<PowerUp> http::UserProfiles::GetPowerUpById(uint32_t id)
-{
-    try {
-        auto powerUp = m_db.get<PowerUp>(id);
-        return powerUp;
-    }
-    catch (const std::system_error&) {
-        return std::nullopt;
-    }
-}
 
 std::optional<PowerUp> http::UserProfiles::GetPowerUpByType(PowerUpType type)
 {

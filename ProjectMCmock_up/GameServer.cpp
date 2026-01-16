@@ -15,7 +15,7 @@ void http::Routing::StartGameForGroupLocked(UserProfiles& storage, const std::ve
 	std::vector<Player> players;
 	players.reserve(playerIds.size());
 	for (int pid : playerIds) {
-		auto u = storage.GetUserById(pid).value();
+		auto u = storage.GetById<User>(pid).value();
 		players.push_back(Player::ConvertUserToPlayer(u));
 	}
 
@@ -85,7 +85,7 @@ void http::Routing::Run(UserProfiles& storage)
 {
 	CROW_ROUTE(m_app, "/player/<int>")([&storage](int id) {
 
-		auto player = storage.GetUserById(id);
+		auto player = storage.GetById<User>(id);
 
 		if (!player.has_value()) {
 			return crow::response(404, "Player not found");
@@ -172,7 +172,7 @@ void http::Routing::Run(UserProfiles& storage)
 		if (!body.has("id")) return crow::response(400, R"({"error":"Missing id"})");
 
 		int playerId = (int)body["id"].i();
-		auto userOpt = storage.GetUserById(playerId);
+		auto userOpt = storage.GetById<User>(playerId);
 		if (!userOpt.has_value()) {
 			return crow::response(404, R"({"error":"Player not found"})");
 		}
@@ -668,7 +668,7 @@ void http::Routing::Run(UserProfiles& storage)
 			int score = (int)body["score"].i();
 
 			// Verifică dacă jucătorul există
-			auto userOpt = storage.GetUserById(playerId);
+			auto userOpt = storage.GetById<User>(playerId);
 			if (!userOpt.has_value()) {
 				return crow::response(404, R"({"error":"Player not found"})");
 			}
@@ -719,7 +719,7 @@ void http::Routing::Run(UserProfiles& storage)
 		
 		CROW_ROUTE(m_app, "/player/<int>/powerups/reset").methods(crow::HTTPMethod::POST)
 			([&storage](int playerId) {
-			auto userOpt = storage.GetUserById(playerId);
+			auto userOpt = storage.GetById<User>(playerId);
 			if (!userOpt.has_value()) {
 				return crow::response(404, R"({"error":"Player not found"})");
 			}
@@ -749,7 +749,7 @@ void http::Routing::Run(UserProfiles& storage)
 		// Obține inventarul de power-up-uri al unui jucător
 		CROW_ROUTE(m_app, "/player/<int>/powerups").methods(crow::HTTPMethod::GET)
 			([&storage](int playerId) {
-			auto userOpt = storage.GetUserById(playerId);
+			auto userOpt = storage.GetById<User>(playerId);
 			if (!userOpt.has_value()) {
 				return crow::response(404, R"({"error":"Player not found"})");
 			}
@@ -765,7 +765,7 @@ void http::Routing::Run(UserProfiles& storage)
 				int idx = 0;
 				for (const auto& entry : inventoryEntries) {
 					// Get the power-up details for this entry
-					auto powerUpOpt = storage.GetPowerUpById(entry.GetPowerUpId());
+					auto powerUpOpt = storage.GetById<PowerUp>(entry.GetPowerUpId());
 					if (powerUpOpt) {
 						const auto& powerUp = powerUpOpt.value();
 
@@ -791,7 +791,7 @@ void http::Routing::Run(UserProfiles& storage)
 
 		CROW_ROUTE(m_app, "/player/<int>/powerups/equipped").methods(crow::HTTPMethod::GET)
 			([&storage](int playerId) {
-			auto userOpt = storage.GetUserById(playerId);
+			auto userOpt = storage.GetById<User>(playerId);
 			if (!userOpt.has_value()) {
 				return crow::response(404, R"({"error":"Player not found"})");
 			}
@@ -822,7 +822,7 @@ void http::Routing::Run(UserProfiles& storage)
 				});
 		CROW_ROUTE(m_app, "/player/<int>/powerups/<int>/equip").methods(crow::HTTPMethod::POST)
 			([&storage](int playerId, int inventoryId) {
-			auto userOpt = storage.GetUserById(playerId);
+			auto userOpt = storage.GetById<User>(playerId);
 			if (!userOpt.has_value()) {
 				return crow::response(404, R"({"error":"Player not found"})");
 			}
@@ -862,7 +862,7 @@ void http::Routing::Run(UserProfiles& storage)
 		// Dezechipează un power-up
 		CROW_ROUTE(m_app, "/player/<int>/powerups/<int>/unequip").methods(crow::HTTPMethod::POST)
 			([&storage](int playerId, int inventoryId) {
-			auto userOpt = storage.GetUserById(playerId);
+			auto userOpt = storage.GetById<User>(playerId);
 			if (!userOpt.has_value()) {
 				return crow::response(404, R"({"error":"Player not found"})");
 			}
@@ -924,7 +924,7 @@ void http::Routing::Run(UserProfiles& storage)
 			}
 
 			// Obține power-up-ul din baza de date
-			auto powerUpOpt = storage.GetPowerUpById(powerUpId);
+			auto powerUpOpt = storage.GetById<PowerUp>(powerUpId);
 			if (!powerUpOpt) {
 				return crow::response(404, R"({"error":"Power-up not found"})");
 			}
@@ -994,7 +994,7 @@ void http::Routing::Run(UserProfiles& storage)
 				return crow::response(400, R"({"error":"Invalid seconds value"})");
 			}
 
-			auto userOpt = storage.GetUserById(playerId);
+			auto userOpt = storage.GetById<User>(playerId);
 			if (!userOpt.has_value()) {
 				return crow::response(404, R"({"error":"Player not found"})");
 			}
@@ -1030,7 +1030,7 @@ void http::Routing::Run(UserProfiles& storage)
 		// Ruta pentru actualizare la câștig
 		CROW_ROUTE(m_app, "/game/<int>/player/<int>/win").methods(crow::HTTPMethod::POST)
 			([&storage](int gameId, int playerId) {
-			auto userOpt = storage.GetUserById(playerId);
+			auto userOpt = storage.GetById<User>(playerId);
 			if (!userOpt.has_value()) {
 				return crow::response(404, R"({"error":"Player not found"})");
 			}
@@ -1079,7 +1079,7 @@ void http::Routing::Run(UserProfiles& storage)
 				return crow::response(400, R"({"error":"Invalid unusedCards value"})");
 			}
 
-			auto userOpt = storage.GetUserById(playerId);
+			auto userOpt = storage.GetById<User>(playerId);
 			if (!userOpt.has_value()) {
 				return crow::response(404, R"({"error":"Player not found"})");
 			}
@@ -1113,7 +1113,7 @@ void http::Routing::Run(UserProfiles& storage)
 		// Ruta pentru recalculare scor
 		CROW_ROUTE(m_app, "/player/<int>/recalculate-score").methods(crow::HTTPMethod::POST)
 			([&storage](int playerId) {
-			auto userOpt = storage.GetUserById(playerId);
+			auto userOpt = storage.GetById<User>(playerId);
 			if (!userOpt.has_value()) {
 				return crow::response(404, R"({"error":"Player not found"})");
 			}
