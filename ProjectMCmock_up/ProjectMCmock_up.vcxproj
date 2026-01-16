@@ -30,7 +30,6 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="PowerUp.h" />
     <ClInclude Include="User.h" />
-    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Card.cpp" />
@@ -45,7 +44,6 @@
     <ClCompile Include="PowerUp.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="User.cpp" />
-    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TimerDLL\TimerDLL.vcxproj">

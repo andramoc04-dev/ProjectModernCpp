@@ -61,8 +61,8 @@ private:
 	bool m_gameLost = false;
 	size_t m_lastPlayerWithTimer = SIZE_MAX;
 
-	static constexpr int DESCENDING_DECK_START = 100;
-	static constexpr int ASCENDING_DECK_START = 1;
-	static constexpr int CHAT_TIMER_DEFAULT_SECONDS = 999999;
+	static const int DESCENDING_DECK_START = 100;
+	static const int ASCENDING_DECK_START = 1;
+	static const int CHAT_TIMER_DEFAULT_SECONDS = 999999;
 };
 

@@ -25,7 +25,6 @@ public:
 		Card& ascendingDeck1, 
 		Card& ascendingDeck2,
 		int pileId);
-	void TakeCard(std::stack<Card>& Deck);
 	
 	std::unordered_set<Card>& GetHand();
 	const std::unordered_set<Card>& GetHand() const;

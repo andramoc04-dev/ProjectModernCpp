@@ -12,7 +12,6 @@ public:
 
 	Card(std::uint16_t number);
 	Card();
-	//Card(const Card& other);
 
 	std::uint16_t GetNumber() const;
 	OrderDirection GetDirection() const;
@@ -23,7 +22,6 @@ public:
 
 	bool operator ==(const Card& other) const;
 
-	//Card& operator=(const Card& other);
 	
 
 	

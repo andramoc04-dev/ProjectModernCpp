@@ -409,19 +409,15 @@ void http::Routing::Run(UserProfiles& storage)
 				switch (pileId) {
 				case 0:
 					resp["newPileValue"] = gameInst.GetDescendingDeck1().GetNumber();
-					std::cout << "Pile 0 updated to " << gameInst.GetDescendingDeck1().GetNumber() << std::endl;
 					break;
 				case 1:
 					resp["newPileValue"] = gameInst.GetDescendingDeck2().GetNumber();
-					std::cout << "Pile 1 updated to " << gameInst.GetDescendingDeck2().GetNumber() << std::endl;
 					break;
 				case 2:
 					resp["newPileValue"] = gameInst.GetAscendingDeck1().GetNumber();
-					std::cout << "Pile 2 updated to " << gameInst.GetAscendingDeck1().GetNumber() << std::endl;
 					break;
 				case 3:
 					resp["newPileValue"] = gameInst.GetAscendingDeck2().GetNumber();
-					std::cout << "Pile 3 updated to " << gameInst.GetAscendingDeck2().GetNumber() << std::endl;
 					break;
 				}
 
@@ -635,22 +631,6 @@ void http::Routing::Run(UserProfiles& storage)
 
 		/////////Minigame routes//////////
 
-		CROW_ROUTE(m_app, "/minigame/rewards").methods(crow::HTTPMethod::GET)
-			([this]() {
-			MinigameServer minigame;
-			const auto& tiers = minigame.GetRewardTiers();
-
-			crow::json::wvalue resp;
-			int idx = 0;
-			for (const auto& tier : tiers) {
-				resp["rewards"][idx]["minScore"] = tier.minScore;
-				resp["rewards"][idx]["powerUpType"] = PowerUp::TypeToString(tier.powerUpType);
-				resp["rewards"][idx]["description"] = tier.rewardName;
-				idx++;
-			}
-
-			return crow::response{ resp.dump() };
-				});
 
 		// Finalizează minigame-ul și atribuie recompense
 		CROW_ROUTE(m_app, "/minigame/complete").methods(crow::HTTPMethod::POST)

@@ -1,5 +1,4 @@
 ﻿#include "Player.h"
-#include <iostream>
 
 Player::Player():
 	User()
@@ -41,13 +40,11 @@ bool Player::PlaceCard(const Card& choosenCard, Card& descendingDeck1, Card& des
 	
 
 	if (m_hand.empty()) {
-		std::cout << "Your hand is empty!\n";
 		return false;
 	}
 
 	auto foundCard = std::find(m_hand.begin(), m_hand.end(), choosenCard);
 	if (foundCard == m_hand.end()) {
-		std::cout << "This card isn't in your hand!\n";
 		return false;
 	}
 
@@ -71,34 +68,21 @@ bool Player::PlaceCard(const Card& choosenCard, Card& descendingDeck1, Card& des
 	case 2: targetPile = &ascendingDeck1;  dir = Ascending;  break;
 	case 3: targetPile = &ascendingDeck2;  dir = Ascending;  break;
 	default:
-		std::cout << "Invalid pileId!\n";
 		return false;
 	}
 
 	if (canPlace(choosenCard, *targetPile, dir)) {
-		// actualizează valoarea teancului cu cartea aleasă
 		targetPile->SetNumber(choosenCard.GetNumber());
 		targetPile->SetDirection(dir);
 
-		// scoate cartea din mână
 		m_hand.erase(foundCard);
 
 		return true;
 	}
 
-	std::cout << "Invalid move: card cannot be placed on this pile!\n";
 	return false;
 
 
-}
-
-
-void Player::TakeCard(std::stack<Card>& Deck)
-{
-		m_hand.insert(Deck.top());
-		Deck.pop();
-	
-	
 }
 
 

@@ -561,7 +561,6 @@ void GamePage::initializeGame(int playerId,const QString& playerName, int gameId
 
 	m_isMyTurn = false;
 
-	net = new QNetworkAccessManager(this);
 
 	connect(ui.DescendingCardPlacer1, &QPushButton::clicked, this, [=]() {
 		onPileClicked(0, ui.DescendingDeck1Number);
