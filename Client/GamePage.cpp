@@ -720,7 +720,7 @@ void GamePage::openEndgamePage(QString gameStatus)
 	qDebug() << "Opening EndgamePage with status:" << gameStatus
 		<< "Unused cards:" << m_currentUnusedCards;
 
-	endgamePage = new EndgamePage(
+	endgamePage = std::make_unique<EndgamePage> (
 		m_playerId,
 		m_playerName,
 		m_gameId,
@@ -731,6 +731,7 @@ void GamePage::openEndgamePage(QString gameStatus)
 	);
 
 	endgamePage->show();
+	endgamePage.release();
 	this->close();
 	this->deleteLater();
 }

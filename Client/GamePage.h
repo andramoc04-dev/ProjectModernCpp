@@ -89,6 +89,6 @@ private:
 	QString m_playerName; 
 
 	void initializeGame(int playerId,const QString& playerName, int gameId);
-	EndgamePage* endgamePage;
+	std::unique_ptr<EndgamePage> endgamePage;
 };
 
