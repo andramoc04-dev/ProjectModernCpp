@@ -19,10 +19,12 @@ void http::Routing::StartGameForGroupLocked(UserProfiles& storage, const std::ve
 		players.push_back(Player::ConvertUserToPlayer(u));
 	}
 
+	// Create a shared_ptr<Chat> because Game constructor expects a shared_ptr<Chat>
+	auto chatPtr = std::make_shared<Chat>();
 	m_activeGames[gid] = std::make_unique<Game>(
 		players,
 		std::stack<Card>{},
-		Chat()
+		chatPtr
 	);
 
 	for (int pid : playerIds) {
@@ -241,7 +243,7 @@ void http::Routing::Run(UserProfiles& storage)
 			return crow::response(404);
 
 		Message msg(text, playerName);
-		it->second->GetChat().AddMessage(msg);
+		it->second->GetChat()->AddMessage(msg);
 
 		return crow::response(200);
 			});
@@ -261,7 +263,7 @@ void http::Routing::Run(UserProfiles& storage)
 		crow::json::wvalue response;
 		int idx = 0;
 
-		for (const auto& m : it->second->GetChat().GetMessages()) {
+		for (const auto& m : it->second->GetChat()->GetMessages()) {
 			response[idx]["playerName"] = m.GetPlayerName();
 			response[idx]["text"] = m.GetTextFromPlayer();
 			idx++;
@@ -1153,6 +1155,3 @@ void http::Routing::Run(UserProfiles& storage)
 
 	m_app.port(18080).multithreaded().run();
 }
-
-
-

@@ -14,7 +14,7 @@ public:
 		Won,
 		Lost
 	};
-	Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck, const Chat& chat);
+	Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck, const std::shared_ptr<Chat>& chat);
 	Game() = default;
 	void ShuffleCards();
 	void CardsDistribution();
@@ -34,7 +34,7 @@ public:
 
 	const std::vector<Player>& GetPlayers() const;
 	std::vector<Player>& GetPlayers();
-	Chat& GetChat();
+	std::shared_ptr<Chat>& GetChat();
 	size_t GetCurrentPlayerIndex() const;
 	Player& GetCurrentPlayer();
 	const Player& GetCurrentPlayer() const;
@@ -50,7 +50,7 @@ public:
 private:
 	std::vector<Player> m_players;
 	std::stack<Card> m_cardsDeck;
-	Chat m_chat;
+	std::shared_ptr<Chat> m_chat;
 	Card m_descendingDeck1, m_descendingDeck2, m_ascendingDeck1, m_ascendingDeck2;
 	bool m_areCardsDealt;
 	bool m_areCardsShuffled;

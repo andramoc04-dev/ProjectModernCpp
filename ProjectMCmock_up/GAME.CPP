@@ -2,8 +2,8 @@
 #include <ranges>
 #include <deque>
 
-Game::Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck, const Chat& chat):
-	m_players(players), m_cardsDeck(cardsDeck), m_chat(chat), m_descendingDeck1(DESCENDING_DECK_START), m_descendingDeck2(DESCENDING_DECK_START),
+Game::Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck, const std::shared_ptr<Chat>& chat):
+	m_players(players), m_cardsDeck(cardsDeck), m_chat(std::move(chat)), m_descendingDeck1(DESCENDING_DECK_START), m_descendingDeck2(DESCENDING_DECK_START),
 	m_ascendingDeck1(ASCENDING_DECK_START), m_ascendingDeck2(ASCENDING_DECK_START), m_areCardsDealt(false), m_areCardsShuffled(false), m_currentPlayerIndex(0)
 {
 	m_chatTimer.start(CHAT_TIMER_DEFAULT_SECONDS); 
@@ -134,7 +134,7 @@ std::vector<Player>& Game::GetPlayers()
 	return m_players;
 }
 
-Chat& Game::GetChat()
+std::shared_ptr<Chat>& Game::GetChat()
 {
 	return m_chat;
 }
