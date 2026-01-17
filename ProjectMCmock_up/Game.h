@@ -63,6 +63,6 @@ private:
 
 	static const int DESCENDING_DECK_START = 100;
 	static const int ASCENDING_DECK_START = 1;
-	static const int CHAT_TIMER_DEFAULT_SECONDS = 999999;
+	
 };
 
