@@ -11,7 +11,8 @@ class EndgamePage : public QDialog
 public:
     EndgamePage(int playerId, const QString& playerName, int gameId,
         QString gameEnding, int unusedCardsCount,
-        const QString& serverUrl, QWidget* parent = nullptr);
+        const QString& serverUrl, bool hasScoreLossProtection = false,
+        QWidget* parent = nullptr);
     ~EndgamePage();
 
 protected:
@@ -42,4 +43,5 @@ private:
 
     bool m_resultSubmitted{ false };
     bool m_scoreRecalculated{ false };
+    bool m_hasScoreLossProtection{ false };
 };

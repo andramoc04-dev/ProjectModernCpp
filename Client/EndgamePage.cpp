@@ -9,7 +9,8 @@
 
 EndgamePage::EndgamePage(int playerId, const QString& playerName, int gameId,
     QString gameEnding, int unusedCardsCount,
-    const QString& serverUrl, QWidget* parent)
+    const QString& serverUrl, bool hasScoreLossProtection ,
+    QWidget* parent)
     : QDialog(parent)
     , m_network(new QNetworkAccessManager(this))
     , m_playerId(playerId)

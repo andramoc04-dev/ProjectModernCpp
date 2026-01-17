@@ -35,6 +35,7 @@ public:
 	void ResetCardsPlacedThisTurn();
 	
 	static Player ConvertUserToPlayer(const User& user);
+
 private:
 	
 	std::unordered_set<Card> m_hand;

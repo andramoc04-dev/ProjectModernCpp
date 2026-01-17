@@ -273,6 +273,7 @@ bool PowerUp::ExecuteDiscardCard(Player& user, int cardValue)
 
 bool PowerUp::ExecuteNoScoreLoss(Player& user, Game& game)
 {
+    user.SetHasScoreLossProtection(true);
     return true;
 }
 

@@ -716,6 +716,8 @@ void GamePage::checkTimers()
 
 void GamePage::openEndgamePage(QString gameStatus)
 {
+	bool hasProtection = false;
+
 	qDebug() << "Opening EndgamePage with status:" << gameStatus
 		<< "Unused cards:" << m_currentUnusedCards;
 
@@ -726,6 +728,7 @@ void GamePage::openEndgamePage(QString gameStatus)
 		gameStatus,              // "won" sau "lost"
 		m_currentUnusedCards,    // numărul de cărți nefolosite
 		"http://127.0.0.1:18080",
+		hasProtection,
 		nullptr
 	);
 

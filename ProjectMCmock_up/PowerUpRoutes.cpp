@@ -265,9 +265,9 @@ void PowerUpRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserPr
             return crow::response(500, R"({"error":"Failed to get current player"})");
         }
 
-        if (!storage.IsPowerUpEquipped(playerId, powerUpId)) {
+        /*if (!storage.IsPowerUpEquipped(playerId, powerUpId)) {
             return crow::response(400, R"({"error":"Power-up not equipped or not owned"})");
-        }
+        }*/
 
         auto powerUpOpt = storage.GetById<PowerUp>(powerUpId);
         if (!powerUpOpt) {

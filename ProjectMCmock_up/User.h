@@ -47,7 +47,9 @@ public:
 	void SetGamesPlayed(std::uint16_t gamesPlayed);
 	std::uint16_t GetGamesPlayed() const;
 
-
+	void SetHasScoreLossProtection(bool hasProtection);
+	bool HasScoreLossProtection() const;
+	void ClearScoreLossProtection();
 protected:
 	std::uint32_t m_id;
 	std::string m_password;
@@ -57,5 +59,6 @@ protected:
 	std::uint16_t m_gamesPlayed;
 	std::uint16_t m_unusedCards;
 	std::uint16_t m_performanceScore;
+	bool m_hasScoreLossProtection = false;
 };
 

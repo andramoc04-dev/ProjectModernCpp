@@ -1,4 +1,6 @@
-﻿#include "Player.h"
+﻿#include <algorithm>
+#include <cmath>
+#include "Player.h"
 
 Player::Player():
 	User()
@@ -22,15 +24,18 @@ Player::Player(const Player& other)
 
 void Player::Score()
 {
-	if (this->GetGamesPlayed() > 0)
-	{
-		double FloatScore = 5.0 * this->GetWins() / (this->GetGamesPlayed() + 0.5 * this->GetUnusedCards());
+	if (GetGamesPlayed() == 0)
+		return SetScore(0);
 
-		uint16_t score= static_cast<uint16_t>(FloatScore);
-		this->SetScore(score);
-	}
-	else
-		this->SetScore(0);
+	const double winRate = static_cast<double>(GetWins()) / GetGamesPlayed();
+	const double penalty = 0.1 * GetUnusedCards();
+
+	const double rawScore = 1.0 + 4.0 * winRate - penalty;
+	const uint16_t finalScore = static_cast<uint16_t>(
+		std::round(std::clamp(rawScore, 1.0, 5.0))
+		);
+
+	SetScore(finalScore);
 }
 
 
@@ -116,7 +121,6 @@ Player Player::ConvertUserToPlayer(const User& user)
 {
 	return Player(user.GetId(), user.GetUsername());
 }
-
 
 
 

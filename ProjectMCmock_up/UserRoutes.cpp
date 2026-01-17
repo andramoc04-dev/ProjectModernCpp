@@ -177,7 +177,7 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
         }
 
         int unusedCards = (int)body["unusedCards"].i();
-
+        
         if (unusedCards < 0) {
             return crow::response(400, R"({"error":"Invalid unusedCards value"})");
         }
@@ -189,8 +189,15 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
 
         User user = userOpt.value();
 
-        user.SetUnusedCards(user.GetUnusedCards() + unusedCards);
         user.SetGamesPlayed(user.GetGamesPlayed() + 1);
+        const bool hadProtection = user.HasScoreLossProtection();
+
+        if (hadProtection) {
+            user.SetHasScoreLossProtection(false);
+        }
+        else {
+            user.SetUnusedCards(user.GetUnusedCards() + unusedCards);
+        }
 
         try {
             storage.UpdateUser(user);
@@ -199,8 +206,10 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
             resp["success"] = true;
             resp["totalUnusedCards"] = user.GetUnusedCards();
             resp["gamesPlayed"] = user.GetGamesPlayed();
-            resp["message"] = "Loss recorded successfully";
-
+            resp["hadProtection"] = hadProtection;
+            resp["message"] = hadProtection ?
+                "Loss recorded (protected)" :
+                "Loss recorded successfully";
             return crow::response(200, resp.dump());
         }
         catch (const std::exception& e) {
@@ -226,7 +235,6 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
         tempPlayer.SetUnusedCards(user.GetUnusedCards());
 
         tempPlayer.Score();
-
         user.SetScore(tempPlayer.GetScore());
 
         try {

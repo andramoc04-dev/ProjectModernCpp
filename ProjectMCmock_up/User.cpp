@@ -144,3 +144,18 @@ void User::SetPassword(const std::string& password)
 {
 	m_password = password;
 }
+
+void User::SetHasScoreLossProtection(bool hasProtection)
+{
+	m_hasScoreLossProtection = hasProtection;
+}
+
+bool User::HasScoreLossProtection() const
+{
+	return m_hasScoreLossProtection;
+}
+
+void User::ClearScoreLossProtection()
+{
+	m_hasScoreLossProtection = false;
+}
