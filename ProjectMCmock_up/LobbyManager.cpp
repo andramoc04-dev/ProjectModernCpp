@@ -1,4 +1,5 @@
-#include "LobbyManager.h"
+module;
+
 #include "Database.h"
 #include "User.h"
 #include "Player.h"
@@ -7,6 +8,13 @@
 #include "Card.h"
 #include <memory>
 #include <stack>
+#include <mutex>
+#include <vector>
+#include <unordered_map>
+#include <crow.h>
+#include "../TimerDLL/GameTimer.h"
+
+module LobbyManager;
 
 LobbyManager::LobbyManager(std::mutex& mutex,
     std::unordered_map<int, std::unique_ptr<Game>>& games)

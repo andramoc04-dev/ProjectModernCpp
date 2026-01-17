@@ -9,6 +9,7 @@
 #include "../TimerDLL/GameTimer.h"
 
 import GameManager;
+import LobbyManager;
 
 // Forward declarations
 class GameManager;

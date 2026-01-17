@@ -1,4 +1,5 @@
-#pragma once
+module;
+
 #include <mutex>
 #include <vector>
 #include <unordered_map>
@@ -7,9 +8,11 @@
 #include "Game.h"
 #include "../TimerDLL/GameTimer.h"
 
-namespace http { class UserProfiles; }
+export module LobbyManager;
 
-class LobbyManager {
+namespace http { export class UserProfiles; }
+
+export class LobbyManager {
 public:
     LobbyManager(std::mutex& mutex,
         std::unordered_map<int, std::unique_ptr<Game>>& games);

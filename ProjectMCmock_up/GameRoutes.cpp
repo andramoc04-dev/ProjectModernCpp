@@ -4,7 +4,7 @@
 #include <algorithm>
 #include "Game.h"
 
-module GameManager;
+import GameManager;
 
 
 void GameRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserProfiles& storage)

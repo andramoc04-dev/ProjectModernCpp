@@ -29,7 +29,9 @@
     <ClInclude Include="GameRoutes.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="Inventory.h" />
-    <ClInclude Include="LobbyManager.h" />
+    <ClCompile Include="LobbyManager.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="Message.h" />
     <ClInclude Include="MiniGameServer.h" />
     <ClInclude Include="Player.h" />
