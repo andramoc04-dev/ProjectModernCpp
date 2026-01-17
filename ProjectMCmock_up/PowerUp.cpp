@@ -293,12 +293,16 @@ bool PowerUp::ExecuteStealCard(Player& user, Game& game, int targetPlayerId)
 
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::uniform_int_distribution<> dis(0, targetHand.size() - 1);
 
-        auto it = targetHand.begin();
-        std::advance(it, dis(gen));
+        std::vector<Card> sample;
+        std::ranges::sample(targetHand, std::back_inserter(sample), 1, gen);
 
-        Card stolenCard = *it;
+        if (sample.empty()) {
+            return false;
+        }
+
+        Card stolenCard = sample[0];
+        auto it = std::ranges::find(targetHand, stolenCard);
         targetHand.erase(it);
         user.GetHand().insert(stolenCard);
 
