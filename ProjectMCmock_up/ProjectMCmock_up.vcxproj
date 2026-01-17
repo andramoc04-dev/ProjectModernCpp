@@ -23,7 +23,9 @@
     <ClInclude Include="Chat.h" />
     <ClInclude Include="Database.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="GameManager.h" />
+    <ClCompile Include="GameManager.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="GameRoutes.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="Inventory.h" />

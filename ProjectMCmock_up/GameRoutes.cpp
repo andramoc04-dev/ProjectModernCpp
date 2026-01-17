@@ -2,6 +2,10 @@
 #include "PowerUp.h"
 #include "Database.h"
 #include <algorithm>
+#include "Game.h"
+
+module GameManager;
+
 
 void GameRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserProfiles& storage)
 {

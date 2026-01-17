@@ -60,9 +60,6 @@
     <ClInclude Include="GameRoutes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Card.cpp">
@@ -115,6 +112,9 @@
     </ClCompile>
     <ClCompile Include="GameManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cppm">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

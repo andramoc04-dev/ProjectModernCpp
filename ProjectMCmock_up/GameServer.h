@@ -8,6 +8,8 @@
 #include "Game.h"
 #include "../TimerDLL/GameTimer.h"
 
+import GameManager;
+
 // Forward declarations
 class GameManager;
 class LobbyManager;

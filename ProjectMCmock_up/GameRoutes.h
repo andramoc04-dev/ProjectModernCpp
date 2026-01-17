@@ -1,6 +1,6 @@
 #pragma once
 #include <crow.h>
-#include "GameManager.h"
+import GameManager;
 
 namespace http { class UserProfiles; }
 

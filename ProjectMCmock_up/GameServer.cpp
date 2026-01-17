@@ -1,9 +1,10 @@
 ﻿#include "GameServer.h"
-#include "GameManager.h"
 #include "LobbyManager.h"
 #include "GameRoutes.h"
 #include "PowerUpRoutes.h"
 #include "UserRoutes.h"
+
+module GameManager;
 
 namespace http
 {

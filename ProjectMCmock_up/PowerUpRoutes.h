@@ -1,7 +1,8 @@
 #pragma once
 #include <crow.h>
 #include "Database.h"
-#include "GameManager.h"
+
+import GameManager;
 
 class PowerUpRoutes {
 public:
