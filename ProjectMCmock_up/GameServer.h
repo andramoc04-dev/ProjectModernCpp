@@ -1,50 +1,42 @@
-﻿#include <crow.h>
+﻿#pragma once
+#include <crow.h>
 #include "Database.h"
 #include <mutex>
 #include <vector>
 #include <unordered_map>
+#include <memory>
 #include "Game.h"
-
 #include "../TimerDLL/GameTimer.h"
+
+// Forward declarations
+class GameManager;
+class LobbyManager;
+class GameRoutes;
+class PowerUpRoutes;
+class UserRoutes;
 
 namespace http
 {
-	class Routing
-	{
-	public:
-		void Run(UserProfiles& storage);
+    class Routing
+    {
+    public:
+        Routing();
+        ~Routing();
 
-	private:
-		crow::SimpleApp m_app;
+        void Run(UserProfiles& storage);
 
-		
-		std::unordered_map<int, std::unique_ptr<Game>> m_activeGames;
+    private:
+        crow::SimpleApp m_app;
 
-		struct LobbyInfo {
-			int m_gameId = -1;
-			bool m_started = false;
-			int m_matchedPlayerId = -1;
-		};
+        // Shared data structures
+        std::mutex m_lobbyMutex;
+        std::unordered_map<int, std::unique_ptr<Game>> m_activeGames;
 
-		struct WaitingPlayer {
-			int playerId{};
-			int score{};
-			GameTimer timer;
-			bool timerStarted{false};
-		};
-
-		std::mutex m_lobbyMutex;
-		std::vector<WaitingPlayer> m_waitingPlayers;
-		std::unordered_map<int, LobbyInfo> m_playerLobbyMap;
-		int m_nextGameId =1;
-
-	private:
-
-		static constexpr int kLobbyTimeoutSeconds =10;
-		static constexpr int kMinPlayersPerGame =2;
-		static constexpr int kMaxPlayersPerGame =5;
-
-		bool TryStartMatchLocked(UserProfiles& storage);
-		void StartGameForGroupLocked(UserProfiles& storage, const std::vector<int>& playerIds);
-	};
+        // Component managers
+        std::unique_ptr<GameManager> m_gameManager;
+        std::unique_ptr<LobbyManager> m_lobbyManager;
+        std::unique_ptr<GameRoutes> m_gameRoutes;
+        std::unique_ptr<PowerUpRoutes> m_powerUpRoutes;
+        std::unique_ptr<UserRoutes> m_userRoutes;
+    };
 }

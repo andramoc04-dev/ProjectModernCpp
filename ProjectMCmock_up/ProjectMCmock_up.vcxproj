@@ -23,27 +23,37 @@
     <ClInclude Include="Chat.h" />
     <ClInclude Include="Database.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="GameRoutes.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="Inventory.h" />
+    <ClInclude Include="LobbyManager.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="MiniGameServer.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PowerUp.h" />
+    <ClInclude Include="PowerUpRoutes.h" />
     <ClInclude Include="User.h" />
+    <ClInclude Include="UserRoutes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Card.cpp" />
     <ClCompile Include="Chat.cpp" />
     <ClCompile Include="Database.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GameRoutes.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="Inventory.cpp" />
+    <ClCompile Include="LobbyManager.cpp" />
     <ClCompile Include="Message.cpp" />
     <ClCompile Include="MiniGameServer.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PowerUp.cpp" />
+    <ClCompile Include="PowerUpRoutes.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="User.cpp" />
+    <ClCompile Include="UserRoutes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TimerDLL\TimerDLL.vcxproj">
