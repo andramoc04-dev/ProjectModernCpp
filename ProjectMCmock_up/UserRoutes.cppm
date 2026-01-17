@@ -1,8 +1,11 @@
-#pragma once
+module;
+
 #include <crow.h>
 #include "Database.h"
 
-class UserRoutes {
+export module UserRoutes;
+
+export class UserRoutes {
 public:
     static void Register(crow::SimpleApp& app, http::UserProfiles& storage);
 };

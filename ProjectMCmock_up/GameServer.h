@@ -10,6 +10,7 @@
 
 import GameManager;
 import LobbyManager;
+import UserRoutes;
 
 // Forward declarations
 class GameManager;

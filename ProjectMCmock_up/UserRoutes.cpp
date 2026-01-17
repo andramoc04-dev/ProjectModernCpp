@@ -1,8 +1,12 @@
-#include "UserRoutes.h"
+module;
+#include <crow.h>
+#include "Database.h"
 #include "Game.h"
 #include "Player.h"
 #include "User.h"
 #include <cmath>
+
+module UserRoutes;
 
 void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
 {

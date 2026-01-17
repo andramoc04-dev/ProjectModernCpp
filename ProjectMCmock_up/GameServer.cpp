@@ -1,8 +1,8 @@
 ﻿#include "GameServer.h"
 #include "GameRoutes.h"
 #include "PowerUpRoutes.h"
-#include "UserRoutes.h"
 
+import UserRoutes;
 import GameManager;
 import LobbyManager;
 
