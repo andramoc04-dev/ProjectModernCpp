@@ -23,11 +23,11 @@ PlayTimeTracker::~PlayTimeTracker()
 
 void PlayTimeTracker::startTracking(int playerId, const QString& serverUrl)
 {
-  
+    
     if (m_isTracking && m_playerId != playerId) {
         qDebug() << "PlayTimeTracker: Switching from player" << m_playerId
             << "to player" << playerId;
-        stopAndSync(); 
+        stopAndSync();
     }
 
     if (m_isTracking && m_playerId == playerId) {
@@ -37,10 +37,13 @@ void PlayTimeTracker::startTracking(int playerId, const QString& serverUrl)
 
     m_playerId = playerId;
     m_serverUrl = serverUrl;
+
+    
     m_sessionStart = std::chrono::steady_clock::now();
-    m_lastSync = m_sessionStart;
+    m_totalSyncedSeconds = 0;
     m_isTracking = true;
 
+    
     m_backupTimer->start();
 
     qDebug() << "PlayTimeTracker: Started tracking for player" << playerId;
@@ -54,24 +57,24 @@ void PlayTimeTracker::stopAndSync()
 
     m_backupTimer->stop();
 
-    const int secondsToSync = getElapsedSeconds();
+    const int totalSecondsInSession = getElapsedSeconds();
+
+    
+    const int secondsToSync = totalSecondsInSession - m_totalSyncedSeconds;
 
     if (secondsToSync > 0) {
+        qDebug() << "PlayTimeTracker: Final sync :" << secondsToSync << "seconds"
+            << "(Total session:" << totalSecondsInSession << "seconds)";
         syncPlayTime(secondsToSync);
     }
 
     m_isTracking = false;
-    qDebug() << "PlayTimeTracker: Stopped tracking. Final sync:" << secondsToSync << "seconds";
+    m_totalSyncedSeconds = 0; 
 }
 
 bool PlayTimeTracker::isTracking() const
 {
     return m_isTracking;
-}
-
-int PlayTimeTracker::getCurrentPlayerId() const
-{
-    return m_playerId;
 }
 
 void PlayTimeTracker::onBackupSync()
@@ -80,20 +83,31 @@ void PlayTimeTracker::onBackupSync()
         return;
     }
 
-    const int secondsSinceLastSync = getElapsedSeconds();
+    
+    const int totalSecondsInSession = getElapsedSeconds();
 
-    if (secondsSinceLastSync > 0) {
-        qDebug() << "PlayTimeTracker: Backup sync -" << secondsSinceLastSync << "seconds";
-        syncPlayTime(secondsSinceLastSync);
-        m_lastSync = std::chrono::steady_clock::now();
+    
+    const int secondsToSync = totalSecondsInSession - m_totalSyncedSeconds;
+
+    if (secondsToSync > 0) {
+        qDebug() << "PlayTimeTracker: Backup sync :" << secondsToSync << "seconds"
+            << "(Total session so far:" << totalSecondsInSession << "seconds)";
+
+        syncPlayTime(secondsToSync);
+
+        
+        m_totalSyncedSeconds = totalSecondsInSession;
     }
 }
 
 int PlayTimeTracker::getElapsedSeconds() const
 {
     using namespace std::chrono;
+
+    
     const auto now = steady_clock::now();
-    const auto elapsed = duration_cast<seconds>(now - m_lastSync);
+    const auto elapsed = duration_cast<seconds>(now - m_sessionStart);
+
     return static_cast<int>(elapsed.count());
 }
 
@@ -114,6 +128,8 @@ void PlayTimeTracker::syncPlayTime(int seconds)
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
+    qDebug() << "PlayTimeTracker: Sending sync request for" << seconds << "seconds to player" << m_playerId;
+
     QNetworkReply* reply = m_network->post(request, body);
     connect(reply, &QNetworkReply::finished, this, &PlayTimeTracker::onSyncReplyFinished);
 }
@@ -129,7 +145,16 @@ void PlayTimeTracker::onSyncReplyFinished()
     else {
         const int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (statusCode == 200) {
-            qDebug() << "PlayTimeTracker: Sync successful";
+            
+            QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+            if (doc.isObject()) {
+                QJsonObject obj = doc.object();
+                int totalMinutes = obj["totalMinutes"].toInt();
+                QString formattedTime = obj["formattedTime"].toString();
+
+                qDebug() << "PlayTimeTracker: Sync successful for player" << m_playerId
+                    << "- Total time:" << formattedTime << "(" << totalMinutes << "minutes)";
+            }
         }
         else {
             qWarning() << "PlayTimeTracker: Sync returned status" << statusCode;
@@ -138,3 +163,4 @@ void PlayTimeTracker::onSyncReplyFinished()
 
     reply->deleteLater();
 }
+

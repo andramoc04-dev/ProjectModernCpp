@@ -41,7 +41,7 @@ private:
     std::unordered_map<int, std::unique_ptr<Game>>& m_activeGames;
     int m_nextGameId = 1;
 
-    static constexpr int kLobbyTimeoutSeconds = 10;
+    static constexpr int kLobbyTimeoutSeconds = 30;
     static constexpr int kMinPlayersPerGame = 2;
     static constexpr int kMaxPlayersPerGame = 5;
 

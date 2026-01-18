@@ -16,7 +16,7 @@ Game::Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck
 void Game::ShuffleCards() {
 	std::srand(std::time(0));
 	std::vector<int> sortedCards;
-	for (int i = 2; i <= 33; i++)
+	for (int i = 2; i <= 99; i++)
 		sortedCards.push_back(i);
 
 	std::random_device rd;

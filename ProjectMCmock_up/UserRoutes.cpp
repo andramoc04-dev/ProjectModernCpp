@@ -10,7 +10,7 @@ module UserRoutes;
 
 void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
 {
-   
+    
     CROW_ROUTE(app, "/player/<int>")
         ([&storage](int id) {
         auto player = storage.GetById<User>(id);
@@ -29,7 +29,7 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
         return crow::response{ json.dump() };
             });
 
-   
+    
     CROW_ROUTE(app, "/addplayer").methods(crow::HTTPMethod::POST)
         ([&storage](const crow::request& req) {
         auto body = crow::json::load(req.body);
@@ -52,7 +52,7 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
         return crow::response(201, R"({"status":"Player created"})");
             });
 
-    
+   
     CROW_ROUTE(app, "/login").methods(crow::HTTPMethod::POST)
         ([&storage](const crow::request& req) {
         auto body = crow::json::load(req.body);
@@ -98,6 +98,7 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
 
         int seconds = (int)body["seconds"].i();
 
+        
         if (seconds < 0 || seconds > 86400) {
             return crow::response(400, R"({"error":"Invalid seconds value"})");
         }
@@ -109,20 +110,28 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
 
         User user = userOpt.value();
 
-        double hoursToAdd = seconds / 3600.0;
-        uint16_t currentHours = user.GetHoursPlayed();
-        uint16_t newHours = static_cast<uint16_t>(currentHours + std::round(hoursToAdd));
+       
+        uint16_t currentSeconds = user.GetHoursPlayed();
+        uint16_t newSeconds = currentSeconds + seconds;
 
-        user.SetHoursPlayed(newHours);
+        user.SetHoursPlayed(newSeconds);
 
         try {
             storage.UpdateUser(user);
 
+            
+            int hours = newSeconds / 3600;
+            int minutes = (newSeconds % 3600) / 60;
+
             crow::json::wvalue resp;
             resp["success"] = true;
-            resp["secondsAdded"] = seconds;
-            resp["totalHours"] = newHours;
+            resp["secondsReceived"] = seconds;
+            resp["totalSeconds"] = newSeconds;
+            resp["formattedTime"] = std::to_string(hours) + ":" +
+                (minutes < 10 ? "0" : "") + std::to_string(minutes);
             resp["message"] = "Play time updated successfully";
+
+           
 
             return crow::response(200, resp.dump());
         }
@@ -133,6 +142,7 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
         }
             });
 
+    
     CROW_ROUTE(app, "/game/<int>/player/<int>/win").methods(crow::HTTPMethod::POST)
         ([&storage](int gameId, int playerId) {
         auto userOpt = storage.GetById<User>(playerId);
@@ -176,7 +186,7 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
         }
 
         int unusedCards = (int)body["unusedCards"].i();
-        
+
         if (unusedCards < 0) {
             return crow::response(400, R"({"error":"Invalid unusedCards value"})");
         }
@@ -218,7 +228,7 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
         }
             });
 
-   
+    
     CROW_ROUTE(app, "/player/<int>/recalculate-score").methods(crow::HTTPMethod::POST)
         ([&storage](int playerId) {
         auto userOpt = storage.GetById<User>(playerId);

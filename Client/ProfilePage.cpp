@@ -56,7 +56,7 @@ void ProfilePage::onProfileReplyFinished()
 
     if (reply->error() != QNetworkReply::NoError) {
         QMessageBox::warning(this, "Network error",
-            "Could not load profile data.\n" + reply->errorString());
+            "Could not load profile data:\n" + reply->errorString());
         reply->deleteLater();
         return;
     }
@@ -74,11 +74,11 @@ void ProfilePage::onProfileReplyFinished()
         }
         else {
             QMessageBox::warning(this, "Error",
-                "Invalid response from server:\n" + parseError.errorString());
+                "Invalid server response:\n" + parseError.errorString());
         }
     }
     else if (statusCode == 404) {
-        QMessageBox::warning(this, "Error", "The player has not been found!");
+        QMessageBox::warning(this, "Error", "Player not found!");
     }
     else {
         QMessageBox::warning(this, "Server error",
@@ -93,16 +93,26 @@ void ProfilePage::updateUIWithProfileData(const QJsonObject& data)
     const QString username = data["name"].toString();
     const int score = data["score"].toInt();
     const int wins = data["wins"].toInt();
-    const int hoursPlayed = data["hoursPlayed"].toInt();
     const int unusedCards = data["unusedCards"].toInt();
+
+    
+    int totalSeconds = data["hoursPlayed"].toInt(); 
+
+    int hours = totalSeconds / 3600;        
+    int minutes = (totalSeconds % 3600) / 60; 
+
+    QString playTimeFormatted = QString("%1:%2")
+        .arg(hours)
+        .arg(minutes, 2, 10, QChar('0')); 
 
     ui->usernameLabel->setText(username);
     ui->scoreLabel->setText(QString::number(score));
     ui->winsLabel->setText(QString::number(wins));
-    ui->hoursLabel->setText(QString::number(hoursPlayed));
+    ui->hoursLabel->setText(playTimeFormatted); 
     ui->unusedLabel->setText(QString::number(unusedCards));
 
     qDebug() << "Profile data updated successfully for:" << username;
+    qDebug() << "Total seconds:" << totalSeconds << "→ Display:" << playTimeFormatted;
 }
 
 void ProfilePage::onBackButtonClicked()
