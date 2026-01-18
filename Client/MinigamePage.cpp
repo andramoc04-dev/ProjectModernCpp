@@ -139,7 +139,6 @@ void MinigamePage::submitMinigameScore(int playerId, int score, const QString& p
         InventoryPage* inventoryPage = new InventoryPage();
         inventoryPage->setAttribute(Qt::WA_DeleteOnClose);
         inventoryPage->setPlayerData(playerId, playerName, gameId);
-		inventoryPage->resetAllPowerUps();
         inventoryPage->fetchAvailablePowerUps();
         inventoryPage->show();
 

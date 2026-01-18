@@ -43,7 +43,8 @@ void InventoryPage::setPlayerData(int playerId, const QString& playerName, int g
 
 void InventoryPage::fetchAvailablePowerUps()
 {
-	QString urlString = QString("http://127.0.0.1:18080/player/%1/powerups")
+	QString urlString = QString("http://127.0.0.1:18080/game/%1/player/%2/powerups")
+		.arg(m_gameId)
 		.arg(m_playerId);
 	QUrl url(urlString);
 
@@ -51,11 +52,23 @@ void InventoryPage::fetchAvailablePowerUps()
 	request.setUrl(url);
 	QNetworkReply* reply = m_networkManager->get(request);
 
-	connect(reply, &QNetworkReply::finished, [this, reply]() {
-		if (reply->error() == QNetworkReply::NoError) {
-			QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
-			QJsonObject obj = doc.object();
+	connect(reply, &QNetworkReply::finished, [this, reply, urlString]() {
+		const QByteArray body = reply->readAll();
 
+		qDebug() << "fetchAvailablePowerUps:" << urlString;
+		qDebug() << "HTTP status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+		qDebug() << "Network error:" << reply->error() << reply->errorString();
+		qDebug() << "Body:" << body;
+		if (reply->error() == QNetworkReply::NoError) {
+			QJsonParseError parseError{};
+			QJsonDocument doc = QJsonDocument::fromJson(body, &parseError);
+			if (parseError.error != QJsonParseError::NoError) {
+				qDebug() << "JSON parse error:" << parseError.errorString();
+				reply->deleteLater();
+				return;
+			}
+
+			QJsonObject obj = doc.object();
 			QJsonArray powerUpsArray = obj["powerUps"].toArray();
 
 			std::unordered_set<QString> powerUpsValues;
@@ -72,6 +85,7 @@ void InventoryPage::fetchAvailablePowerUps()
 
 				powerUpsValues.insert(powerUpId);
 			}
+
 			showPowerUpOptions(powerUpsValues, powerUpToInventoryId);
 		}
 		reply->deleteLater();
@@ -166,30 +180,10 @@ int InventoryPage::getSelectedCount() const
 	return count;
 }
 
-void InventoryPage::resetAllPowerUps()
-{
-	QString urlString = QString("http://127.0.0.1:18080/player/%1/powerups/reset")
-		.arg(m_playerId);
-
-	QNetworkRequest request(urlString);
-	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-	QNetworkReply* reply = m_networkManager->post(request, QByteArray());
-
-	connect(reply, &QNetworkReply::finished, [reply]() {
-		if (reply->error() == QNetworkReply::NoError) {
-			qDebug() << "All power-ups reset successfully!";
-		}
-		else {
-			qDebug() << "Error resetting power-ups:" << reply->errorString();
-		}
-		reply->deleteLater();
-		});
-}
-
 void InventoryPage::equipPowerUp(int powerUpId)
 {
-	QString urlString = QString("http://127.0.0.1:18080/player/%1/powerups/%2/equip")
+	QString urlString = QString("http://127.0.0.1:18080/game/%1/player/%2/powerups/%3/equip")
+		.arg(m_gameId)
 		.arg(m_playerId)
 		.arg(powerUpId);
 
@@ -211,7 +205,8 @@ void InventoryPage::equipPowerUp(int powerUpId)
 
 void InventoryPage::unequipPowerUp(int powerUpId)
 {
-	QString urlString = QString("http://127.0.0.1:18080/player/%1/powerups/%2/unequip")
+	QString urlString = QString("http://127.0.0.1:18080/game/%1/player/%2/powerups/%3/unequip")
+		.arg(m_gameId)
 		.arg(m_playerId)
 		.arg(powerUpId);
 

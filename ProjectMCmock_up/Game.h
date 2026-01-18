@@ -47,6 +47,12 @@ public:
 	void StartTurnTimerIfNeeded();
 	void StopTurnTimer();
 	void CheckTurnTimeout();
+
+	bool EquipPowerUp(int playerId, int inventoryId, int maxEquipped = 3);
+	bool UnequipPowerUp(int playerId, int inventoryId);
+	void ResetEquippedPowerUps(int playerId);
+	bool IsPowerUpEquipped(int playerId, int inventoryId) const;
+	std::vector<int> GetEquippedInventoryIds(int playerId) const;
 private:
 	std::vector<Player> m_players;
 	std::stack<Card> m_cardsDeck;
@@ -64,5 +70,7 @@ private:
 	static const int DESCENDING_DECK_START = 100;
 	static const int ASCENDING_DECK_START = 1;
 	
+	std::unordered_map<int, std::unordered_set<int>> m_equippedInventoryIdsByPlayer;
+
 };
 

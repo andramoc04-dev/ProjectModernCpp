@@ -45,8 +45,7 @@ namespace http
 				"UserPowerUps",
 				sql::make_column("id", &Inventory::SetId, &Inventory::GetId,sql::primary_key().autoincrement()),
 				sql::make_column("userId", &Inventory::SetUserId, &Inventory::GetUserId),
-				sql::make_column("powerUpId", &Inventory::SetPowerUpId, &Inventory::GetPowerUpId),
-				sql::make_column("isEquipped", &Inventory::SetIsEquipped, &Inventory::GetIsEquipped)
+				sql::make_column("powerUpId", &Inventory::SetPowerUpId, &Inventory::GetPowerUpId)
 			)
 
 
@@ -79,13 +78,6 @@ namespace http
 		std::vector<Inventory> GetUserInventoryEntries(uint32_t userId);
 		bool UserHasPowerUp(uint32_t userId, uint32_t powerUpId);
 		int GetPowerUpCount(uint32_t userId, PowerUpType type);
-
-
-		void EquipPowerUp(uint32_t userId, uint32_t inventoryId);
-		void UnequipPowerUp(uint32_t userId, uint32_t inventoryId);
-		std::vector<PowerUp> GetEquippedPowerUps(uint32_t userId);
-		bool IsPowerUpEquipped(uint32_t userId, uint32_t powerUpId);
-
 
 		template<typename T>
 		std::optional<T> GetById(int id)

@@ -96,7 +96,6 @@ void http::UserProfiles::AddPowerUpToUser(uint32_t userId, uint32_t powerUpId)
     Inventory entry;
     entry.SetUserId(userId);
     entry.SetPowerUpId(powerUpId);
-    entry.SetIsEquipped(false);
     m_db.insert(entry);
 }
 
@@ -174,78 +173,6 @@ int http::UserProfiles::GetPowerUpCount(uint32_t userId, PowerUpType type)
     );
 
     return static_cast<int>(entries.size());
-}
-
-
-void http::UserProfiles::EquipPowerUp(uint32_t userId, uint32_t inventoryId)
-{
-    using namespace sql;
-
-    auto entries = m_db.get_all<Inventory>(
-        where(c(&Inventory::GetUserId) == userId &&
-            c(&Inventory::GetId) == inventoryId),
-        limit(1)
-    );
-
-    if (!entries.empty()) {
-        auto entry = entries[0];
-        entry.SetIsEquipped(true);
-        m_db.update(entry);
-    }
-}
-
-void http::UserProfiles::UnequipPowerUp(uint32_t userId, uint32_t inventoryId)
-{
-    using namespace sql;
-
-    auto entries = m_db.get_all<Inventory>(
-        where(c(&Inventory::GetUserId) == userId &&
-            c(&Inventory::GetId) == inventoryId),
-        limit(1)
-    );
-
-    if (!entries.empty()) {
-        auto entry = entries[0];
-        entry.SetIsEquipped(false);
-        m_db.update(entry);
-    }
-}
-
-std::vector<PowerUp> http::UserProfiles::GetEquippedPowerUps(uint32_t userId)
-{
-    using namespace sql;
-
-    auto entries = m_db.get_all<Inventory>(
-        where(c(&Inventory::GetUserId) == userId &&
-            c(&Inventory::GetIsEquipped) == true)
-    );
-
-    std::vector<PowerUp> equippedPowerUps;
-    for (const auto& entry : entries) {
-        try {
-            auto powerUp = m_db.get<PowerUp>(entry.GetPowerUpId());
-            equippedPowerUps.push_back(powerUp);
-        }
-        catch (const std::system_error&) {
-            continue;
-        }
-    }
-
-    return equippedPowerUps;
-}
-
-bool http::UserProfiles::IsPowerUpEquipped(uint32_t userId, uint32_t powerUpId)
-{
-    using namespace sql;
-
-    auto entries = m_db.get_all<Inventory>(
-        where(c(&Inventory::GetUserId) == userId &&
-            c(&Inventory::GetPowerUpId) == powerUpId &&
-            c(&Inventory::GetIsEquipped) == true),
-        limit(1)
-    );
-
-    return !entries.empty();
 }
 
 

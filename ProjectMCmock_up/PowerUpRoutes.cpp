@@ -2,6 +2,7 @@
 #include "MiniGameServer.h"
 #include "PowerUp.h"
 #include "User.h"
+#include "Game.h"
 
 void PowerUpRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserProfiles& storage)
 {
@@ -65,173 +66,159 @@ void PowerUpRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserPr
         }
             });
 
-    // ===================== RESET POWERUPS =====================
-    CROW_ROUTE(app, "/player/<int>/powerups/reset").methods(crow::HTTPMethod::POST)
-        ([&storage](int playerId) {
-        auto userOpt = storage.GetById<User>(playerId);
-        if (!userOpt.has_value()) {
-            return crow::response(404, R"({"error":"Player not found"})");
-        }
-
-        try {
-            auto inventoryEntries = storage.GetUserInventoryEntries(playerId);
-
-            for (const auto& entry : inventoryEntries) {
-                if (entry.GetIsEquipped()) {
-                    storage.UnequipPowerUp(playerId, entry.GetId());
-                }
-            }
-
-            crow::json::wvalue resp;
-            resp["success"] = true;
-            resp["message"] = "All power-ups reset to unequipped";
-            resp["playerId"] = playerId;
-
-            return crow::response{ resp.dump() };
-        }
-        catch (const std::exception& e) {
-            crow::json::wvalue errorResp;
-            errorResp["error"] = std::string("Database error: ") + e.what();
-            return crow::response(500, errorResp.dump());
-        }
-            });
-
+    
     // ===================== POWERUPS LIST =====================
-    CROW_ROUTE(app, "/player/<int>/powerups").methods(crow::HTTPMethod::GET)
-        ([&storage](int playerId) {
-        auto userOpt = storage.GetById<User>(playerId);
-        if (!userOpt.has_value()) {
-            return crow::response(404, R"({"error":"Player not found"})");
+    CROW_ROUTE(app, "/game/<int>/player/<int>/powerups").methods(crow::HTTPMethod::GET)
+        ([&gm, &storage](int gameId, int playerId) {
+        std::lock_guard<std::mutex> lk(gm.Mutex());
+
+        auto* game = gm.Get(gameId);
+        if (!game) {
+            return crow::response(404, R"({"error":"Game not found"})");
         }
 
-        try {
-            auto inventoryEntries = storage.GetUserInventoryEntries(playerId);
-
-            crow::json::wvalue resp;
-            resp["playerId"] = playerId;
-            resp["totalPowerUps"] = (int)inventoryEntries.size();
-
-            int idx = 0;
-            for (const auto& entry : inventoryEntries) {
-                auto powerUpOpt = storage.GetById<PowerUp>(entry.GetPowerUpId());
-                if (powerUpOpt) {
-                    const auto& powerUp = powerUpOpt.value();
-
-                    resp["powerUps"][idx]["inventoryId"] = entry.GetId();
-                    resp["powerUps"][idx]["powerUpId"] = powerUp.GetDatabaseId();
-                    resp["powerUps"][idx]["type"] = powerUp.GetTypeString();
-                    resp["powerUps"][idx]["name"] = powerUp.GetName();
-                    resp["powerUps"][idx]["description"] = powerUp.GetDescription();
-                    resp["powerUps"][idx]["isEquipped"] = entry.GetIsEquipped();
-                    idx++;
-                }
-            }
-
-            return crow::response{ resp.dump() };
-        }
-        catch (const std::exception& e) {
-            crow::json::wvalue errorResp;
-            errorResp["error"] = std::string("Database error: ") + e.what();
-            return crow::response(500, errorResp.dump());
-        }
-            });
-
-    // ===================== EQUIPPED POWERUPS =====================
-    CROW_ROUTE(app, "/player/<int>/powerups/equipped").methods(crow::HTTPMethod::GET)
-        ([&storage](int playerId) {
-        auto userOpt = storage.GetById<User>(playerId);
-        if (!userOpt.has_value()) {
-            return crow::response(404, R"({"error":"Player not found"})");
-        }
-
-        try {
-            auto equippedPowerUps = storage.GetEquippedPowerUps(playerId);
-
-            crow::json::wvalue resp;
-            resp["playerId"] = playerId;
-            resp["totalEquipped"] = (int)equippedPowerUps.size();
-
-            int idx = 0;
-            for (const auto& powerUp : equippedPowerUps) {
-                resp["powerUps"][idx]["id"] = powerUp.GetDatabaseId();
-                resp["powerUps"][idx]["type"] = powerUp.GetTypeString();
-                resp["powerUps"][idx]["name"] = powerUp.GetName();
-                resp["powerUps"][idx]["description"] = powerUp.GetDescription();
-                idx++;
-            }
-
-            return crow::response{ resp.dump() };
-        }
-        catch (const std::exception& e) {
-            crow::json::wvalue errorResp;
-            errorResp["error"] = std::string("Database error: ") + e.what();
-            return crow::response(500, errorResp.dump());
-        }
-            });
-
-    // ===================== EQUIP =====================
-    CROW_ROUTE(app, "/player/<int>/powerups/<int>/equip").methods(crow::HTTPMethod::POST)
-        ([&storage](int playerId, int inventoryId) {
         auto userOpt = storage.GetById<User>(playerId);
         if (!userOpt.has_value()) {
             return crow::response(404, R"({"error":"Player not found"})");
         }
 
         auto inventoryEntries = storage.GetUserInventoryEntries(playerId);
-        bool found = false;
+
+        crow::json::wvalue resp;
+        resp["gameId"] = gameId;
+        resp["playerId"] = playerId;
+        resp["totalPowerUps"] = (int)inventoryEntries.size();
+
+        int idx = 0;
         for (const auto& entry : inventoryEntries) {
-            if (entry.GetId() == inventoryId) {
-                found = true;
-                break;
+            auto powerUpOpt = storage.GetById<PowerUp>((int)entry.GetPowerUpId());
+            if (!powerUpOpt.has_value()) {
+                continue;
             }
+
+            const auto& powerUp = powerUpOpt.value();
+            resp["powerUps"][idx]["inventoryId"] = entry.GetId();
+            resp["powerUps"][idx]["powerUpId"] = powerUp.GetDatabaseId();
+            resp["powerUps"][idx]["type"] = powerUp.GetTypeString();
+            resp["powerUps"][idx]["name"] = powerUp.GetName();
+            resp["powerUps"][idx]["description"] = powerUp.GetDescription();
+            resp["powerUps"][idx]["isEquipped"] = game->IsPowerUpEquipped(playerId, (int)entry.GetId());
+            idx++;
         }
 
-        if (!found) {
-            return crow::response(400, R"({"error":"Player does not own this power-up"})");
-        }
-
-        try {
-            storage.EquipPowerUp(playerId, inventoryId);
-
-            crow::json::wvalue resp;
-            resp["success"] = true;
-            resp["message"] = "Power-up equipped successfully";
-            resp["playerId"] = playerId;
-            resp["inventoryId"] = inventoryId;
-
-            return crow::response{ resp.dump() };
-        }
-        catch (const std::exception& e) {
-            crow::json::wvalue errorResp;
-            errorResp["error"] = std::string("Database error: ") + e.what();
-            return crow::response(500, errorResp.dump());
-        }
+        return crow::response{ resp.dump() };
             });
+    CROW_ROUTE(app, "/game/<int>/player/<int>/powerups/equipped").methods(crow::HTTPMethod::GET)
+        ([&gm, &storage](int gameId, int playerId) {
+        std::lock_guard<std::mutex> lk(gm.Mutex());
 
-    // ===================== UNEQUIP =====================
-    CROW_ROUTE(app, "/player/<int>/powerups/<int>/unequip").methods(crow::HTTPMethod::POST)
-        ([&storage](int playerId, int inventoryId) {
+        auto* game = gm.Get(gameId);
+        if (!game) {
+            return crow::response(404, R"({"error":"Game not found"})");
+        }
+
         auto userOpt = storage.GetById<User>(playerId);
         if (!userOpt.has_value()) {
             return crow::response(404, R"({"error":"Player not found"})");
         }
 
-        try {
-            storage.UnequipPowerUp(playerId, inventoryId);
+        crow::json::wvalue resp;
+        resp["gameId"] = gameId;
+        resp["playerId"] = playerId;
 
-            crow::json::wvalue resp;
-            resp["success"] = true;
-            resp["message"] = "Power-up unequipped successfully";
-            resp["playerId"] = playerId;
-            resp["inventoryId"] = inventoryId;
+        const auto equippedInventoryIds = game->GetEquippedInventoryIds(playerId);
+        resp["totalEquipped"] = (int)equippedInventoryIds.size();
 
-            return crow::response{ resp.dump() };
+        int idx = 0;
+        for (int inventoryId : equippedInventoryIds) {
+            auto entryOpt = storage.GetById<Inventory>(inventoryId);
+            if (!entryOpt.has_value()) {
+                continue;
+            }
+
+            const auto& entry = entryOpt.value();
+            if (entry.GetUserId() != (uint32_t)playerId) {
+                continue;
+            }
+
+            auto powerUpOpt = storage.GetById<PowerUp>((int)entry.GetPowerUpId());
+            if (!powerUpOpt.has_value()) {
+                continue;
+            }
+
+            const auto& powerUp = powerUpOpt.value();
+            resp["powerUps"][idx]["inventoryId"] = inventoryId;
+            resp["powerUps"][idx]["id"] = powerUp.GetDatabaseId();
+            resp["powerUps"][idx]["type"] = powerUp.GetTypeString();
+            resp["powerUps"][idx]["name"] = powerUp.GetName();
+            resp["powerUps"][idx]["description"] = powerUp.GetDescription();
+            idx++;
         }
-        catch (const std::exception& e) {
-            crow::json::wvalue errorResp;
-            errorResp["error"] = std::string("Database error: ") + e.what();
-            return crow::response(500, errorResp.dump());
+
+        return crow::response{ resp.dump() };
+            });
+    CROW_ROUTE(app, "/game/<int>/player/<int>/powerups/<int>/equip").methods(crow::HTTPMethod::POST)
+        ([&gm, &storage](int gameId, int playerId, int inventoryId) {
+        std::lock_guard<std::mutex> lk(gm.Mutex());
+
+        auto* game = gm.Get(gameId);
+        if (!game) {
+            return crow::response(404, R"({"error":"Game not found"})");
         }
+
+        auto userOpt = storage.GetById<User>(playerId);
+        if (!userOpt.has_value()) {
+            return crow::response(404, R"({"error":"Player not found"})");
+        }
+
+        auto entryOpt = storage.GetById<Inventory>(inventoryId);
+        if (!entryOpt.has_value() || entryOpt->GetUserId() != (uint32_t)playerId) {
+            return crow::response(400, R"({"error":"Player does not own this power-up"})");
+        }
+
+        const int maxEquipped = 3;
+        if (!game->EquipPowerUp(playerId, inventoryId, maxEquipped)) {
+            return crow::response(400, R"({"error":"Too many equipped power-ups"})");
+        }
+
+        crow::json::wvalue resp;
+        resp["success"] = true;
+        resp["message"] = "Power-up equipped successfully";
+        resp["gameId"] = gameId;
+        resp["playerId"] = playerId;
+        resp["inventoryId"] = inventoryId;
+        return crow::response{ resp.dump() };
+            });
+
+    // ===================== UNEQUIP (GAME) =====================
+    CROW_ROUTE(app, "/game/<int>/player/<int>/powerups/<int>/unequip").methods(crow::HTTPMethod::POST)
+        ([&gm, &storage](int gameId, int playerId, int inventoryId) {
+        std::lock_guard<std::mutex> lk(gm.Mutex());
+
+        auto* game = gm.Get(gameId);
+        if (!game) {
+            return crow::response(404, R"({"error":"Game not found"})");
+        }
+
+        auto userOpt = storage.GetById<User>(playerId);
+        if (!userOpt.has_value()) {
+            return crow::response(404, R"({"error":"Player not found"})");
+        }
+
+        auto entryOpt = storage.GetById<Inventory>(inventoryId);
+        if (!entryOpt.has_value() || entryOpt->GetUserId() != (uint32_t)playerId) {
+            return crow::response(400, R"({"error":"Player does not own this power-up"})");
+        }
+
+        game->UnequipPowerUp(playerId, inventoryId);
+
+        crow::json::wvalue resp;
+        resp["success"] = true;
+        resp["message"] = "Power-up unequipped successfully";
+        resp["gameId"] = gameId;
+        resp["playerId"] = playerId;
+        resp["inventoryId"] = inventoryId;
+        return crow::response{ resp.dump() };
             });
 
     // ===================== USE POWERUP IN GAME =====================

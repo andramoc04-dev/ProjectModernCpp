@@ -2,13 +2,11 @@
 #include <ranges>
 #include <deque>
 
-Game::Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck, const std::shared_ptr<Chat>& chat):
+Game::Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck, const std::shared_ptr<Chat>& chat) :
 	m_players(players), m_cardsDeck(cardsDeck), m_chat(std::move(chat)), m_descendingDeck1(DESCENDING_DECK_START), m_descendingDeck2(DESCENDING_DECK_START),
 	m_ascendingDeck1(ASCENDING_DECK_START), m_ascendingDeck2(ASCENDING_DECK_START), m_areCardsDealt(false), m_areCardsShuffled(false), m_currentPlayerIndex(0)
 {
-	 
 	m_players.reserve(5);
-
 }
 
 void Game::ShuffleCards()
@@ -231,3 +229,59 @@ void Game::CheckTurnTimeout()
 	m_gameLost = true;
 }
 
+bool Game::EquipPowerUp(int playerId, int inventoryId, int maxEquipped)
+{
+	auto& equipped = m_equippedInventoryIdsByPlayer[playerId];
+	if (equipped.contains(inventoryId)) {
+		return true;
+	}
+
+	if (static_cast<int>(equipped.size()) >= maxEquipped) {
+		return false;
+	}
+
+	equipped.insert(inventoryId);
+	return true;
+}
+
+bool Game::UnequipPowerUp(int playerId, int inventoryId)
+{
+	auto it = m_equippedInventoryIdsByPlayer.find(playerId);
+	if (it == m_equippedInventoryIdsByPlayer.end()) {
+		return false;
+	}
+
+	return it->second.erase(inventoryId) > 0;
+}
+
+void Game::ResetEquippedPowerUps(int playerId)
+{
+	m_equippedInventoryIdsByPlayer.erase(playerId);
+}
+
+bool Game::IsPowerUpEquipped(int playerId, int inventoryId) const
+{
+	auto it = m_equippedInventoryIdsByPlayer.find(playerId);
+	if (it == m_equippedInventoryIdsByPlayer.end()) {
+		return false;
+	}
+
+	return it->second.contains(inventoryId);
+}
+
+std::vector<int> Game::GetEquippedInventoryIds(int playerId) const
+{
+	std::vector<int> result;
+
+	auto it = m_equippedInventoryIdsByPlayer.find(playerId);
+	if (it == m_equippedInventoryIdsByPlayer.end()) {
+		return result;
+	}
+
+	result.reserve(it->second.size());
+	for (int id : it->second) {
+		result.push_back(id);
+	}
+
+	return result;
+}

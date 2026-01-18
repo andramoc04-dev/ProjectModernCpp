@@ -87,7 +87,8 @@ GamePage::~GamePage()
 }
 void GamePage::fetchEquippedPowerUps()
 {
-	QString urlString = QString("http://127.0.0.1:18080/player/%1/powerups/equipped")
+	QString urlString = QString("http://127.0.0.1:18080/game/%1/player/%2/powerups/equipped")
+		.arg(m_gameId)
 		.arg(m_playerId);
 	QUrl url(urlString);
 
@@ -360,7 +361,6 @@ void GamePage::fetchGameState()
 			
 			int unusedCards = 0;
 			if (gameStatus == "lost") {
-				// Caută jucătorul curent în array-ul de players
 				QJsonArray players = obj["players"].toArray();
 				for (const auto& playerVal : players) {
 					QJsonObject playerObj = playerVal.toObject();
