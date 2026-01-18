@@ -41,25 +41,25 @@ void EndgamePage::showEvent(QShowEvent* event)
 
     // Trimite rezultatul jocului doar o singur? dat?
     if (!m_resultSubmitted) {
-        submitGameResult();
+        SubmitGameResult();
     }
 }
 
-void EndgamePage::submitGameResult()
+void EndgamePage::SubmitGameResult()
 {
     qDebug() << "Submitting game result for player" << m_playerId
         << "- Result:" << m_gameEnding
         << "- Unused cards:" << m_unusedCardsCount;
 
     if (m_gameEnding == "won") {
-        recordWin();
+        RecordWin();
     }
     else {
-        recordLoss();
+        RecordLoss();
     }
 }
 
-void EndgamePage::recordWin()
+void EndgamePage::RecordWin()
 {
     const QUrl url(m_serverUrl + "/game/" + QString::number(m_gameId) +
         "/player/" + QString::number(m_playerId) + "/win");
@@ -70,10 +70,10 @@ void EndgamePage::recordWin()
     qDebug() << "Recording win at:" << url.toString();
 
     QNetworkReply* reply = m_network->post(request, QByteArray());
-    connect(reply, &QNetworkReply::finished, this, &EndgamePage::onWinReplyFinished);
+    connect(reply, &QNetworkReply::finished, this, &EndgamePage::OnWinReplyFinished);
 }
 
-void EndgamePage::recordLoss()
+void EndgamePage::RecordLoss()
 {
     const QUrl url(m_serverUrl + "/game/" + QString::number(m_gameId) +
         "/player/" + QString::number(m_playerId) + "/loss");
@@ -91,10 +91,10 @@ void EndgamePage::recordLoss()
     qDebug() << "Unused cards to record:" << m_unusedCardsCount;
 
     QNetworkReply* reply = m_network->post(request, body);
-    connect(reply, &QNetworkReply::finished, this, &EndgamePage::onLossReplyFinished);
+    connect(reply, &QNetworkReply::finished, this, &EndgamePage::OnLossReplyFinished);
 }
 
-void EndgamePage::onWinReplyFinished()
+void EndgamePage::OnWinReplyFinished()
 {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
     if (!reply) return;
@@ -112,7 +112,7 @@ void EndgamePage::onWinReplyFinished()
         m_resultSubmitted = true;
 
         // Dup? ce am înregistrat rezultatul, recalcul?m scorul
-        recalculateScore();
+        RecalculateScore();
     }
     else {
         const QByteArray body = reply->readAll();
@@ -122,7 +122,7 @@ void EndgamePage::onWinReplyFinished()
     reply->deleteLater();
 }
 
-void EndgamePage::onLossReplyFinished()
+void EndgamePage::OnLossReplyFinished()
 {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
     if (!reply) return;
@@ -140,7 +140,7 @@ void EndgamePage::onLossReplyFinished()
         m_resultSubmitted = true;
 
         // Dup? ce am înregistrat rezultatul, recalcul?m scorul
-        recalculateScore();
+        RecalculateScore();
     }
     else {
         const QByteArray body = reply->readAll();
@@ -150,7 +150,7 @@ void EndgamePage::onLossReplyFinished()
     reply->deleteLater();
 }
 
-void EndgamePage::recalculateScore()
+void EndgamePage::RecalculateScore()
 {
     const QUrl url(m_serverUrl + "/player/" + QString::number(m_playerId) + "/recalculate-score");
 
@@ -160,10 +160,10 @@ void EndgamePage::recalculateScore()
     qDebug() << "Recalculating score at:" << url.toString();
 
     QNetworkReply* reply = m_network->post(request, QByteArray());
-    connect(reply, &QNetworkReply::finished, this, &EndgamePage::onRecalculateScoreFinished);
+    connect(reply, &QNetworkReply::finished, this, &EndgamePage::OnRecalculateScoreFinished);
 }
 
-void EndgamePage::onRecalculateScoreFinished()
+void EndgamePage::OnRecalculateScoreFinished()
 {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
     if (!reply) return;
@@ -191,10 +191,6 @@ void EndgamePage::onRecalculateScoreFinished()
 
             m_scoreRecalculated = true;
 
-            // Op?ional: Afi?eaz? scorul nou pe UI dac? ai un label pentru asta
-            // if (auto* scoreLabel = findChild<QLabel*>("newScoreLabel")) {
-            //     scoreLabel->setText(QString("Your score: %1").arg(newScore));
-            // }
         }
     }
     else {
@@ -204,7 +200,7 @@ void EndgamePage::onRecalculateScoreFinished()
     reply->deleteLater();
 }
 
-void EndgamePage::onBackToMenuClicked()
+void EndgamePage::OnBackToMenuClicked()
 {
     // Întoarce-te la meniu
     MenuPage* menuPage = new MenuPage(m_playerId, m_playerName, nullptr);

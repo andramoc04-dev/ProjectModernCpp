@@ -127,9 +127,8 @@ bool PowerUp::Use(Player& user, Game& game, int targetPlayerId, int targetCardVa
     case PowerUpType::STEAL_CARD:
         if (targetPlayerId == -1) {
             return false;
-        }
-        auto result = ExecuteStealCard(user, game, targetPlayerId);
-        success = result.has_value();
+        }      
+        success = ExecuteStealCard(user, game, targetPlayerId).has_value();
         break;
     }
 

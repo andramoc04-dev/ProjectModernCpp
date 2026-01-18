@@ -26,14 +26,14 @@ GamePage::GamePage(QWidget *parent)
 	net = new QNetworkAccessManager(this);
 
 	connect(ui.sendButton, &QPushButton::clicked,
-		this, &GamePage::onSendClicked);
+		this, &GamePage::OnSendClicked);
 
 	// pornește timerele DLL
 	m_chatTimer.start(1);   // 1 sec
 	m_stateTimer.start(2);  // 1 sec
 
 	m_pollTimer = new QTimer(this);
-	connect(m_pollTimer, &QTimer::timeout, this, &GamePage::checkTimers);
+	connect(m_pollTimer, &QTimer::timeout, this, &GamePage::CheckTimers);
 	m_pollTimer->start(50);
 
 	ui.chatInput->setStyleSheet(
@@ -54,17 +54,17 @@ GamePage::GamePage(QWidget *parent)
 		"   font-size: 14pt;"
 	);
 
-	updatePileVisual(ui.AscendingDeck1Number, 1);
-	updatePileVisual(ui.AscendingDeck2Number, 1);
-	updatePileVisual(ui.DescendingDeck1Number, 100);
-	updatePileVisual(ui.DescendingDeck2Number, 100);
+	UpdatePileVisual(ui.AscendingDeck1Number, 1);
+	UpdatePileVisual(ui.AscendingDeck2Number, 1);
+	UpdatePileVisual(ui.DescendingDeck1Number, 100);
+	UpdatePileVisual(ui.DescendingDeck2Number, 100);
 	
 }
 
 GamePage::GamePage(int playerId,const QString& playerName, int gameId, QWidget* parent) : GamePage(parent)
 {
-	initializeGame(playerId,playerName, gameId);
-	shuffleDeck();
+	InitializeGame(playerId,playerName, gameId);
+	ShuffleDeck();
 }
 
 GamePage::~GamePage()
@@ -85,7 +85,7 @@ GamePage::~GamePage()
 		m_stealCardWidget = nullptr;
 	}
 }
-void GamePage::fetchEquippedPowerUps()
+void GamePage::FetchEquippedPowerUps()
 {
 	QString urlString = QString("http://127.0.0.1:18080/game/%1/player/%2/powerups/equipped")
 		.arg(m_gameId)
@@ -123,7 +123,7 @@ void GamePage::fetchEquippedPowerUps()
 			}
 
 			qDebug() << "Power-ups găsite:" << equippedPowerUpIds.size();
-			showPowerUps(equippedPowerUpIds);
+			ShowPowerUps(equippedPowerUpIds);
 		}
 		else {
 			qDebug() << "Error fetching equipped power-ups:" << reply->errorString();
@@ -161,7 +161,7 @@ void GamePage::FetchHand()
 			}
 
 			ShowCards(cardsValues);
-			fetchGameState();
+			FetchGameState();
 		}
 		else {
 			qDebug() << "Error fetching hand:" << reply->errorString();
@@ -227,7 +227,7 @@ void GamePage::ShowCards(const std::vector<int>& cardsValues)
 		connect(button, &QPushButton::clicked, this, [=]() {
 			if (m_isPowerUpActive) {
 				if (m_activePowerUpType == PowerUpType::DISCARD_CARD) {
-					usePowerUp(m_activePowerUpId, -1, cardValue, -1);
+					UsePowerUp(m_activePowerUpId, -1, cardValue, -1);
 					m_isPowerUpActive = false;
 					m_activePowerUpId = -1;
 					m_activePowerUpType = PowerUpType::UNKNOWN;
@@ -252,7 +252,7 @@ void GamePage::ShowCards(const std::vector<int>& cardsValues)
 	}
 }
 
-void GamePage::updatePileVisual(QLabel* pileLabel, int cardValue)
+void GamePage::UpdatePileVisual(QLabel* pileLabel, int cardValue)
 {
 	int pileIndex = -1;
 	if (pileLabel == ui.DescendingDeck1Number) pileIndex = 0;
@@ -302,7 +302,7 @@ void GamePage::updatePileVisual(QLabel* pileLabel, int cardValue)
 }
 
 
-void GamePage::enablePowerUps(bool enabled)
+void GamePage::EnablePowerUps(bool enabled)
 {
 	// Parcurge toate widget-urile din powerupsGrid și activează/dezactivează butoanele
 	for (int i = 0; i < ui.powerupsGrid->count(); ++i) {
@@ -325,7 +325,7 @@ void GamePage::enablePowerUps(bool enabled)
 	}
 }
 
-void GamePage::fetchGameState()
+void GamePage::FetchGameState()
 {
 	if (m_isFetchingState) return;
 
@@ -375,7 +375,7 @@ void GamePage::fetchGameState()
 				}
 			}
 			m_currentUnusedCards = unusedCards;
-			openEndgamePage(gameStatus);
+			OpenEndgamePage(gameStatus);
 			reply->deleteLater();
 			return;
 
@@ -394,7 +394,7 @@ void GamePage::fetchGameState()
 		ui.deckButton->setEnabled(m_isMyTurn);
 
 		// Apelăm enablePowerUps pentru a actualiza butoanele existente
-		enablePowerUps(m_isMyTurn);
+		EnablePowerUps(m_isMyTurn);
 
 		QJsonArray players = obj["players"].toArray();
 		m_allPlayerNames.clear(); // Golim lista veche
@@ -412,10 +412,10 @@ void GamePage::fetchGameState()
 		}
 
 		QJsonArray piles = obj["piles"].toArray();
-		updatePileVisual(ui.DescendingDeck1Number, piles[0].toInt());
-		updatePileVisual(ui.DescendingDeck2Number, piles[1].toInt());
-		updatePileVisual(ui.AscendingDeck1Number, piles[2].toInt());
-		updatePileVisual(ui.AscendingDeck2Number, piles[3].toInt());
+		UpdatePileVisual(ui.DescendingDeck1Number, piles[0].toInt());
+		UpdatePileVisual(ui.DescendingDeck2Number, piles[1].toInt());
+		UpdatePileVisual(ui.AscendingDeck1Number, piles[2].toInt());
+		UpdatePileVisual(ui.AscendingDeck2Number, piles[3].toInt());
 
 		FetchHand();
 
@@ -423,7 +423,7 @@ void GamePage::fetchGameState()
 		});
 }
 
-void GamePage::showPowerUps(const std::unordered_set<int>& equippedPowerUpIds)
+void GamePage::ShowPowerUps(const std::unordered_set<int>& equippedPowerUpIds)
 {
 	QLayoutItem* item;
 	while ((item = ui.powerupsGrid->takeAt(0)) != nullptr) {
@@ -473,7 +473,7 @@ void GamePage::showPowerUps(const std::unordered_set<int>& equippedPowerUpIds)
 		connect(button, &QPushButton::clicked, [this, powerUpId]() {
 			// transformăm ID-ul în enum
 			PowerUpType type = static_cast<PowerUpType>(powerUpId);
-			onPowerUpClicked(powerUpId, type);
+			OnPowerUpClicked(powerUpId, type);
 			});
 
 
@@ -487,7 +487,7 @@ void GamePage::showPowerUps(const std::unordered_set<int>& equippedPowerUpIds)
 	qDebug() << "Displayed" << equippedPowerUpIds.size() << "equipped power-ups vertically";
 }
 
-void GamePage::shuffleDeck()
+void GamePage::ShuffleDeck()
 {
 	QJsonObject obj;
 	obj["gameId"] = m_gameId;
@@ -554,7 +554,7 @@ void GamePage::DistributeCards()
 
 
 
-void GamePage::initializeGame(int playerId,const QString& playerName, int gameId)
+void GamePage::InitializeGame(int playerId,const QString& playerName, int gameId)
 {
 	m_playerId = playerId;
 	m_playerName = playerName;
@@ -566,30 +566,30 @@ void GamePage::initializeGame(int playerId,const QString& playerName, int gameId
 
 
 	connect(ui.DescendingCardPlacer1, &QPushButton::clicked, this, [=]() {
-		onPileClicked(0, ui.DescendingDeck1Number);
+		OnPileClicked(0, ui.DescendingDeck1Number);
 		});
 	connect(ui.DescendingCardPlacer2, &QPushButton::clicked, this, [=]() {
-		onPileClicked(1, ui.DescendingDeck2Number);
+		OnPileClicked(1, ui.DescendingDeck2Number);
 		});
 	connect(ui.AscendingCardPlacer1, &QPushButton::clicked, this, [=]() {
-		onPileClicked(2, ui.AscendingDeck1Number);
+		OnPileClicked(2, ui.AscendingDeck1Number);
 		});
 	connect(ui.AscendingCardPlacer2, &QPushButton::clicked, this, [=]() {
-		onPileClicked(3, ui.AscendingDeck2Number);
+		OnPileClicked(3, ui.AscendingDeck2Number);
 		});
 
-	connect(ui.deckButton, &QPushButton::clicked, this, &GamePage::onDrawCardClicked);
+	connect(ui.deckButton, &QPushButton::clicked, this, &GamePage::OnDrawCardClicked);
 
-	updatePileVisual(ui.AscendingDeck1Number, 1);
-	updatePileVisual(ui.AscendingDeck2Number, 1);
-	updatePileVisual(ui.DescendingDeck1Number, 100);
-	updatePileVisual(ui.DescendingDeck2Number, 100);
+	UpdatePileVisual(ui.AscendingDeck1Number, 1);
+	UpdatePileVisual(ui.AscendingDeck2Number, 1);
+	UpdatePileVisual(ui.DescendingDeck1Number, 100);
+	UpdatePileVisual(ui.DescendingDeck2Number, 100);
 
 	//fetchGameState();
-	fetchEquippedPowerUps();
+	FetchEquippedPowerUps();
 }
 
-void GamePage::onSendClicked()
+void GamePage::OnSendClicked()
 {
 	QString text = ui.chatInput->text().trimmed();
 	if (text.isEmpty()) return;
@@ -610,7 +610,7 @@ void GamePage::onSendClicked()
 }
 
 
-void GamePage::onPileClicked(int pileId, QLabel* pileLabel)
+void GamePage::OnPileClicked(int pileId, QLabel* pileLabel)
 {
 
 	if (m_selectedCardValue == -1) {
@@ -620,7 +620,7 @@ void GamePage::onPileClicked(int pileId, QLabel* pileLabel)
 
 	// Verifică dacă Wild Card este activ
 	if (m_isPowerUpActive && m_activePowerUpType == PowerUpType::PLACE_ANY_CARD) {
-		usePowerUp(m_activePowerUpId, -1, m_selectedCardValue, pileId);
+		UsePowerUp(m_activePowerUpId, -1, m_selectedCardValue, pileId);
 		m_isPowerUpActive = false;
 		m_activePowerUpId = -1;
 		m_activePowerUpType = PowerUpType::UNKNOWN;
@@ -649,7 +649,7 @@ void GamePage::onPileClicked(int pileId, QLabel* pileLabel)
 			int newPileValue = doc["newPileValue"].toInt();
 			int cardsPlaced = respObj["cardsPlacedThisTurn"].toInt();
 
-			updatePileVisual(pileLabel, newPileValue);
+			UpdatePileVisual(pileLabel, newPileValue);
 			m_selectedCardValue = -1;
 			m_cardsPlacedThisTurn = cardsPlaced;
 			FetchHand();
@@ -663,7 +663,7 @@ void GamePage::onPileClicked(int pileId, QLabel* pileLabel)
 
 }
 
-void GamePage::onDrawCardClicked()
+void GamePage::OnDrawCardClicked()
 {
 	QNetworkRequest endTurnReq(QUrl(QString("http://127.0.0.1:18080/game/%1/player/%2/endturn")
 		.arg(m_gameId).arg(m_playerId)));
@@ -703,21 +703,21 @@ void GamePage::onDrawCardClicked()
 		});
 }
 
-void GamePage::checkTimers()
+void GamePage::CheckTimers()
 {	// Verifică dacă timer-ul de chat a expirat
 	if (m_chatTimer.expired()) {
-		fetchMessages();
+		FetchMessages();
 		m_chatTimer.start(1);  // Restart pentru următorul ciclu
 	}
 
 	// Verifică dacă timer-ul de game state a expirat
 	if (m_stateTimer.expired()) {
-		fetchGameState();
+		FetchGameState();
 		m_stateTimer.start(2);  // Restart pentru următorul ciclu
 	}
 }
 
-void GamePage::openEndgamePage(QString gameStatus)
+void GamePage::OpenEndgamePage(QString gameStatus)
 {
 	bool hasProtection = false;
 
@@ -741,7 +741,7 @@ void GamePage::openEndgamePage(QString gameStatus)
 	this->deleteLater();
 }
 
-void GamePage::onPowerUpClicked(int powerUpId, PowerUpType powerUpType)
+void GamePage::OnPowerUpClicked(int powerUpId, PowerUpType powerUpType)
 {
 	qDebug() << "Power-up clicked:" << powerUpId << "Type:" << static_cast<int>(powerUpType);
 
@@ -757,14 +757,14 @@ void GamePage::onPowerUpClicked(int powerUpId, PowerUpType powerUpType)
 
 	case PowerUpType::SKIP_TURN:
 		// Folosește imediat power-up-ul
-		usePowerUp(powerUpId);
+		UsePowerUp(powerUpId);
 		m_isPowerUpActive = false;
 		m_activePowerUpId = -1;
 		m_activePowerUpType = PowerUpType::UNKNOWN;
 		break;
 
 	case PowerUpType::STEAL_CARD:
-		showStealCardDialog();
+		ShowStealCardDialog();
 		break;
 
 	case PowerUpType::PLACE_ANY_CARD:
@@ -774,7 +774,7 @@ void GamePage::onPowerUpClicked(int powerUpId, PowerUpType powerUpType)
 
 	case PowerUpType::NO_SCORE_LOSS:
 		// Acest power-up se activează automat la pierderea jocului
-		usePowerUp(powerUpId);
+		UsePowerUp(powerUpId);
 		m_isPowerUpActive = false;
 		m_activePowerUpId = -1;
 		m_activePowerUpType = PowerUpType::UNKNOWN;
@@ -791,7 +791,7 @@ void GamePage::onPowerUpClicked(int powerUpId, PowerUpType powerUpType)
 	}
 }
 
-void GamePage::usePowerUp(int powerUpId, int targetPlayerId, int targetCardValue, int targetPileId)
+void GamePage::UsePowerUp(int powerUpId, int targetPlayerId, int targetCardValue, int targetPileId)
 {
 	QJsonObject obj;
 	obj["powerUpId"] = powerUpId;
@@ -828,12 +828,12 @@ void GamePage::usePowerUp(int powerUpId, int targetPlayerId, int targetCardValue
 
 			// Refresh hand and equipped power-ups
 			FetchHand();
-			fetchEquippedPowerUps();
+			FetchEquippedPowerUps();
 
 			// Dacă a fost Skip Turn, refresh game state
 			// Dacă vrei să verifici dacă e Skip Turn:
 			if (static_cast<PowerUpType>(powerUpId) == PowerUpType::SKIP_TURN) {
-				fetchGameState();
+				FetchGameState();
 			}
 
 		}
@@ -847,7 +847,7 @@ void GamePage::usePowerUp(int powerUpId, int targetPlayerId, int targetCardValue
 		});
 }
 
-void GamePage::showStealCardDialog()
+void GamePage::ShowStealCardDialog()
 {
 	// Creează widget-ul pentru steal card dacă nu există
 	if (!m_stealCardWidget) {
@@ -932,8 +932,8 @@ void GamePage::showStealCardDialog()
 			QPushButton* playerBtn = new QPushButton(username, m_stealCardWidget);
 			connect(playerBtn, &QPushButton::clicked, [this, playerId, username]() {
 				qDebug() << "Stealing from player:" << username << "ID:" << playerId;
-				usePowerUp(m_activePowerUpId, playerId, -1, -1);
-				hideStealCardDialog();
+				UsePowerUp(m_activePowerUpId, playerId, -1, -1);
+				HideStealCardDialog();
 				m_isPowerUpActive = false;
 				m_activePowerUpId = -1;
 				m_activePowerUpType = PowerUpType::UNKNOWN;
@@ -953,7 +953,7 @@ void GamePage::showStealCardDialog()
 			"}"
 		);
 		connect(cancelBtn, &QPushButton::clicked, this, [this]() {
-			hideStealCardDialog();
+			HideStealCardDialog();
 			m_isPowerUpActive = false;
 			m_activePowerUpId = -1;
 			m_activePowerUpType = PowerUpType::UNKNOWN;
@@ -976,7 +976,7 @@ void GamePage::showStealCardDialog()
 		});
 }
 
-void GamePage::hideStealCardDialog()
+void GamePage::HideStealCardDialog()
 {
 	if (m_stealCardWidget) {
 		m_stealCardWidget->hide();
@@ -984,7 +984,7 @@ void GamePage::hideStealCardDialog()
 }
 
 
-void GamePage::fetchMessages()
+void GamePage::FetchMessages()
 {
 	QNetworkRequest req(QUrl(
 		QString("http://127.0.0.1:18080/game/%1/chat/messages")

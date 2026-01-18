@@ -28,26 +28,26 @@ public:
 
 	void FetchHand();
 	void ShowCards(const std::vector<int>& cardsValues);
-	void shuffleDeck();
+	void ShuffleDeck();
 	void DistributeCards();
-	void updatePileVisual(QLabel* pileLabel, int cardValue);
-	void fetchGameState();
-	void showPowerUps(const std::unordered_set<int>& equippedPowerUpIds);
-	void fetchEquippedPowerUps();
+	void UpdatePileVisual(QLabel* pileLabel, int cardValue);
+	void FetchGameState();
+	void ShowPowerUps(const std::unordered_set<int>& equippedPowerUpIds);
+	void FetchEquippedPowerUps();
 
 private slots:
-	void onSendClicked();
-	void fetchMessages();
-	void onPileClicked(int pileId, QLabel* pileLabel);
-	void onDrawCardClicked();
-	void checkTimers();
-	void openEndgamePage(QString gameStatus);
+	void OnSendClicked();
+	void FetchMessages();
+	void OnPileClicked(int pileId, QLabel* pileLabel);
+	void OnDrawCardClicked();
+	void CheckTimers();
+	void OpenEndgamePage(QString gameStatus);
 
-	void onPowerUpClicked(int powerUpId, PowerUpType powerUpType);
-	void usePowerUp(int powerUpId, int targetPlayerId = INVALID_ID, int targetCardValue = INVALID_CARD_VALUE, int targetPileId = INVALID_PILE);
-	void showStealCardDialog();
-	void hideStealCardDialog();
-	void enablePowerUps(bool enabled);
+	void OnPowerUpClicked(int powerUpId, PowerUpType powerUpType);
+	void UsePowerUp(int powerUpId, int targetPlayerId = INVALID_ID, int targetCardValue = INVALID_CARD_VALUE, int targetPileId = INVALID_PILE);
+	void ShowStealCardDialog();
+	void HideStealCardDialog();
+	void EnablePowerUps(bool enabled);
 
 private:
 	Ui::GameClass ui;
@@ -95,6 +95,6 @@ private:
 
 	QString m_playerName;
 
-	void initializeGame(int playerId, const QString& playerName, int gameId);
+	void InitializeGame(int playerId, const QString& playerName, int gameId);
 	std::unique_ptr<EndgamePage> endgamePage;
 };

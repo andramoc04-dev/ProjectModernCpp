@@ -19,16 +19,16 @@ protected:
     void showEvent(QShowEvent* event) override;
 
 private slots:
-    void onWinReplyFinished();
-    void onLossReplyFinished();
-    void onRecalculateScoreFinished();
-    void onBackToMenuClicked();
+    void OnWinReplyFinished();
+    void OnLossReplyFinished();
+    void OnRecalculateScoreFinished();
+    void OnBackToMenuClicked();
 
 private:
-    void submitGameResult();
-    void recordWin();
-    void recordLoss();
-    void recalculateScore();
+    void SubmitGameResult();
+    void RecordWin();
+    void RecordLoss();
+    void RecalculateScore();
 
 private:
     Ui::EndgamePageClass ui;
