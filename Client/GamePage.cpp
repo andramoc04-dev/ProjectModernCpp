@@ -1020,10 +1020,6 @@ void GamePage::fetchMessages()
 			newLines << line;
 		}
 
-		// păstrăm ultimele MAX_CHAT_MESSAGES mesaje
-		while (newLines.size() > MAX_CHAT_MESSAGES) {
-			newLines.removeFirst();
-		}
 
 		if (newLines == m_chatLines) {
 			reply->deleteLater();

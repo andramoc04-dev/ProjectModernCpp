@@ -13,5 +13,6 @@ public:
 	void PrintMessages() const;
 private:
 	std::deque<Message>m_messages;
+	static const std::uint8_t MAX_CHAT_MESSAGES = 8;
 };
 

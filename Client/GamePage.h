@@ -61,7 +61,7 @@ private:
 	bool m_isMyTurn = false;
 	QStringList m_allPlayerNames;
 
-	static constexpr int MAX_CHAT_MESSAGES = 8;
+	
 	QStringList m_chatLines;
 
 	std::vector<int> m_lastHandCards;
