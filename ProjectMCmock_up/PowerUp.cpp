@@ -301,10 +301,8 @@ std::expected<void, Error> PowerUp::ExecuteStealCard(Player& user, Game& game, i
     auto it = std::ranges::begin(targetHand);
     std::ranges::advance(it, randomIndex);
 
-    Card stolenCard = std::move(*it);
-
+   
+    user.GetHand().insert(std::move(*it));
     targetHand.erase(it);
-    user.GetHand().insert(std::move(stolenCard));
-
     return {};
 }

@@ -226,13 +226,13 @@ void GamePage::ShowCards(const std::vector<int>& cardsValues)
 
 		connect(button, &QPushButton::clicked, this, [=]() {
 			if (m_isPowerUpActive) {
-				if (m_activePowerUpType == POWERUP_DISCARD_CARD) {
+				if (m_activePowerUpType == PowerUpType::DISCARD_CARD) {
 					usePowerUp(m_activePowerUpId, -1, cardValue, -1);
 					m_isPowerUpActive = false;
 					m_activePowerUpId = -1;
-					m_activePowerUpType = -1;
+					m_activePowerUpType = PowerUpType::UNKNOWN;
 				}
-				else if (m_activePowerUpType == POWERUP_PLACE_ANY_CARD) {
+				else if (m_activePowerUpType == PowerUpType::PLACE_ANY_CARD) {
 					m_selectedCardValue = cardValue;
 					QMessageBox::information(this, "Wild Card",
 						QString("Card %1 selected. Now choose any pile.").arg(cardValue));
@@ -470,9 +470,12 @@ void GamePage::showPowerUps(const std::unordered_set<int>& equippedPowerUpIds)
 
 		int powerUpType = powerUpId; // ID-ul este același cu type-ul (1-5)
 
-		connect(button, &QPushButton::clicked, [this, powerUpId, powerUpType]() {
-			onPowerUpClicked(powerUpId, powerUpType);
+		connect(button, &QPushButton::clicked, [this, powerUpId]() {
+			// transformăm ID-ul în enum
+			PowerUpType type = static_cast<PowerUpType>(powerUpId);
+			onPowerUpClicked(powerUpId, type);
 			});
+
 
 		// Inițial disabled până verificăm dacă este tura jucătorului
 		button->setEnabled(m_isMyTurn);
@@ -616,11 +619,11 @@ void GamePage::onPileClicked(int pileId, QLabel* pileLabel)
 	}
 
 	// Verifică dacă Wild Card este activ
-	if (m_isPowerUpActive && m_activePowerUpType == POWERUP_PLACE_ANY_CARD) {
+	if (m_isPowerUpActive && m_activePowerUpType == PowerUpType::PLACE_ANY_CARD) {
 		usePowerUp(m_activePowerUpId, -1, m_selectedCardValue, pileId);
 		m_isPowerUpActive = false;
 		m_activePowerUpId = -1;
-		m_activePowerUpType = -1;
+		m_activePowerUpType = PowerUpType::UNKNOWN;
 		m_selectedCardValue = -1;
 		return;
 	}
@@ -738,52 +741,52 @@ void GamePage::openEndgamePage(QString gameStatus)
 	this->deleteLater();
 }
 
-void GamePage::onPowerUpClicked(int powerUpId, int powerUpType)
+void GamePage::onPowerUpClicked(int powerUpId, PowerUpType powerUpType)
 {
-	qDebug() << "Power-up clicked:" << powerUpId << "Type:" << powerUpType;
+	qDebug() << "Power-up clicked:" << powerUpId << "Type:" << static_cast<int>(powerUpType);
 
 	m_activePowerUpId = powerUpId;
 	m_activePowerUpType = powerUpType;
 	m_isPowerUpActive = true;
 
 	switch (powerUpType) {
-	case POWERUP_DISCARD_CARD:
+	case PowerUpType::DISCARD_CARD:
 		QMessageBox::information(this, "Discard Card",
 			"Select a card from your hand to discard it.");
 		break;
 
-	case POWERUP_SKIP_TURN:
+	case PowerUpType::SKIP_TURN:
 		// Folosește imediat power-up-ul
 		usePowerUp(powerUpId);
 		m_isPowerUpActive = false;
 		m_activePowerUpId = -1;
-		m_activePowerUpType = -1;
+		m_activePowerUpType = PowerUpType::UNKNOWN;
 		break;
 
-	case POWERUP_STEAL_CARD:
+	case PowerUpType::STEAL_CARD:
 		showStealCardDialog();
 		break;
 
-	case POWERUP_PLACE_ANY_CARD:
+	case PowerUpType::PLACE_ANY_CARD:
 		QMessageBox::information(this, "Wild Card",
 			"Select a card from your hand, then select any pile to place it.");
 		break;
 
-	case POWERUP_NO_SCORE_LOSS:
+	case PowerUpType::NO_SCORE_LOSS:
 		// Acest power-up se activează automat la pierderea jocului
 		usePowerUp(powerUpId);
 		m_isPowerUpActive = false;
 		m_activePowerUpId = -1;
-		m_activePowerUpType = -1;
+		m_activePowerUpType = PowerUpType::UNKNOWN;
 		QMessageBox::information(this, "Safety Net",
 			"Safety Net activated! You won't lose points if you lose this game.");
 		break;
 
 	default:
-		qDebug() << "Unknown power-up type:" << powerUpType;
+		qDebug() << "Unknown power-up type:" << static_cast<int>(powerUpType);
 		m_isPowerUpActive = false;
 		m_activePowerUpId = -1;
-		m_activePowerUpType = -1;
+		m_activePowerUpType = PowerUpType::UNKNOWN;
 		break;
 	}
 }
@@ -828,9 +831,11 @@ void GamePage::usePowerUp(int powerUpId, int targetPlayerId, int targetCardValue
 			fetchEquippedPowerUps();
 
 			// Dacă a fost Skip Turn, refresh game state
-			if (powerUpId == POWERUP_SKIP_TURN) {
+			// Dacă vrei să verifici dacă e Skip Turn:
+			if (static_cast<PowerUpType>(powerUpId) == PowerUpType::SKIP_TURN) {
 				fetchGameState();
 			}
+
 		}
 		else {
 			QString error = respObj["error"].toString();
@@ -931,7 +936,7 @@ void GamePage::showStealCardDialog()
 				hideStealCardDialog();
 				m_isPowerUpActive = false;
 				m_activePowerUpId = -1;
-				m_activePowerUpType = -1;
+				m_activePowerUpType = PowerUpType::UNKNOWN;
 				});
 
 			m_stealCardLayout->addWidget(playerBtn);
@@ -951,7 +956,7 @@ void GamePage::showStealCardDialog()
 			hideStealCardDialog();
 			m_isPowerUpActive = false;
 			m_activePowerUpId = -1;
-			m_activePowerUpType = -1;
+			m_activePowerUpType = PowerUpType::UNKNOWN;
 			});
 		m_stealCardLayout->addWidget(cancelBtn);
 

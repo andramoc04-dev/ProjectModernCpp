@@ -39,6 +39,7 @@ public:
 private:
 	
 	std::unordered_set<Card> m_hand;
-	int m_numberOfPlacedCards = 0;
+	const int NoPlacedCards = 0;
+	int m_numberOfPlacedCards = NoPlacedCards;
 };
 
