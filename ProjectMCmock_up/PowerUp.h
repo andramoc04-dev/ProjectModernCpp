@@ -7,7 +7,6 @@
 class Player;
 class Game;
 
-
 enum class PowerUpType : uint8_t
 {
     SKIP_TURN = 1,
@@ -17,7 +16,16 @@ enum class PowerUpType : uint8_t
     STEAL_CARD = 5
 };
 
-enum class Error { InvalidTarget, EmptyHand, Unexpected };
+enum class Error
+{
+    InvalidTarget,
+    EmptyHand,
+    CardNotFound,
+    InvalidPile,
+    CannotUse,
+    MissingParameters,
+    Unexpected
+};
 
 class PowerUp
 {
@@ -26,20 +34,17 @@ public:
     PowerUp(uint32_t dbId, PowerUpType type);
     PowerUp(uint32_t dbId, PowerUpType type, const std::string& name, const std::string& description);
 
-   
-    uint32_t GetDatabaseId() const;  
+    uint32_t GetDatabaseId() const;
     PowerUpType GetType() const;
     std::string GetName() const;
     std::string GetDescription() const;
-	
-
 
     void SetName(const std::string& name);
     void SetDescription(const std::string& desc);
-	
     void SetDatabaseId(uint32_t id);
 
-    bool Use(Player& user, Game& game, int targetPlayerId = -1, int targetCardValue = -1, int targetPileId = -1);
+    [[nodiscard]]
+    std::expected<void, Error> Use(Player& user, Game& game, int targetPlayerId = -1, int targetCardValue = -1, int targetPileId = -1);
 
     bool CanBeUsed(const Player& user, const Game& game) const;
 
@@ -49,27 +54,31 @@ public:
     static PowerUp CreateNoScoreLoss(uint32_t dbId = 0);
     static PowerUp CreateStealCard(uint32_t dbId = 0);
 
-   
     static std::string TypeToString(PowerUpType type);
     static PowerUpType StringToType(const std::string& typeStr);
+    static std::string ErrorToString(Error error);
 
     std::string GetTypeString() const;
     void SetTypeString(const std::string& typeStr);
 
-
 private:
-    uint32_t m_databaseId;  
+    uint32_t m_databaseId;
     PowerUpType m_type;
     std::string m_name;
     std::string m_description;
-    
 
-    
+    [[nodiscard]]
+    std::expected<void, Error> ExecuteSkipTurn(Player& user, Game& game);
 
-    bool ExecuteSkipTurn(Player& user, Game& game);
-    bool ExecutePlaceAnyCard(Player& user, Game& game, int cardValue, int pileId);
-    bool ExecuteDiscardCard(Player& user, int cardValue);
-    bool ExecuteNoScoreLoss(Player& user, Game& game);
-    std::expected<void, Error>ExecuteStealCard(Player& user, Game& game, int targetPlayerId);
+    [[nodiscard]]
+    std::expected<void, Error> ExecutePlaceAnyCard(Player& user, Game& game, int cardValue, int pileId);
+
+    [[nodiscard]]
+    std::expected<void, Error> ExecuteDiscardCard(Player& user, int cardValue);
+
+    [[nodiscard]]
+    std::expected<void, Error> ExecuteNoScoreLoss(Player& user, Game& game);
+
+    [[nodiscard]]
+    std::expected<void, Error> ExecuteStealCard(Player& user, Game& game, int targetPlayerId);
 };
-

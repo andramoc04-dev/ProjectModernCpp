@@ -3,13 +3,11 @@
 #include <algorithm>
 #include <random>
 
-
 PowerUp::PowerUp()
     : m_databaseId(0)
     , m_type(PowerUpType::SKIP_TURN)
     , m_name("")
     , m_description("")
-
 {
 }
 
@@ -17,7 +15,6 @@ PowerUp::PowerUp(uint32_t dbId, PowerUpType type)
     : m_databaseId(dbId)
     , m_type(type)
 {
- 
     switch (type) {
     case PowerUpType::SKIP_TURN:
         m_name = "Skip Turn";
@@ -60,8 +57,6 @@ std::string PowerUp::GetName() const
     return m_name;
 }
 
-
-
 std::string PowerUp::GetDescription() const
 {
     return m_description;
@@ -71,10 +66,6 @@ uint32_t PowerUp::GetDatabaseId() const
 {
     return m_databaseId;
 }
-
-
-
-
 
 void PowerUp::SetName(const std::string& name)
 {
@@ -86,53 +77,44 @@ void PowerUp::SetDescription(const std::string& desc)
     m_description = desc;
 }
 
-
 void PowerUp::SetDatabaseId(uint32_t id)
 {
     m_databaseId = id;
 }
 
-
-bool PowerUp::Use(Player& user, Game& game, int targetPlayerId, int targetCardValue, int targetPileId)
+std::expected<void, Error> PowerUp::Use(Player& user, Game& game, int targetPlayerId, int targetCardValue, int targetPileId)
 {
     if (!CanBeUsed(user, game)) {
-        return false;
+        return std::unexpected(Error::CannotUse);
     }
-
-    bool success = false;
 
     switch (m_type) {
     case PowerUpType::SKIP_TURN:
-        success = ExecuteSkipTurn(user, game);
-        break;
+        return ExecuteSkipTurn(user, game);
 
     case PowerUpType::PLACE_ANY_CARD:
         if (targetCardValue == -1 || targetPileId == -1) {
-            return false;
+            return std::unexpected(Error::MissingParameters);
         }
-        success = ExecutePlaceAnyCard(user, game, targetCardValue, targetPileId);
-        break;
+        return ExecutePlaceAnyCard(user, game, targetCardValue, targetPileId);
 
     case PowerUpType::DISCARD_CARD:
         if (targetCardValue == -1) {
-            return false;
+            return std::unexpected(Error::MissingParameters);
         }
-        success = ExecuteDiscardCard(user, targetCardValue);
-        break;
+        return ExecuteDiscardCard(user, targetCardValue);
 
     case PowerUpType::NO_SCORE_LOSS:
-        success = ExecuteNoScoreLoss(user, game);
-        break;
+        return ExecuteNoScoreLoss(user, game);
 
     case PowerUpType::STEAL_CARD:
         if (targetPlayerId == -1) {
-            return false;
-        }      
-        success = ExecuteStealCard(user, game, targetPlayerId).has_value();
-        break;
+            return std::unexpected(Error::MissingParameters);
+        }
+        return ExecuteStealCard(user, game, targetPlayerId);
     }
 
-    return success;
+    return std::unexpected(Error::Unexpected);
 }
 
 bool PowerUp::CanBeUsed(const Player& user, const Game& game) const
@@ -150,7 +132,6 @@ bool PowerUp::CanBeUsed(const Player& user, const Game& game) const
     }
 }
 
-// Factory methods
 PowerUp PowerUp::CreateSkipTurn(uint32_t dbId)
 {
     return PowerUp(dbId, PowerUpType::SKIP_TURN);
@@ -198,9 +179,23 @@ PowerUpType PowerUp::StringToType(const std::string& typeStr)
     return PowerUpType::SKIP_TURN;
 }
 
+std::string PowerUp::ErrorToString(Error error)
+{
+    switch (error) {
+    case Error::InvalidTarget: return "Invalid target player";
+    case Error::EmptyHand: return "Target player has no cards";
+    case Error::CardNotFound: return "Card not found in hand";
+    case Error::InvalidPile: return "Invalid pile specified";
+    case Error::CannotUse: return "Power-up cannot be used in current state";
+    case Error::MissingParameters: return "Missing required parameters";
+    case Error::Unexpected: return "Unexpected error occurred";
+    default: return "Unknown error";
+    }
+}
+
 std::string PowerUp::GetTypeString() const
 {
-   return TypeToString(m_type);
+    return TypeToString(m_type);
 }
 
 void PowerUp::SetTypeString(const std::string& typeStr)
@@ -208,20 +203,20 @@ void PowerUp::SetTypeString(const std::string& typeStr)
     m_type = StringToType(typeStr);
 }
 
-bool PowerUp::ExecuteSkipTurn(Player& user, Game& game)
+std::expected<void, Error> PowerUp::ExecuteSkipTurn(Player& user, Game& game)
 {
     user.ResetCardsPlacedThisTurn();
-    return true;
+    return {};
 }
 
-bool PowerUp::ExecutePlaceAnyCard(Player& user, Game& game, int cardValue, int pileId)
+std::expected<void, Error> PowerUp::ExecutePlaceAnyCard(Player& user, Game& game, int cardValue, int pileId)
 {
     auto& hand = user.GetHand();
     auto it = std::find_if(hand.begin(), hand.end(),
         [cardValue](const Card& c) { return c.GetNumber() == cardValue; });
 
     if (it == hand.end()) {
-        return false;
+        return std::unexpected(Error::CardNotFound);
     }
 
     Card cardToPlace = *it;
@@ -242,38 +237,35 @@ bool PowerUp::ExecutePlaceAnyCard(Player& user, Game& game, int cardValue, int p
         break;
     default:
         hand.insert(cardToPlace);
-        return false;
+        return std::unexpected(Error::InvalidPile);
     }
 
     user.IncrementCardsPlacedThisTurn();
-    return true;
+    return {};
 }
 
-bool PowerUp::ExecuteDiscardCard(Player& user, int cardValue)
+std::expected<void, Error> PowerUp::ExecuteDiscardCard(Player& user, int cardValue)
 {
     auto& hand = user.GetHand();
     auto it = std::find_if(hand.begin(), hand.end(),
         [cardValue](const Card& c) { return c.GetNumber() == cardValue; });
 
     if (it == hand.end()) {
-        return false;
+        return std::unexpected(Error::CardNotFound);
     }
 
     hand.erase(it);
-    return true;
+    return {};
 }
 
-bool PowerUp::ExecuteNoScoreLoss(Player& user, Game& game)
+std::expected<void, Error> PowerUp::ExecuteNoScoreLoss(Player& user, Game& game)
 {
     user.SetHasScoreLossProtection(true);
-    return true;
+    return {};
 }
 
-
-
-
-[[nodiscard]]
-std::expected<void, Error> PowerUp::ExecuteStealCard(Player& user, Game& game, int targetPlayerId) {
+std::expected<void, Error> PowerUp::ExecuteStealCard(Player& user, Game& game, int targetPlayerId)
+{
     if (user.GetId() == targetPlayerId) {
         return std::unexpected(Error::InvalidTarget);
     }
@@ -292,15 +284,12 @@ std::expected<void, Error> PowerUp::ExecuteStealCard(Player& user, Game& game, i
     }
 
     static thread_local std::mt19937 gen{ std::random_device{}() };
-
- 
     std::uniform_int_distribution<size_t> dist(0, targetHand.size() - 1);
     size_t randomIndex = dist(gen);
 
     auto it = std::ranges::begin(targetHand);
     std::ranges::advance(it, randomIndex);
 
-   
     user.GetHand().insert(std::move(*it));
     targetHand.erase(it);
     return {};

@@ -66,7 +66,7 @@ void PowerUpRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserPr
         }
             });
 
-    
+
     // ===================== POWERUPS LIST =====================
     CROW_ROUTE(app, "/game/<int>/player/<int>/powerups").methods(crow::HTTPMethod::GET)
         ([&gm, &storage](int gameId, int playerId) {
@@ -108,6 +108,7 @@ void PowerUpRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserPr
 
         return crow::response{ resp.dump() };
             });
+
     CROW_ROUTE(app, "/game/<int>/player/<int>/powerups/equipped").methods(crow::HTTPMethod::GET)
         ([&gm, &storage](int gameId, int playerId) {
         std::lock_guard<std::mutex> lk(gm.Mutex());
@@ -157,6 +158,7 @@ void PowerUpRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserPr
 
         return crow::response{ resp.dump() };
             });
+
     CROW_ROUTE(app, "/game/<int>/player/<int>/powerups/<int>/equip").methods(crow::HTTPMethod::POST)
         ([&gm, &storage](int gameId, int playerId, int inventoryId) {
         std::lock_guard<std::mutex> lk(gm.Mutex());
@@ -252,10 +254,6 @@ void PowerUpRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserPr
             return crow::response(500, R"({"error":"Failed to get current player"})");
         }
 
-        /*if (!storage.IsPowerUpEquipped(playerId, powerUpId)) {
-            return crow::response(400, R"({"error":"Power-up not equipped or not owned"})");
-        }*/
-
         auto powerUpOpt = storage.GetById<PowerUp>(powerUpId);
         if (!powerUpOpt) {
             return crow::response(404, R"({"error":"Power-up not found"})");
@@ -269,9 +267,9 @@ void PowerUpRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserPr
             int targetCardValue = body.has("targetCardValue") ? (int)body["targetCardValue"].i() : -1;
             int targetPileId = body.has("targetPileId") ? (int)body["targetPileId"].i() : -1;
 
-            bool success = powerUp.Use(player, *game, targetPlayerId, targetCardValue, targetPileId);
+            auto result = powerUp.Use(player, *game, targetPlayerId, targetCardValue, targetPileId);
 
-            if (success) {
+            if (result) {
                 storage.RemovePowerUpFromUser(playerId, powerUpId);
 
                 if (powerUp.GetType() == PowerUpType::SKIP_TURN) {
@@ -290,8 +288,26 @@ void PowerUpRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserPr
             else {
                 crow::json::wvalue resp;
                 resp["success"] = false;
-                resp["error"] = "Failed to use power-up - invalid conditions or parameters";
-                return crow::response(400, resp.dump());
+                resp["error"] = PowerUp::ErrorToString(result.error());
+                resp["errorCode"] = static_cast<int>(result.error());
+
+                int statusCode;
+                switch (result.error()) {
+                case Error::InvalidTarget:
+                case Error::EmptyHand:
+                case Error::CardNotFound:
+                case Error::InvalidPile:
+                case Error::CannotUse:
+                case Error::MissingParameters:
+                    statusCode = 400;
+                    break;
+                case Error::Unexpected:
+                default:
+                    statusCode = 500;
+                    break;
+                }
+
+                return crow::response(statusCode, resp.dump());
             }
         }
         catch (const std::exception& e) {
