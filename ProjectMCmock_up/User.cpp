@@ -155,7 +155,4 @@ bool User::HasScoreLossProtection() const
 	return m_hasScoreLossProtection;
 }
 
-void User::ClearScoreLossProtection()
-{
-	m_hasScoreLossProtection = false;
-}
+

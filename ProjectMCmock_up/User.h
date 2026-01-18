@@ -49,7 +49,6 @@ public:
 
 	void SetHasScoreLossProtection(bool hasProtection);
 	bool HasScoreLossProtection() const;
-	void ClearScoreLossProtection();
 protected:
 	std::uint32_t m_id;
 	std::string m_password;

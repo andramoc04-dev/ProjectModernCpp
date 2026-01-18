@@ -3,12 +3,13 @@
 #include <algorithm>
 #include <random>
 
+
 PowerUp::PowerUp()
     : m_databaseId(0)
     , m_type(PowerUpType::SKIP_TURN)
     , m_name("")
     , m_description("")
-    , m_iconPath("")
+
 {
 }
 
@@ -21,27 +22,22 @@ PowerUp::PowerUp(uint32_t dbId, PowerUpType type)
     case PowerUpType::SKIP_TURN:
         m_name = "Skip Turn";
         m_description = "Skip your turn without placing cards";
-        m_iconPath = ":/Client/resources/powerup_skip.png";
         break;
     case PowerUpType::PLACE_ANY_CARD:
         m_name = "Wild Card";
         m_description = "Place any card on any pile";
-        m_iconPath = ":/Client/resources/powerup_wild.png";
         break;
     case PowerUpType::DISCARD_CARD:
         m_name = "Discard";
         m_description = "Remove a card from your hand";
-        m_iconPath = ":/Client/resources/powerup_discard.png";
         break;
     case PowerUpType::NO_SCORE_LOSS:
         m_name = "Safety Net";
         m_description = "Don't lose points if you lose";
-        m_iconPath = ":/Client/resources/powerup_safety.png";
         break;
     case PowerUpType::STEAL_CARD:
         m_name = "Pickpocket";
         m_description = "Steal a random card from another player";
-        m_iconPath = ":/Client/resources/powerup_steal.png";
         break;
     }
 }
@@ -51,7 +47,6 @@ PowerUp::PowerUp(uint32_t dbId, PowerUpType type, const std::string& name, const
     , m_type(type)
     , m_name(name)
     , m_description(description)
-    , m_iconPath("")
 {
 }
 
@@ -77,10 +72,7 @@ uint32_t PowerUp::GetDatabaseId() const
     return m_databaseId;
 }
 
-std::string PowerUp::GetIconPath() const
-{
-    return m_iconPath;
-}
+
 
 
 
@@ -136,7 +128,8 @@ bool PowerUp::Use(Player& user, Game& game, int targetPlayerId, int targetCardVa
         if (targetPlayerId == -1) {
             return false;
         }
-        success = ExecuteStealCard(user, game, targetPlayerId);
+        auto result = ExecuteStealCard(user, game, targetPlayerId);
+        success = result.has_value();
         break;
     }
 
@@ -277,38 +270,41 @@ bool PowerUp::ExecuteNoScoreLoss(Player& user, Game& game)
     return true;
 }
 
-bool PowerUp::ExecuteStealCard(Player& user, Game& game, int targetPlayerId)
-{
+
+
+
+[[nodiscard]]
+std::expected<void, Error> PowerUp::ExecuteStealCard(Player& user, Game& game, int targetPlayerId) {
+    if (user.GetId() == targetPlayerId) {
+        return std::unexpected(Error::InvalidTarget);
+    }
+
+    Player* target;
     try {
-        Player& target = game.GetPlayer(targetPlayerId);
-
-        if (target.GetId() == user.GetId()) {
-            return false;
-        }
-
-        auto& targetHand = target.GetHand();
-        if (targetHand.empty()) {
-            return false;
-        }
-
-        std::random_device rd;
-        std::mt19937 gen(rd());
-
-        std::vector<Card> sample;
-        std::ranges::sample(targetHand, std::back_inserter(sample), 1, gen);
-
-        if (sample.empty()) {
-            return false;
-        }
-
-        Card stolenCard = sample[0];
-        auto it = std::ranges::find(targetHand, stolenCard);
-        targetHand.erase(it);
-        user.GetHand().insert(stolenCard);
-
-        return true;
+        target = &game.GetPlayer(targetPlayerId);
     }
     catch (...) {
-        return false;
+        return std::unexpected(Error::InvalidTarget);
     }
+
+    auto& targetHand = target->GetHand();
+    if (targetHand.empty()) {
+        return std::unexpected(Error::EmptyHand);
+    }
+
+    static thread_local std::mt19937 gen{ std::random_device{}() };
+
+ 
+    std::uniform_int_distribution<size_t> dist(0, targetHand.size() - 1);
+    size_t randomIndex = dist(gen);
+
+    auto it = std::ranges::begin(targetHand);
+    std::ranges::advance(it, randomIndex);
+
+    Card stolenCard = std::move(*it);
+
+    targetHand.erase(it);
+    user.GetHand().insert(std::move(stolenCard));
+
+    return {};
 }

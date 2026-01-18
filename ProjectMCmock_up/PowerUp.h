@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <cstdint>
+#include <ranges>
+#include <expected>
 
 class Player;
 class Game;
@@ -14,6 +16,9 @@ enum class PowerUpType : uint8_t
     NO_SCORE_LOSS = 4,
     STEAL_CARD = 5
 };
+
+enum class Error { InvalidTarget, EmptyHand, Unexpected };
+
 class PowerUp
 {
 public:
@@ -26,7 +31,6 @@ public:
     PowerUpType GetType() const;
     std::string GetName() const;
     std::string GetDescription() const;
-    std::string GetIconPath() const;
 	
 
 
@@ -58,14 +62,14 @@ private:
     PowerUpType m_type;
     std::string m_name;
     std::string m_description;
-    std::string m_iconPath;
     
 
     
+
     bool ExecuteSkipTurn(Player& user, Game& game);
     bool ExecutePlaceAnyCard(Player& user, Game& game, int cardValue, int pileId);
     bool ExecuteDiscardCard(Player& user, int cardValue);
     bool ExecuteNoScoreLoss(Player& user, Game& game);
-    bool ExecuteStealCard(Player& user, Game& game, int targetPlayerId);
+    std::expected<void, Error>ExecuteStealCard(Player& user, Game& game, int targetPlayerId);
 };
 
