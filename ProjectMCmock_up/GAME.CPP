@@ -88,16 +88,16 @@ const Player& Game::GetPlayer(int id) const
 	throw std::runtime_error("Player with id " + std::to_string(id) + " not found in game");
 }
 
-Player& Game::GetPlayer(int id)
-{
-	auto it = std::find_if(m_players.begin(), m_players.end(),
-		[id](const Player& p) { return p.GetId() == id; });
+Player& Game::GetPlayer(int id) {
+	auto it = std::ranges::find_if(m_players, [id](const auto& p) {
+		return p.GetId() == id;
+		});
 
-	if (it != m_players.end()) {
-		return *it;
+	if (it == m_players.end()) {
+
+		throw std::runtime_error("Player with id " + std::to_string(id) + " not found");
 	}
-	throw std::runtime_error("Player with id " + std::to_string(id) + " not found in game");
-
+	return *it;
 }
 
 bool Game::GetAreCardsDealt() const
@@ -170,24 +170,18 @@ const Player& Game::GetCurrentPlayer() const
 	return m_players[m_currentPlayerIndex % m_players.size()];
 }
 
-Game::GameStatus Game::GetGameStatus() const
-{
-	if (m_gameLost)
-		return GameStatus::Lost;
+Game::GameStatus Game::GetGameStatus() const {
+    if (m_gameLost) return GameStatus::Lost;
 
-	if (m_cardsDeck.empty()) {
-		bool allHandsEmpty = true;
-		for (const auto& player : m_players) {
-			if (!player.GetHand().empty()) {
-				allHandsEmpty = false;
-				break;
-			}
-		}
-		if (allHandsEmpty) {
-			return GameStatus::Won;
-		}
-	}
-	return GameStatus::Playing;
+    if (m_cardsDeck.empty()) {
+        
+        bool victory = std::ranges::all_of(m_players, [](const auto& p) {
+            return p.GetHand().empty();
+        });
+
+        if (victory) return GameStatus::Won;
+    }
+    return GameStatus::Playing;
 }
 
 void Game::SetCurrentPlayerIndex(size_t index)
