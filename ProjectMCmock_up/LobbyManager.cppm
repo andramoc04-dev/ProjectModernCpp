@@ -24,6 +24,7 @@ private:
     struct LobbyInfo {
         int m_gameId = -1;
         bool m_started = false;
+        bool m_timedOut = false;
         int m_matchedPlayerId = -1;
     };
 

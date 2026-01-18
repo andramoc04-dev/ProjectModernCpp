@@ -8,9 +8,9 @@
 #include <QDebug>
 #include <QMetaObject>
 #include "MinigamePage.h"   
-
+#include "MenuPage.h"
 #include <chrono>
-
+#include<QMessageBox>
 LobbyPage::LobbyPage(int playerId, const QString& playerName, const QString& serverBaseUrl, QWidget* parent)
 	: QDialog(parent),
 	ui(new Ui::LobbyPageClass),
@@ -84,24 +84,39 @@ void LobbyPage::onStatusReplyFinished()
 		if (err.error == QJsonParseError::NoError && doc.isObject()) {
 			const QJsonObject obj = doc.object();
 			bool started = obj.value("started").toBool(false);
+			bool timedOut = obj.value("timedOut").toBool(false);
+
+			/* ================= TIMEOUT ================= */
+			if (timedOut) {
+				m_pollRunning = false;
+
+				QMessageBox::information(
+					this,
+					"Lobby",
+					"No players joined the lobby.\nYou are returning to the main menu."
+				);
+
+				MenuPage* menu = new MenuPage(m_playerId, m_playerName, nullptr);
+				menu->show();
+				this->deleteLater();
+				return;
+			}
+
+			/* ================= GAME START ================= */
 			if (started) {
 				int gameId = obj.value("gameId").toInt(-1);
 
 				m_pollRunning = false;
-
 
 				MinigamePage* mini = new MinigamePage(nullptr);
 				mini->setProperty("playerId", m_playerId);
 				mini->setProperty("playerName", m_playerName);
 				mini->setProperty("gameId", gameId);
 
-
 				mini->show();
 				this->deleteLater();
-
-
-
 			}
+
 
 		}
 		else {
