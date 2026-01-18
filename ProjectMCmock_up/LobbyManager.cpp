@@ -70,13 +70,11 @@ crow::json::wvalue LobbyManager::GetStatus(http::UserProfiles& storage, int play
     }
 
     // caută jucătorul în lista de așteptare (pentru timeout)
-    auto wpIt = std::find_if(
-        m_waitingPlayers.begin(),
-        m_waitingPlayers.end(),
-        [playerId](const WaitingPlayer& wp) {
-            return wp.playerId == playerId;
-        }
+    auto wpIt = std::ranges::find_if(
+        m_waitingPlayers,
+        [playerId](const auto& wp) { return wp.playerId == playerId; }
     );
+
 
     // ===== TIMEOUT =====
     if (wpIt != m_waitingPlayers.end() && wpIt->timer.expired()) {

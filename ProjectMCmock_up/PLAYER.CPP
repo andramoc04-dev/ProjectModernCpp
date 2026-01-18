@@ -48,7 +48,8 @@ bool Player::PlaceCard(const Card& choosenCard, Card& descendingDeck1, Card& des
 		return false;
 	}
 
-	auto foundCard = std::find(m_hand.begin(), m_hand.end(), choosenCard);
+	auto foundCard = std::ranges::find(m_hand, choosenCard);
+
 	if (foundCard == m_hand.end()) {
 		return false;
 	}
