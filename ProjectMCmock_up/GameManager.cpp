@@ -1,13 +1,11 @@
-﻿module; // Global Module Fragment și aici pentru dependințe
-
+﻿module; 
 #include <unordered_map>
 #include <memory>
 #include <mutex>
 #include "Game.h"
 
-module GameManager; // Declarăm că acest fișier face parte din modulul GameManager
+module GameManager; 
 
-// Constructorul și metodele rămân identice ca logică
 GameManager::GameManager(std::mutex& mutex, std::unordered_map<int, std::unique_ptr<Game>>& games)
     : m_mutex(mutex), m_games(games)
 {

@@ -48,7 +48,6 @@ void MinigamePage::updateTimerUi()
         QString playerName = property("playerName").toString();
         int gameId = property("gameId").toInt();
 
-        // Submit minigame score and award power-ups
         submitMinigameScore(playerId, m_counter, playerName, gameId);
 
 

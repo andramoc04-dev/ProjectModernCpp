@@ -37,7 +37,7 @@ private:
     int m_playerId;
     QString m_playerName;
     int m_gameId;
-    QString m_gameEnding; // "won" sau "lost"
+    QString m_gameEnding; 
     int m_unusedCardsCount;
     QString m_serverUrl;
 

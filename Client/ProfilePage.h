@@ -3,9 +3,7 @@
 #include <QDialog>
 #include "ui_ProfilePage.h"
 #include <QNetworkAccessManager>
-//#include <QNetworkRequest>
 #include <QNetworkReply>
-//#include <QUrl>
 
 
 
@@ -26,8 +24,8 @@ private slots:
     void onBackButtonClicked();
 
 private:
-    void fetchProfileData(); // Nouă funcție pentru a obține datele
-    void updateUIWithProfileData(const QJsonObject& data); // Actualizează UI-ul
+    void fetchProfileData(); 
+    void updateUIWithProfileData(const QJsonObject& data); 
 
 
 private:

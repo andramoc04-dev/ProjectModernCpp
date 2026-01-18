@@ -83,7 +83,7 @@ private:
 
 	
 
-	// UI for steal card
+	
 	QWidget* m_stealCardWidget = nullptr;
 	QVBoxLayout* m_stealCardLayout = nullptr;
 

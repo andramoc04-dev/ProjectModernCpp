@@ -35,7 +35,7 @@ void ProfilePage::showEvent(QShowEvent* event)
 void ProfilePage::fetchProfileData()
 {
     if (m_playerId < 0) {
-        QMessageBox::warning(this, "Eroare", "Player ID invalid!");
+        QMessageBox::warning(this, "Error", "Invalid player ID !");
         return;
     }
 
@@ -55,8 +55,8 @@ void ProfilePage::onProfileReplyFinished()
     if (!reply) return;
 
     if (reply->error() != QNetworkReply::NoError) {
-        QMessageBox::warning(this, "Eroare rețea",
-            "Nu s-au putut încărca datele profilului:\n" + reply->errorString());
+        QMessageBox::warning(this, "Network error",
+            "Could not load profile data.\n" + reply->errorString());
         reply->deleteLater();
         return;
     }
@@ -73,15 +73,15 @@ void ProfilePage::onProfileReplyFinished()
             updateUIWithProfileData(data);
         }
         else {
-            QMessageBox::warning(this, "Eroare",
-                "Răspuns invalid de la server:\n" + parseError.errorString());
+            QMessageBox::warning(this, "Error",
+                "Invalid response from server:\n" + parseError.errorString());
         }
     }
     else if (statusCode == 404) {
-        QMessageBox::warning(this, "Eroare", "Jucătorul nu a fost găsit!");
+        QMessageBox::warning(this, "Error", "The player has not been found!");
     }
     else {
-        QMessageBox::warning(this, "Eroare server",
+        QMessageBox::warning(this, "Server error",
             QString("HTTP %1\n\n%2").arg(statusCode).arg(QString::fromUtf8(body)));
     }
 
@@ -90,7 +90,6 @@ void ProfilePage::onProfileReplyFinished()
 
 void ProfilePage::updateUIWithProfileData(const QJsonObject& data)
 {
-    // Extrage datele din JSON
     const QString username = data["name"].toString();
     const int score = data["score"].toInt();
     const int wins = data["wins"].toInt();

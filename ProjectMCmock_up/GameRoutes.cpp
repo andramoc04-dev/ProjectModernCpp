@@ -9,7 +9,6 @@ import GameManager;
 
 void GameRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserProfiles& storage)
 {
-    // ===================== CHAT SEND =====================
     CROW_ROUTE(app, "/game/<int>/chat/send").methods(crow::HTTPMethod::POST)
         ([&gm](const crow::request& req, int gameId) {
         auto body = crow::json::load(req.body);
@@ -28,7 +27,7 @@ void GameRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserProfi
         return crow::response(200);
             });
 
-    // ===================== CHAT MESSAGES =====================
+   
     CROW_ROUTE(app, "/game/<int>/chat/messages").methods(crow::HTTPMethod::GET)
         ([&gm](int gameId) {
         std::lock_guard<std::mutex> lk(gm.Mutex());
@@ -46,7 +45,7 @@ void GameRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserProfi
         return crow::response(response.dump());
             });
 
-    // ===================== SHUFFLE =====================
+ 
     CROW_ROUTE(app, "/game/<int>/shuffle").methods(crow::HTTPMethod::POST)
         ([&gm](int gameId) {
         std::lock_guard<std::mutex> lk(gm.Mutex());
@@ -68,7 +67,7 @@ void GameRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserProfi
         return crow::response{ resp.dump() };
             });
 
-    // ===================== DISTRIBUTION =====================
+  
     CROW_ROUTE(app, "/game/<int>/distribution").methods(crow::HTTPMethod::POST)
         ([&gm](int gameId) {
         std::lock_guard<std::mutex> lk(gm.Mutex());
@@ -95,7 +94,7 @@ void GameRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserProfi
         return crow::response{ resp.dump() };
             });
 
-    // ===================== PLAYER HAND =====================
+   
     CROW_ROUTE(app, "/game/<int>/player/<int>/hand").methods(crow::HTTPMethod::GET)
         ([&gm](int gameId, int playerId) {
         std::lock_guard<std::mutex> lk(gm.Mutex());
@@ -121,7 +120,6 @@ void GameRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserProfi
         return crow::response{ resp.dump() };
             });
 
-    // ===================== PLACE CARD =====================
     CROW_ROUTE(app, "/game/<int>/player/<int>/place").methods(crow::HTTPMethod::POST)
         ([&gm](const crow::request& req, int gameId, int playerId) {
         auto body = crow::json::load(req.body);
@@ -188,7 +186,7 @@ void GameRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserProfi
         }
             });
 
-    // ===================== GAME STATE =====================
+ 
     CROW_ROUTE(app, "/game/<int>/state").methods(crow::HTTPMethod::GET)
         ([&gm](int gameId) {
         std::lock_guard<std::mutex> lk(gm.Mutex());
@@ -258,7 +256,7 @@ void GameRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserProfi
         return crow::response{ resp.dump() };
             });
 
-    // ===================== DRAW =====================
+  
     CROW_ROUTE(app, "/game/<int>/player/<int>/draw").methods(crow::HTTPMethod::POST)
         ([&gm](int gameId, int playerId) {
         std::lock_guard<std::mutex> lk(gm.Mutex());
@@ -292,7 +290,6 @@ void GameRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserProfi
         }
             });
 
-    // ===================== END TURN =====================
     CROW_ROUTE(app, "/game/<int>/player/<int>/endturn").methods(crow::HTTPMethod::POST)
         ([&gm](int gameId, int playerId) {
         std::lock_guard<std::mutex> lk(gm.Mutex());

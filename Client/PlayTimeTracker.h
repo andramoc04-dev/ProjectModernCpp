@@ -15,13 +15,10 @@ public:
     explicit PlayTimeTracker(QObject* parent = nullptr);
     ~PlayTimeTracker();
 
-    // Porne?te tracking-ul când userul ajunge în menu
     void startTracking(int playerId, const QString& serverUrl);
 
-    // Opre?te ?i trimite timpul acumulat
     void stopAndSync();
 
-    // Verific? dac? tracking-ul este activ
     bool isTracking() const;
 
     int getCurrentPlayerId() const;
@@ -45,5 +42,5 @@ private:
     QString m_serverUrl;
     bool m_isTracking{ false };
 
-    static constexpr int BACKUP_INTERVAL_MS = 5 * 60 * 1000; // 5 minute
+    static constexpr int BACKUP_INTERVAL_MS = 5 * 60 * 1000; 
 };

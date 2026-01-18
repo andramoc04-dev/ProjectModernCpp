@@ -10,7 +10,7 @@ module UserRoutes;
 
 void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
 {
-    // ===================== GET PLAYER =====================
+   
     CROW_ROUTE(app, "/player/<int>")
         ([&storage](int id) {
         auto player = storage.GetById<User>(id);
@@ -29,7 +29,7 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
         return crow::response{ json.dump() };
             });
 
-    // ===================== ADD PLAYER =====================
+   
     CROW_ROUTE(app, "/addplayer").methods(crow::HTTPMethod::POST)
         ([&storage](const crow::request& req) {
         auto body = crow::json::load(req.body);
@@ -52,7 +52,7 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
         return crow::response(201, R"({"status":"Player created"})");
             });
 
-    // ===================== LOGIN =====================
+    
     CROW_ROUTE(app, "/login").methods(crow::HTTPMethod::POST)
         ([&storage](const crow::request& req) {
         auto body = crow::json::load(req.body);
@@ -84,7 +84,7 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
         return crow::response(401, R"({"error":"Invalid credentials"})");
             });
 
-    // ===================== UPDATE PLAYTIME =====================
+    
     CROW_ROUTE(app, "/player/<int>/updateplaytime").methods(crow::HTTPMethod::POST)
         ([&storage](const crow::request& req, int playerId) {
         auto body = crow::json::load(req.body);
@@ -133,7 +133,6 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
         }
             });
 
-    // ===================== RECORD WIN =====================
     CROW_ROUTE(app, "/game/<int>/player/<int>/win").methods(crow::HTTPMethod::POST)
         ([&storage](int gameId, int playerId) {
         auto userOpt = storage.GetById<User>(playerId);
@@ -164,7 +163,7 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
         }
             });
 
-    // ===================== RECORD LOSS =====================
+    
     CROW_ROUTE(app, "/game/<int>/player/<int>/loss").methods(crow::HTTPMethod::POST)
         ([&storage](const crow::request& req, int gameId, int playerId) {
         auto body = crow::json::load(req.body);
@@ -219,7 +218,7 @@ void UserRoutes::Register(crow::SimpleApp& app, http::UserProfiles& storage)
         }
             });
 
-    // ===================== RECALCULATE SCORE =====================
+   
     CROW_ROUTE(app, "/player/<int>/recalculate-score").methods(crow::HTTPMethod::POST)
         ([&storage](int playerId) {
         auto userOpt = storage.GetById<User>(playerId);

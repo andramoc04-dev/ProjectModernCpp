@@ -86,7 +86,6 @@ void LobbyPage::onStatusReplyFinished()
 			bool started = obj.value("started").toBool(false);
 			bool timedOut = obj.value("timedOut").toBool(false);
 
-			/* ================= TIMEOUT ================= */
 			if (timedOut) {
 				m_pollRunning = false;
 
@@ -102,7 +101,6 @@ void LobbyPage::onStatusReplyFinished()
 				return;
 			}
 
-			/* ================= GAME START ================= */
 			if (started) {
 				int gameId = obj.value("gameId").toInt(-1);
 

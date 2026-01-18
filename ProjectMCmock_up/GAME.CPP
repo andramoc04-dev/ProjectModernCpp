@@ -19,11 +19,9 @@ void Game::ShuffleCards() {
 	for (int i = 2; i <= 33; i++)
 		sortedCards.push_back(i);
 
-	// Initialize the random number generator
 	std::random_device rd;
 	std::mt19937 g(rd());
 
-	// Shuffle the cards using std::ranges::shuffle
 	std::ranges::shuffle(sortedCards, g);
 
 	for (int card : sortedCards) {

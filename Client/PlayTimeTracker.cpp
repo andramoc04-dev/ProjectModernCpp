@@ -23,14 +23,13 @@ PlayTimeTracker::~PlayTimeTracker()
 
 void PlayTimeTracker::startTracking(int playerId, const QString& serverUrl)
 {
-    // IMPORTANT: Dacă deja trackuim pentru alt jucător, OPREȘTE și SINCRONIZEAZĂ
+  
     if (m_isTracking && m_playerId != playerId) {
         qDebug() << "PlayTimeTracker: Switching from player" << m_playerId
             << "to player" << playerId;
-        stopAndSync(); // Salvează timpul pentru jucătorul anterior
+        stopAndSync(); 
     }
 
-    // Dacă deja trackuim pentru același jucător, nu face nimic
     if (m_isTracking && m_playerId == playerId) {
         qWarning() << "PlayTimeTracker: Already tracking for player" << playerId;
         return;
@@ -42,7 +41,6 @@ void PlayTimeTracker::startTracking(int playerId, const QString& serverUrl)
     m_lastSync = m_sessionStart;
     m_isTracking = true;
 
-    // Pornește backup timer-ul
     m_backupTimer->start();
 
     qDebug() << "PlayTimeTracker: Started tracking for player" << playerId;
@@ -56,7 +54,6 @@ void PlayTimeTracker::stopAndSync()
 
     m_backupTimer->stop();
 
-    // Calculeaz? timpul total de la ultima sincronizare
     const int secondsToSync = getElapsedSeconds();
 
     if (secondsToSync > 0) {

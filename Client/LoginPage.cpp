@@ -14,7 +14,7 @@ LoginPage::LoginPage(QWidget* parent)
     ui->Password->setEchoMode(QLineEdit::Password);
 
     if (!s_playTimeTracker) {
-        s_playTimeTracker = new PlayTimeTracker(qApp); // parent = QApplication
+        s_playTimeTracker = new PlayTimeTracker(qApp); 
     }
 }
 
@@ -91,7 +91,7 @@ void LoginPage::onRegisterReply(QNetworkReply* reply)
     ui->registerButton->setEnabled(true);
 
     if (reply->error() != QNetworkReply::NoError) {
-        QMessageBox::warning(this, "Eroare rețea", reply->errorString());
+        QMessageBox::warning(this, "Network error", reply->errorString());
         reply->deleteLater();
         return;
     }
@@ -104,7 +104,7 @@ void LoginPage::onRegisterReply(QNetworkReply* reply)
     qDebug() << "Register reply. HTTP:" << statusCode << "Body:" << bodyStr;
 
     if (statusCode == 201) {
-        QMessageBox::information(this, "Succes", "Cont creat cu succes!");
+        QMessageBox::information(this, "Succes", "Account created successfully!");
     }
     else if (statusCode == 409) {
         QString msg = "User already exists.";
@@ -117,13 +117,13 @@ void LoginPage::onRegisterReply(QNetworkReply* reply)
         else if (!bodyStr.isEmpty()) {
             msg = bodyStr;
         }
-        QMessageBox::warning(this, "Eroare", msg);
+        QMessageBox::warning(this, "Error", msg);
     }
     else if (statusCode == 400) {
-        QMessageBox::warning(this, "Eroare", "Bad request (server rejected payload).");
+        QMessageBox::warning(this, "Error", "Bad request (server rejected payload).");
     }
     else {
-        QMessageBox::warning(this, "Eroare server",
+        QMessageBox::warning(this, "Server error",
             QString("HTTP %1\n\n%2").arg(statusCode).arg(bodyStr));
     }
 
@@ -135,7 +135,7 @@ void LoginPage::onLoginReply(QNetworkReply* reply)
     ui->loginButton->setEnabled(true);
 
     if (reply->error() != QNetworkReply::NoError) {
-        QMessageBox::warning(this, "Eroare rețea", reply->errorString());
+        QMessageBox::warning(this, "Network error", reply->errorString());
         reply->deleteLater();
         return;
     }
@@ -149,7 +149,6 @@ void LoginPage::onLoginReply(QNetworkReply* reply)
         const QString name = obj["name"].toString();
         int score = obj["score"].toInt();
 
-        // extragem ID din răspunsul serverului
         int id = -1;
         if (obj.contains("id")) {
             id = obj["id"].toInt(-1);
@@ -162,14 +161,12 @@ void LoginPage::onLoginReply(QNetworkReply* reply)
             s_playTimeTracker->startTracking(id, "http://localhost:18080");
         }
 
-        // cream MenuPage, setam playerId si o aratam
         menu = new MenuPage(nullptr);
         if (id >= 0) {
             menu->setPlayerId(id);
           
         }
         else {
-            // dacă serverul nu a trimis id, poți decide: fie refuzi, fie folosești altă logică
             qWarning() << "Login reply: no id field returned by server";
         }
         menu->setPlayerName(name);
@@ -177,10 +174,10 @@ void LoginPage::onLoginReply(QNetworkReply* reply)
         this->close();
     }
     else if (statusCode == 401) {
-        QMessageBox::warning(this, "Eroare", "Invalid credentials!");
+        QMessageBox::warning(this, "Error", "Invalid credentials!");
     }
     else {
-        QMessageBox::warning(this, "Eroare server",
+        QMessageBox::warning(this, "Server error",
             QString("HTTP %1\n\n%2").arg(statusCode).arg(QString::fromUtf8(body)));
     }
 
@@ -193,13 +190,13 @@ bool LoginPage::validateInput(const QString& username, const QString& password)
     const QRegularExpression passwordRegex("^.{8,}$");
 
     if (!usernameRegex.match(username).hasMatch()) {
-        QMessageBox::warning(this, "Eroare",
+        QMessageBox::warning(this, "Error",
             "Invalid Username!\nOnly digits and letters are accepted and the username should always start with a letter!");
         return false; 
     }
 
     if (!passwordRegex.match(password).hasMatch()) {
-        QMessageBox::warning(this, "Eroare",
+        QMessageBox::warning(this, "Error",
             "Invalid Password!\nYou need at least 8 characters (letters, digits or symbols like @!#)");
         return false; 
     }

@@ -45,7 +45,7 @@ void LobbyManager::Join(http::UserProfiles& storage, int playerId)
     m_playerLobbyMap[playerId] = LobbyInfo{};
 
     while (TryStartMatchLocked(storage)) {
-        // keep matching
+      
     }
 }
 
@@ -53,14 +53,12 @@ crow::json::wvalue LobbyManager::GetStatus(http::UserProfiles& storage, int play
 {
     std::lock_guard<std::mutex> lk(m_lobbyMutex);
 
-    // încearcă să pornească meciuri dacă sunt condiții
     while (TryStartMatchLocked(storage)) {
-        // keep matching
+    
     }
 
     crow::json::wvalue resp;
 
-    // caută jucătorul în lobby
     auto lobbyIt = m_playerLobbyMap.find(playerId);
     if (lobbyIt == m_playerLobbyMap.end()) {
         resp["started"] = false;
@@ -69,16 +67,14 @@ crow::json::wvalue LobbyManager::GetStatus(http::UserProfiles& storage, int play
         return resp;
     }
 
-    // caută jucătorul în lista de așteptare (pentru timeout)
     auto wpIt = std::ranges::find_if(
         m_waitingPlayers,
         [playerId](const auto& wp) { return wp.playerId == playerId; }
     );
 
 
-    // ===== TIMEOUT =====
     if (wpIt != m_waitingPlayers.end() && wpIt->timer.expired()) {
-        // scoate jucătorul din lobby
+      
         m_waitingPlayers.erase(wpIt);
         m_playerLobbyMap.erase(playerId);
 
@@ -87,7 +83,6 @@ crow::json::wvalue LobbyManager::GetStatus(http::UserProfiles& storage, int play
         return resp;
     }
 
-    // ===== NORMAL STATUS =====
     const LobbyInfo& info = lobbyIt->second;
     resp["started"] = info.m_started;
     resp["timedOut"] = false;
@@ -133,13 +128,13 @@ bool LobbyManager::TryStartMatchLocked(http::UserProfiles& storage)
     if (!oldestExpired)
         return false;
 
-    //  CAZUL 1: NU sunt suficienți jucători → TIMEOUT
+   
     if ((int)m_waitingPlayers.size() < kMinPlayersPerGame) {
 
         for (const auto& wp : m_waitingPlayers) {
             LobbyInfo info;
             info.m_started = false;
-            info.m_timedOut = true;   //  IMPORTANT
+            info.m_timedOut = true;   
             m_playerLobbyMap[wp.playerId] = info;
         }
 
@@ -147,7 +142,6 @@ bool LobbyManager::TryStartMatchLocked(http::UserProfiles& storage)
         return true;
     }
 
-    // CAZUL 2: suficienți jucători → pornești joc
     std::vector<int> playerIds;
     for (const auto& wp : m_waitingPlayers) {
         playerIds.push_back(wp.playerId);

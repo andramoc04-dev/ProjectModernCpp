@@ -22,7 +22,6 @@ EndgamePage::EndgamePage(int playerId, const QString& playerName, int gameId,
 {
     ui.setupUi(this);
 
-    // Seteaz? background-ul în func?ie de rezultat
     if (gameEnding == "won") {
         this->setStyleSheet("border-image: url(:/Client/resources/win_background.jpeg) 0 0 0 0 stretch stretch;");
     }
@@ -39,7 +38,6 @@ void EndgamePage::showEvent(QShowEvent* event)
 {
     QDialog::showEvent(event);
 
-    // Trimite rezultatul jocului doar o singur? dat?
     if (!m_resultSubmitted) {
         SubmitGameResult();
     }
@@ -111,7 +109,6 @@ void EndgamePage::OnWinReplyFinished()
         qDebug() << "Win recorded successfully";
         m_resultSubmitted = true;
 
-        // Dup? ce am înregistrat rezultatul, recalcul?m scorul
         RecalculateScore();
     }
     else {
@@ -139,7 +136,6 @@ void EndgamePage::OnLossReplyFinished()
         qDebug() << "Loss recorded successfully";
         m_resultSubmitted = true;
 
-        // Dup? ce am înregistrat rezultatul, recalcul?m scorul
         RecalculateScore();
     }
     else {
@@ -202,7 +198,6 @@ void EndgamePage::OnRecalculateScoreFinished()
 
 void EndgamePage::OnBackToMenuClicked()
 {
-    // Întoarce-te la meniu
     MenuPage* menuPage = new MenuPage(m_playerId, m_playerName, nullptr);
     menuPage->show();
     this->close();

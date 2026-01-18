@@ -18,7 +18,6 @@ GamePage::GamePage(QWidget *parent)
 	: QDialog(parent)
 {
 	ui.setupUi(this);
-	// CHAT – fără scrollbar
 	ui.chatMessages->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	ui.chatMessages->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	ui.chatMessages->setReadOnly(true);
@@ -28,9 +27,8 @@ GamePage::GamePage(QWidget *parent)
 	connect(ui.sendButton, &QPushButton::clicked,
 		this, &GamePage::OnSendClicked);
 
-	// pornește timerele DLL
-	m_chatTimer.start(1);   // 1 sec
-	m_stateTimer.start(2);  // 1 sec
+	m_chatTimer.start(1);   
+	m_stateTimer.start(2);  
 
 	m_pollTimer = new QTimer(this);
 	connect(m_pollTimer, &QTimer::timeout, this, &GamePage::CheckTimers);
@@ -70,16 +68,13 @@ GamePage::GamePage(int playerId,const QString& playerName, int gameId, QWidget* 
 GamePage::~GamePage()
 {
 
-	// Oprește QTimer
 		if (m_pollTimer) {
 			m_pollTimer->stop();
 		}
 
-	// Oprește GameTimer DLL
 	m_chatTimer.stop();
 	m_stateTimer.stop();
 
-	// Cleanup steal card widget
 	if (m_stealCardWidget) {
 		delete m_stealCardWidget;
 		m_stealCardWidget = nullptr;
@@ -122,7 +117,7 @@ void GamePage::FetchEquippedPowerUps()
 				}
 			}
 
-			qDebug() << "Power-ups găsite:" << equippedPowerUpIds.size();
+			qDebug() << "Found power-ups:" << equippedPowerUpIds.size();
 			ShowPowerUps(equippedPowerUpIds);
 		}
 		else {
@@ -274,11 +269,9 @@ void GamePage::UpdatePileVisual(QLabel* pileLabel, int cardValue)
 		pix.load(":/Client/resources/100.png");
 	}
 	else if (cardValue >= 10) {
-		// compunem imaginea din două cifre
 		QPixmap left(QString(":/Client/resources/%1.png").arg(cardValue / 10));
 		QPixmap right(QString(":/Client/resources/%1.png").arg(cardValue % 10));
 
-		// lipim cele două imagini într-un pixmap nou
 		pix = QPixmap(left.width() + right.width(), left.height());
 		pix.fill(Qt::transparent);
 
@@ -295,7 +288,7 @@ void GamePage::UpdatePileVisual(QLabel* pileLabel, int cardValue)
 		pileLabel->update();
 	}
 	else {
-		qDebug() << "Eroare: nu găsesc resursa pentru valoarea" << cardValue;
+		qDebug() << "Error: could not find the resource for value" << cardValue;
 	}
 
 
@@ -304,7 +297,6 @@ void GamePage::UpdatePileVisual(QLabel* pileLabel, int cardValue)
 
 void GamePage::EnablePowerUps(bool enabled)
 {
-	// Parcurge toate widget-urile din powerupsGrid și activează/dezactivează butoanele
 	for (int i = 0; i < ui.powerupsGrid->count(); ++i) {
 		QLayoutItem* item = ui.powerupsGrid->itemAt(i);
 		if (item && item->widget()) {
@@ -312,7 +304,6 @@ void GamePage::EnablePowerUps(bool enabled)
 			if (button) {
 				button->setEnabled(enabled);
 
-				// Schimbă stilul vizual pentru a indica că sunt disabled
 				if (!enabled) {
 					button->setStyleSheet(button->styleSheet() +
 						"QPushButton:disabled {"
@@ -385,23 +376,21 @@ void GamePage::FetchGameState()
 		QString currentPlayerName = obj["currentPlayerName"].toString();
 		m_isMyTurn = (currentPlayerId == m_playerId);
 
-		// Activează/Dezactivează butoanele de plasare
-		// (Nu mai e nevoie să verifici isEnabled anterior, setEnabled e destul de eficient în Qt)
+
 		ui.DescendingCardPlacer1->setEnabled(m_isMyTurn);
 		ui.DescendingCardPlacer2->setEnabled(m_isMyTurn);
 		ui.AscendingCardPlacer1->setEnabled(m_isMyTurn);
 		ui.AscendingCardPlacer2->setEnabled(m_isMyTurn);
 		ui.deckButton->setEnabled(m_isMyTurn);
 
-		// Apelăm enablePowerUps pentru a actualiza butoanele existente
 		EnablePowerUps(m_isMyTurn);
 
 		QJsonArray players = obj["players"].toArray();
-		m_allPlayerNames.clear(); // Golim lista veche
+		m_allPlayerNames.clear(); 
 		for (const auto& playerVal : players) {
 			QJsonObject playerObj = playerVal.toObject();
 			QString username = playerObj["username"].toString();
-			m_allPlayerNames << username; // Adăugăm numele în listă
+			m_allPlayerNames << username;
 		}
 		QString newTitle;
 		if (m_isMyTurn) newTitle = QString("Your turn | Team: %1").arg(m_allPlayerNames.join(", "));
@@ -468,16 +457,14 @@ void GamePage::ShowPowerUps(const std::unordered_set<int>& equippedPowerUpIds)
 
 		button->setProperty("powerUpId", powerUpId);
 
-		int powerUpType = powerUpId; // ID-ul este același cu type-ul (1-5)
+		int powerUpType = powerUpId; 
 
 		connect(button, &QPushButton::clicked, [this, powerUpId]() {
-			// transformăm ID-ul în enum
 			PowerUpType type = static_cast<PowerUpType>(powerUpId);
 			OnPowerUpClicked(powerUpId, type);
 			});
 
 
-		// Inițial disabled până verificăm dacă este tura jucătorului
 		button->setEnabled(m_isMyTurn);
 
 		ui.powerupsGrid->addWidget(button, row, Qt::AlignCenter);
@@ -585,7 +572,6 @@ void GamePage::InitializeGame(int playerId,const QString& playerName, int gameId
 	UpdatePileVisual(ui.DescendingDeck1Number, 100);
 	UpdatePileVisual(ui.DescendingDeck2Number, 100);
 
-	//fetchGameState();
 	FetchEquippedPowerUps();
 }
 
@@ -618,7 +604,7 @@ void GamePage::OnPileClicked(int pileId, QLabel* pileLabel)
 		return;
 	}
 
-	// Verifică dacă Wild Card este activ
+	
 	if (m_isPowerUpActive && m_activePowerUpType == PowerUpType::PLACE_ANY_CARD) {
 		UsePowerUp(m_activePowerUpId, -1, m_selectedCardValue, pileId);
 		m_isPowerUpActive = false;
@@ -628,7 +614,7 @@ void GamePage::OnPileClicked(int pileId, QLabel* pileLabel)
 		return;
 	}
 
-	// Comportament normal
+
 	QJsonObject obj;
 	obj["cardValue"] = m_selectedCardValue;
 	obj["pileId"] = pileId;
@@ -690,7 +676,7 @@ void GamePage::OnDrawCardClicked()
 			FetchHand();
 		}
 		else {
-			// Eroare - probabil nu a plasat destule cărți
+			
 			QString errorMsg = "Unknown error";
 			if (obj.contains("error")) {
 				errorMsg = obj["error"].toString();
@@ -704,16 +690,15 @@ void GamePage::OnDrawCardClicked()
 }
 
 void GamePage::CheckTimers()
-{	// Verifică dacă timer-ul de chat a expirat
+{	
 	if (m_chatTimer.expired()) {
 		FetchMessages();
-		m_chatTimer.start(1);  // Restart pentru următorul ciclu
+		m_chatTimer.start(1);  
 	}
 
-	// Verifică dacă timer-ul de game state a expirat
 	if (m_stateTimer.expired()) {
 		FetchGameState();
-		m_stateTimer.start(2);  // Restart pentru următorul ciclu
+		m_stateTimer.start(2);  
 	}
 }
 
@@ -728,8 +713,8 @@ void GamePage::OpenEndgamePage(QString gameStatus)
 		m_playerId,
 		m_playerName,
 		m_gameId,
-		gameStatus,              // "won" sau "lost"
-		m_currentUnusedCards,    // numărul de cărți nefolosite
+		gameStatus,              
+		m_currentUnusedCards,    
 		"http://127.0.0.1:18080",
 		hasProtection,
 		nullptr
@@ -756,7 +741,6 @@ void GamePage::OnPowerUpClicked(int powerUpId, PowerUpType powerUpType)
 		break;
 
 	case PowerUpType::SKIP_TURN:
-		// Folosește imediat power-up-ul
 		UsePowerUp(powerUpId);
 		m_isPowerUpActive = false;
 		m_activePowerUpId = -1;
@@ -773,7 +757,6 @@ void GamePage::OnPowerUpClicked(int powerUpId, PowerUpType powerUpType)
 		break;
 
 	case PowerUpType::NO_SCORE_LOSS:
-		// Acest power-up se activează automat la pierderea jocului
 		UsePowerUp(powerUpId);
 		m_isPowerUpActive = false;
 		m_activePowerUpId = -1;
@@ -826,12 +809,9 @@ void GamePage::UsePowerUp(int powerUpId, int targetPlayerId, int targetCardValue
 			QMessageBox::information(this, "Power-up Used",
 				QString("%1 used successfully!\n%2").arg(powerUpName).arg(message));
 
-			// Refresh hand and equipped power-ups
 			FetchHand();
 			FetchEquippedPowerUps();
 
-			// Dacă a fost Skip Turn, refresh game state
-			// Dacă vrei să verifici dacă e Skip Turn:
 			if (static_cast<PowerUpType>(powerUpId) == PowerUpType::SKIP_TURN) {
 				FetchGameState();
 			}
@@ -849,7 +829,7 @@ void GamePage::UsePowerUp(int powerUpId, int targetPlayerId, int targetCardValue
 
 void GamePage::ShowStealCardDialog()
 {
-	// Creează widget-ul pentru steal card dacă nu există
+
 	if (!m_stealCardWidget) {
 		m_stealCardWidget = new QWidget(this);
 		m_stealCardWidget->setStyleSheet(
@@ -893,7 +873,6 @@ void GamePage::ShowStealCardDialog()
 		m_stealCardWidget->setLayout(m_stealCardLayout);
 	}
 
-	// Șterge butoanele vechi
 	while (m_stealCardLayout->count() > 1) {
 		QLayoutItem* item = m_stealCardLayout->takeAt(1);
 		if (item->widget()) {
@@ -902,7 +881,6 @@ void GamePage::ShowStealCardDialog()
 		delete item;
 	}
 
-	// Fetch players from game state
 	QNetworkRequest req(QUrl(QString("http://127.0.0.1:18080/game/%1/state").arg(m_gameId)));
 	QNetworkReply* reply = net->get(req);
 
@@ -924,7 +902,6 @@ void GamePage::ShowStealCardDialog()
 			int playerId = playerObj["id"].toInt();
 			QString username = playerObj["username"].toString();
 
-			// Skip current player
 			if (playerId == m_playerId) {
 				continue;
 			}
@@ -942,7 +919,6 @@ void GamePage::ShowStealCardDialog()
 			m_stealCardLayout->addWidget(playerBtn);
 		}
 
-		// Adaugă buton de anulare
 		QPushButton* cancelBtn = new QPushButton("Cancel", m_stealCardWidget);
 		cancelBtn->setStyleSheet(
 			"QPushButton {"
@@ -960,7 +936,6 @@ void GamePage::ShowStealCardDialog()
 			});
 		m_stealCardLayout->addWidget(cancelBtn);
 
-		// Poziționează widget-ul în centrul ecranului
 		int w = 300;
 		int h = 400;
 		m_stealCardWidget->setGeometry(

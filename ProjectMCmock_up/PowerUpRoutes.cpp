@@ -6,7 +6,7 @@
 
 void PowerUpRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserProfiles& storage)
 {
-    // ===================== MINIGAME COMPLETE =====================
+    
     CROW_ROUTE(app, "/minigame/complete").methods(crow::HTTPMethod::POST)
         ([&storage](const crow::request& req) {
         auto body = crow::json::load(req.body);
@@ -67,7 +67,7 @@ void PowerUpRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserPr
             });
 
 
-    // ===================== POWERUPS LIST =====================
+   
     CROW_ROUTE(app, "/game/<int>/player/<int>/powerups").methods(crow::HTTPMethod::GET)
         ([&gm, &storage](int gameId, int playerId) {
         std::lock_guard<std::mutex> lk(gm.Mutex());
@@ -192,7 +192,7 @@ void PowerUpRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserPr
         return crow::response{ resp.dump() };
             });
 
-    // ===================== UNEQUIP (GAME) =====================
+    
     CROW_ROUTE(app, "/game/<int>/player/<int>/powerups/<int>/unequip").methods(crow::HTTPMethod::POST)
         ([&gm, &storage](int gameId, int playerId, int inventoryId) {
         std::lock_guard<std::mutex> lk(gm.Mutex());
@@ -223,7 +223,6 @@ void PowerUpRoutes::Register(crow::SimpleApp& app, GameManager& gm, http::UserPr
         return crow::response{ resp.dump() };
             });
 
-    // ===================== USE POWERUP IN GAME =====================
     CROW_ROUTE(app, "/game/<int>/player/<int>/usepower").methods(crow::HTTPMethod::POST)
         ([&gm, &storage](const crow::request& req, int gameId, int playerId) {
         auto body = crow::json::load(req.body);

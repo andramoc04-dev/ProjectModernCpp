@@ -21,14 +21,14 @@ namespace http
 
     void Routing::Run(UserProfiles& storage)
     {
-        // Inițializează managerii cu referințe la structurile partajate
+       
         m_gameManager = std::make_unique<GameManager>(m_lobbyMutex, m_activeGames);
         m_lobbyManager = std::make_unique<LobbyManager>(m_lobbyMutex, m_activeGames);
         m_gameRoutes = std::make_unique<GameRoutes>();
         m_powerUpRoutes = std::make_unique<PowerUpRoutes>();
         m_userRoutes = std::make_unique<UserRoutes>();
 
-        // ===================== LOBBY ROUTES =====================
+      
         CROW_ROUTE(m_app, "/join").methods(crow::HTTPMethod::POST)
             ([this, &storage](const crow::request& req) {
             auto body = crow::json::load(req.body);
@@ -54,12 +54,11 @@ namespace http
             return crow::response{ resp.dump() };
                 });
 
-        // ===================== REGISTER COMPONENT ROUTES =====================
+        
         GameRoutes::Register(m_app, *m_gameManager, storage);
         PowerUpRoutes::Register(m_app, *m_gameManager, storage);
         UserRoutes::Register(m_app, storage);
 
-        // Pornește serverul
         m_app.port(18080).multithreaded().run();
     }
 }

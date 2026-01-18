@@ -54,7 +54,7 @@ void MenuPage::openProfilePage()
 void MenuPage::OpenLobbyPage()
 {
     if (m_playerId < 0) {
-        QMessageBox::warning(this, "Nu ești logat", "Trebuie să te autentifici înainte de a intra în lobby.");
+        QMessageBox::warning(this, "You are not logged in.", "You must log in before entering the lobby.");
         return;
     }
 

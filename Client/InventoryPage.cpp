@@ -249,12 +249,9 @@ void InventoryPage::updateTimerUI()
 	const int elapsed = m_gameTimer.elapsedSeconds();
 	const int remaining = std::max(0, m_totalSeconds - elapsed);
 
-	// Update UI to show remaining time (if you have a label for it)
-	// ui.timerLabel->setText(QString("Time remaining: %1s").arg(remaining));
 
 	qDebug() << "InventoryPage - Time remaining:" << remaining << "seconds";
 
-	// Check if timer expired
 	if (m_gameTimer.expired() && !m_timerExpired) {
 		m_timerExpired = true;
 		onTimerExpired();

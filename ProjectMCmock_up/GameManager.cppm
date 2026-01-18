@@ -1,14 +1,12 @@
-﻿module; // Începutul Global Module Fragment
+﻿module; 
 
-// Toate include-urile clasice trebuie să stea aici
 #include <unordered_map>
 #include <memory>
 #include <mutex>
 #include "Game.h" 
 
-export module GameManager; // Declarăm numele modulului
+export module GameManager; 
 
-// Exportăm clasa pentru a fi vizibilă în afara modulului
 export class GameManager {
 public:
     GameManager(std::mutex& mutex, std::unordered_map<int, std::unique_ptr<Game>>& games);

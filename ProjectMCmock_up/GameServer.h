@@ -12,7 +12,6 @@ import GameManager;
 import LobbyManager;
 import UserRoutes;
 
-// Forward declarations
 class GameManager;
 class LobbyManager;
 class GameRoutes;
@@ -32,11 +31,9 @@ namespace http
     private:
         crow::SimpleApp m_app;
 
-        // Shared data structures
         std::mutex m_lobbyMutex;
         std::unordered_map<int, std::unique_ptr<Game>> m_activeGames;
 
-        // Component managers
         std::unique_ptr<GameManager> m_gameManager;
         std::unique_ptr<LobbyManager> m_lobbyManager;
         std::unique_ptr<GameRoutes> m_gameRoutes;
