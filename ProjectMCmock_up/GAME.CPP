@@ -1,6 +1,10 @@
 #include "Game.h"
 #include <ranges>
 #include <deque>
+#include <random>
+#include <vector>
+
+
 
 Game::Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck, const std::shared_ptr<Chat>& chat) :
 	m_players(players), m_cardsDeck(cardsDeck), m_chat(std::move(chat)), m_descendingDeck1(DESCENDING_DECK_START), m_descendingDeck2(DESCENDING_DECK_START),
@@ -9,22 +13,26 @@ Game::Game(const std::vector<Player>& players, const std::stack<Card>& cardsDeck
 	m_players.reserve(5);
 }
 
-void Game::ShuffleCards()
-{
+void Game::ShuffleCards() {
 	std::srand(std::time(0));
-	std::deque<int> sortedCards;
+	std::vector<int> sortedCards;
 	for (int i = 2; i <= 33; i++)
 		sortedCards.push_back(i);
-	int position;
-	while (!sortedCards.empty())
-	{
-		position = std::rand() % sortedCards.size();
-		Card card(sortedCards[position]);
-		m_cardsDeck.push(card);
-		sortedCards.erase(sortedCards.begin() + position);
+
+	// Initialize the random number generator
+	std::random_device rd;
+	std::mt19937 g(rd());
+
+	// Shuffle the cards using std::ranges::shuffle
+	std::ranges::shuffle(sortedCards, g);
+
+	for (int card : sortedCards) {
+		m_cardsDeck.push(Card(card));
 	}
+
 	m_areCardsShuffled = true;
 }
+
 
 
 void Game::CardsDistribution()
